@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <configurationdialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    ConfigurationDialog *mConfigurationDialog;
+
+private slots:
+    void on_actionConfigure_triggered();
 };
 
 #endif // MAINWINDOW_H
