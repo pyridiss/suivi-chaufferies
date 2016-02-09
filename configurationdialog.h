@@ -20,6 +20,9 @@ private:
 
 public slots:
     void setHeatSell(int state);
+private slots:
+    void on_pushButton_AddSubstation_clicked();
+    void on_pushButton_RemoveSubstation_clicked();
 };
 
 #endif // CONFIGURATIONDIALOG_H
