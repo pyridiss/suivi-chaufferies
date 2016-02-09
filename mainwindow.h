@@ -21,8 +21,8 @@ private:
     ConfigurationDialog *mConfigurationDialog;
 
 private slots:
-    void on_actionConfigure_triggered();
     void on_actionExit_triggered();
+    void on_actionConfigureBoilerRoom_triggered();
 };
 
 #endif // MAINWINDOW_H

@@ -15,12 +15,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionConfigure_triggered()
-{
-    mConfigurationDialog->show();
-}
-
 void MainWindow::on_actionExit_triggered()
 {
     qApp->exit();
+}
+
+void MainWindow::on_actionConfigureBoilerRoom_triggered()
+{
+    mConfigurationDialog->show();
 }
