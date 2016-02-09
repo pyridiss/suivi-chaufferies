@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    configurationdialog.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    configurationdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    configurationdialog.ui

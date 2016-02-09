@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConfigurationDialog</class>
+ <widget class="QDialog" name="ConfigurationDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>378</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabGeneral">
+      <attribute name="title">
+       <string>Général</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Nom de la chaufferie</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEdit_BoilerRoomName"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Source de chaleur principale</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboBox_mainHeatSource">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Bois déchiqueté</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Granulés de bois</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Géothermie</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Source de chaleur secondaire</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="comboBox_SecondaryHeatSource">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Aucune</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Appoint / Secours au gaz naturel</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Appoint / Secours au fioul</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Appoint / Secours au propane</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Appoint / Secours électrique</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Autre</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Compteur de chaleur général</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="comboBox_mainHeatMeter">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Oui</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Non</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabSubstations">
+      <attribute name="title">
+       <string>Sous-stations</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Supprimer</string>
+         </property>
+         <property name="icon">
+          <iconset theme="list-remove">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Ajouter</string>
+         </property>
+         <property name="icon">
+          <iconset theme="list-add">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QListWidget" name="listWidget"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Liste des sous-stations</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabHeatSell">
+      <attribute name="title">
+       <string>Vente de chaleur</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Si vous souhaitez vendre de la chaleur à d'autres usagers, activez le calcul de la vente de chaleur et remplissez cet onglet.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_HeatSell">
+         <property name="text">
+          <string>Activer le calcul de la vente de chaleur</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_HeatSell">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="title">
+          <string>Dépenses à prendre en compte lors de la refacturation</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_2">
+          <item row="2" column="1">
+           <widget class="QComboBox" name="comboBox_HeatSell_RoutineMaintenance">
+            <item>
+             <property name="text">
+              <string>Oui</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Non</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="comboBox_HeatSell_MajorMaintenance">
+            <item>
+             <property name="text">
+              <string>Oui</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Non</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QComboBox" name="comboBox_HeatSell_LoanInterest">
+            <item>
+             <property name="text">
+              <string>Oui</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Non</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="comboBox_HeatSell_LoanAmortization">
+            <item>
+             <property name="text">
+              <string>Oui</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Non</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Intérets d'emprunt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Amortissement et remboursement de prêt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Dépenses de gros entretien</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Dépenses d'entretien courant</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboBox_HeatSell_Electricity">
+            <item>
+             <property name="text">
+              <string>Oui</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Non</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Consommations d'électricité</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ConfigurationDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ConfigurationDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
