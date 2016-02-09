@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = SuiviChaufferies
 TEMPLATE = app
@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    configurationdialog.cpp
+    configurationdialog.cpp \
+    qcustomplot/qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
-    configurationdialog.h
+    configurationdialog.h \
+    qcustomplot/qcustomplot.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui
