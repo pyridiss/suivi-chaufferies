@@ -19,3 +19,8 @@ void MainWindow::on_actionConfigure_triggered()
 {
     mConfigurationDialog->show();
 }
+
+void MainWindow::on_actionExit_triggered()
+{
+    qApp->exit();
+}

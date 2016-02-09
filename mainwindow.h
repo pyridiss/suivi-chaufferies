@@ -22,6 +22,7 @@ private:
 
 private slots:
     void on_actionConfigure_triggered();
+    void on_actionExit_triggered();
 };
 
 #endif // MAINWINDOW_H

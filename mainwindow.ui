@@ -23,6 +23,13 @@
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFichier">
+    <property name="title">
+     <string>Fic&amp;hier</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFichier"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="toolButtonStyle">
@@ -43,6 +50,14 @@
    </property>
    <property name="text">
     <string>Configure</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset theme="application-exit"/>
+   </property>
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
