@@ -35,6 +35,13 @@ void ConfigurationDialog::readSettings()
         newItem->setFlags(newItem->flags () | Qt::ItemIsEditable);
     }
     settings.endArray();
+
+    ui->checkBox_HeatSell->setChecked(settings.value("heatSell/heatSell", false).toBool());
+    ui->comboBox_HeatSell_Electricity->setCurrentIndex(settings.value("heatSell/electricity", 0).toInt());
+    ui->comboBox_HeatSell_RoutineMaintenance->setCurrentIndex(settings.value("heatSell/routineMaintenance", 0).toInt());
+    ui->comboBox_HeatSell_MajorMaintenance->setCurrentIndex(settings.value("heatSell/majorMaintenance", 0).toInt());
+    ui->comboBox_HeatSell_LoanAmortization->setCurrentIndex(settings.value("heatSell/loanAmortization", 0).toInt());
+    ui->comboBox_HeatSell_LoanInterest->setCurrentIndex(settings.value("heatSell/loanInterest", 0).toInt());
 }
 
 void ConfigurationDialog::setHeatSell(int state)
@@ -72,6 +79,13 @@ void ConfigurationDialog::on_buttonBox_accepted()
         settings.setValue("name", ui->listWidget_Substations->item(i)->text());
     }
     settings.endArray();
+
+    settings.setValue("heatSell/heatSell", ui->checkBox_HeatSell->isChecked());
+    settings.setValue("heatSell/electricity", ui->comboBox_HeatSell_Electricity->currentIndex());
+    settings.setValue("heatSell/routineMaintenance", ui->comboBox_HeatSell_RoutineMaintenance->currentIndex());
+    settings.setValue("heatSell/majorMaintenance", ui->comboBox_HeatSell_MajorMaintenance->currentIndex());
+    settings.setValue("heatSell/loanAmortization", ui->comboBox_HeatSell_LoanAmortization->currentIndex());
+    settings.setValue("heatSell/loanInterest", ui->comboBox_HeatSell_LoanInterest->currentIndex());
 
     emit settingsChanged();
 }
