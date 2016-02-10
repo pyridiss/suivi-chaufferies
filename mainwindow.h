@@ -23,6 +23,9 @@ private:
 private slots:
     void on_actionExit_triggered();
     void on_actionConfigureBoilerRoom_triggered();
+
+public slots:
+    void readSettings();
 };
 
 #endif // MAINWINDOW_H
