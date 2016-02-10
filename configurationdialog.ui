@@ -328,6 +328,33 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabEconomicData">
+      <attribute name="title">
+       <string>Données économiques</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEdit_Investment"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Investissement total</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>Subventions obtenues</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit_Subsidies"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
