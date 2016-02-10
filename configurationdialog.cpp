@@ -42,6 +42,12 @@ void ConfigurationDialog::readSettings()
     ui->comboBox_HeatSell_MajorMaintenance->setCurrentIndex(settings.value("heatSell/majorMaintenance", 0).toInt());
     ui->comboBox_HeatSell_LoanAmortization->setCurrentIndex(settings.value("heatSell/loanAmortization", 0).toInt());
     ui->comboBox_HeatSell_LoanInterest->setCurrentIndex(settings.value("heatSell/loanInterest", 0).toInt());
+
+    ui->doubleSpinBox_Investment->setValue(settings.value("economy/investment", 0).toDouble());
+    ui->doubleSpinBox_Subsidies->setValue(settings.value("economy/subsidies", 0).toDouble());
+    ui->doubleSpinBox_Loan->setValue(settings.value("economy/loan", 0).toDouble());
+    ui->spinBox_LoanPeriod->setValue(settings.value("economy/loanPeriod", 0).toInt());
+    ui->doubleSpinBox_LoanRate->setValue(settings.value("economy/loanRate", 0).toDouble());
 }
 
 void ConfigurationDialog::setHeatSell(int state)
@@ -86,6 +92,12 @@ void ConfigurationDialog::on_buttonBox_accepted()
     settings.setValue("heatSell/majorMaintenance", ui->comboBox_HeatSell_MajorMaintenance->currentIndex());
     settings.setValue("heatSell/loanAmortization", ui->comboBox_HeatSell_LoanAmortization->currentIndex());
     settings.setValue("heatSell/loanInterest", ui->comboBox_HeatSell_LoanInterest->currentIndex());
+
+    settings.setValue("economy/investment", ui->doubleSpinBox_Investment->value());
+    settings.setValue("economy/subsidies",  ui->doubleSpinBox_Subsidies->value());
+    settings.setValue("economy/loan",       ui->doubleSpinBox_Loan->value());
+    settings.setValue("economy/loanPeriod", ui->spinBox_LoanPeriod->value());
+    settings.setValue("economy/loanRate",   ui->doubleSpinBox_LoanRate->value());
 
     emit settingsChanged();
 }

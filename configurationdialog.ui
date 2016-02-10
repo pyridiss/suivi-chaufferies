@@ -333,13 +333,26 @@
        <string>Données économiques</string>
       </attribute>
       <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit_Investment"/>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Investissement total</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_Investment">
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="suffix">
+          <string> €</string>
+         </property>
+         <property name="maximum">
+          <double>1000000.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>1000.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -351,7 +364,71 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_Subsidies"/>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_Subsidies">
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="suffix">
+          <string> €</string>
+         </property>
+         <property name="maximum">
+          <double>1000000.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>1000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>Emprunt à rembourser</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_Loan">
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="suffix">
+          <string> €</string>
+         </property>
+         <property name="maximum">
+          <double>1000000.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>1000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="spinBox_LoanPeriod">
+         <property name="suffix">
+          <string> ans</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="text">
+          <string>Durée de remboursement</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>Taux d'emprunt</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QDoubleSpinBox" name="doubleSpinBox_LoanRate">
+         <property name="suffix">
+          <string> %</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
