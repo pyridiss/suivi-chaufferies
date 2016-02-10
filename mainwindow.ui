@@ -11,12 +11,15 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Outil de suivi des chaufferies</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="clock"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0">
     <item row="2" column="1">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="pushButton_AddMetersRecord">
       <property name="text">
        <string>Enregistrer un relevé des compteurs de chaleur</string>
       </property>
@@ -122,7 +125,7 @@
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="pushButton_AddFuelDelivery">
       <property name="text">
        <string>Enregistrer une livraison de combustible</string>
       </property>
@@ -143,6 +146,10 @@
     <property name="title">
      <string>Fic&amp;hier</string>
     </property>
+    <addaction name="actionConfigureBoilerRoom"/>
+    <addaction name="actionExport"/>
+    <addaction name="actionSend"/>
+    <addaction name="actionDownloadData"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFichier"/>
@@ -158,11 +165,15 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionConfigureBoilerRoom"/>
+   <addaction name="actionExport"/>
+   <addaction name="actionSend"/>
+   <addaction name="actionDownloadData"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConfigureBoilerRoom">
    <property name="icon">
-    <iconset theme="document-properties"/>
+    <iconset theme="document-properties">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Configurer la chaufferie</string>
@@ -173,10 +184,35 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="application-exit"/>
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="icon">
+    <iconset theme="x-office-document"/>
+   </property>
+   <property name="text">
+    <string>Exporter les données dans un fichier</string>
+   </property>
+  </action>
+  <action name="actionSend">
+   <property name="icon">
+    <iconset theme="document-export"/>
+   </property>
+   <property name="text">
+    <string>Envoyer les données à l'ALE 08</string>
+   </property>
+  </action>
+  <action name="actionDownloadData">
+   <property name="icon">
+    <iconset theme="download"/>
+   </property>
+   <property name="text">
+    <string>Mettre à jour les données de prix des énergies et de température</string>
    </property>
   </action>
  </widget>

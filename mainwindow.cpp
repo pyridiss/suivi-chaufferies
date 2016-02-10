@@ -19,17 +19,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionExit_triggered()
-{
-    qApp->exit();
-}
-
-void MainWindow::on_actionConfigureBoilerRoom_triggered()
-{
-    mConfigurationDialog->readSettings();
-    mConfigurationDialog->show();
-}
-
 void MainWindow::readSettings()
 {
     QSettings settings;
@@ -39,4 +28,40 @@ void MainWindow::readSettings()
     name += "</span></p>";
 
     ui->labelBoilerRoomName->setText(name);
+}
+
+void MainWindow::on_actionConfigureBoilerRoom_triggered()
+{
+    mConfigurationDialog->readSettings();
+    mConfigurationDialog->show();
+}
+
+void MainWindow::on_actionExport_triggered()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_actionSend_triggered()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_actionDownloadData_triggered()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    qApp->exit();
+}
+
+void MainWindow::on_pushButton_AddFuelDelivery_clicked()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_pushButton_AddMetersRecord_clicked()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
 }

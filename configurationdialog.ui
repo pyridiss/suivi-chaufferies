@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Configuration de la chaufferie</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="clock"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

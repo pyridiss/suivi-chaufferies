@@ -21,8 +21,13 @@ private:
     ConfigurationDialog *mConfigurationDialog;
 
 private slots:
-    void on_actionExit_triggered();
     void on_actionConfigureBoilerRoom_triggered();
+    void on_actionExport_triggered();
+    void on_actionSend_triggered();
+    void on_actionDownloadData_triggered();
+    void on_actionExit_triggered();
+    void on_pushButton_AddFuelDelivery_clicked();
+    void on_pushButton_AddMetersRecord_clicked();
 
 public slots:
     void readSettings();
