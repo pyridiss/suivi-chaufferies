@@ -2,7 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <configurationdialog.h>
+#include <addfueldeliverydialog.h>
+#include <addmetersrecorddialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +22,8 @@ public:
 private:
     Ui::MainWindow *ui;
     ConfigurationDialog *mConfigurationDialog;
+    AddFuelDeliveryDialog *mAddFullDeliveryDialog;
+    AddMetersRecordDialog *mAddMetersRecordDialog;
 
 private slots:
     void on_actionConfigureBoilerRoom_triggered();

@@ -14,7 +14,8 @@
    <string>Configuration de la chaufferie</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="clock"/>
+   <iconset theme="clock">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -119,31 +120,20 @@
          </item>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Compteur de chaleur général</string>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Éléments présents dans la chaufferie</string>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="comboBox_MainHeatMeter">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <item>
-          <property name="text">
-           <string>Oui</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Non</string>
-          </property>
-         </item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="checkBox_MainHeatMeter">
+            <property name="text">
+             <string>Compteur de chaleur général</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

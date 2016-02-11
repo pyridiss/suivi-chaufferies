@@ -24,7 +24,7 @@ void ConfigurationDialog::readSettings()
     ui->lineEdit_BoilerRoomName->setText(settings.value("boilerRoom/boilerRoomName", "").toString());
     ui->comboBox_MainHeatSource->setCurrentIndex(settings.value("boilerRoom/mainHeatSource", 0).toInt());
     ui->comboBox_SecondaryHeatSource->setCurrentIndex(settings.value("boilerRoom/secondaryHeatSource", 0).toInt());
-    ui->comboBox_MainHeatMeter->setCurrentIndex(settings.value("boilerRoom/mainHeatMeter", 0).toInt());
+    ui->checkBox_MainHeatMeter->setChecked(settings.value("boilerRoom/mainHeatMeter", 0).toBool());
 
     ui->listWidget_Substations->clear();
     int size = settings.beginReadArray("substations");
@@ -77,7 +77,7 @@ void ConfigurationDialog::on_buttonBox_accepted()
     settings.setValue("boilerRoom/boilerRoomName",      ui->lineEdit_BoilerRoomName->text());
     settings.setValue("boilerRoom/mainHeatSource",      ui->comboBox_MainHeatSource->currentIndex());
     settings.setValue("boilerRoom/secondaryHeatSource", ui->comboBox_SecondaryHeatSource->currentIndex());
-    settings.setValue("boilerRoom/mainHeatMeter",       ui->comboBox_MainHeatMeter->currentIndex());
+    settings.setValue("boilerRoom/mainHeatMeter",       ui->checkBox_MainHeatMeter->isChecked());
 
     settings.beginWriteArray("substations");
     for (int i = 0; i < ui->listWidget_Substations->count(); ++i) {

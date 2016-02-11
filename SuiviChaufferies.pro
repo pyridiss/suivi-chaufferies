@@ -15,11 +15,17 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     configurationdialog.cpp \
-    qcustomplot/qcustomplot.cpp
+    qcustomplot/qcustomplot.cpp \
+    addfueldeliverydialog.cpp \
+    addmetersrecorddialog.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
-    qcustomplot/qcustomplot.h
+    qcustomplot/qcustomplot.h \
+    addfueldeliverydialog.h \
+    addmetersrecorddialog.h
 
 FORMS    += mainwindow.ui \
-    configurationdialog.ui
+    configurationdialog.ui \
+    addfueldeliverydialog.ui \
+    addmetersrecorddialog.ui

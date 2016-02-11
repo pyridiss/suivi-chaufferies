@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("ALE 08");
     QCoreApplication::setOrganizationDomain("ale08.org");
     QCoreApplication::setApplicationName("SuiviChaufferies");
-
+QList<QSpinBox*> list;
     MainWindow w;
     w.readSettings();
     w.show();

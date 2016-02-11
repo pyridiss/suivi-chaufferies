@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     mConfigurationDialog = new ConfigurationDialog(this);
+    mAddFullDeliveryDialog = new AddFuelDeliveryDialog(this);
+    mAddMetersRecordDialog = new AddMetersRecordDialog(this);
 
     connect(mConfigurationDialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
 }
@@ -58,10 +60,12 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_pushButton_AddFuelDelivery_clicked()
 {
-    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+    mAddFullDeliveryDialog->readSettings();
+    mAddFullDeliveryDialog->show();
 }
 
 void MainWindow::on_pushButton_AddMetersRecord_clicked()
 {
-    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+    mAddMetersRecordDialog->readSettings();
+    mAddMetersRecordDialog->show();
 }
