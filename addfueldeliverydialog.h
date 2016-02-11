@@ -20,6 +20,9 @@ private:
 
 public slots:
     void readSettings();
+    void changeSelectionToWood();
+    void changeSelectionToSecondaryFuel();
+    void changeSelectionToElectricity();
 };
 
 #endif // ADDFUELDELIVERYDIALOG_H
