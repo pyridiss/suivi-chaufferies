@@ -87,7 +87,11 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
         <item>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_Wood"/>
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_Wood">
+          <property name="maximum">
+           <double>10000.000000000000000</double>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QComboBox" name="comboBox_WoodUnit">
@@ -165,6 +169,9 @@
         <property name="suffix">
          <string> €</string>
         </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
+        </property>
        </widget>
       </item>
      </layout>
@@ -234,6 +241,9 @@
         </property>
         <property name="suffix">
          <string> €</string>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
         </property>
        </widget>
       </item>

@@ -15,6 +15,9 @@ public:
     explicit AddFuelDeliveryDialog(QWidget *parent = 0);
     ~AddFuelDeliveryDialog();
 
+public:
+    void resetValues();
+
 private:
     Ui::AddFuelDeliveryDialog *ui;
 
@@ -23,6 +26,9 @@ public slots:
     void changeSelectionToWood();
     void changeSelectionToSecondaryFuel();
     void changeSelectionToElectricity();
+
+private slots:
+    void on_buttonBox_accepted();
 };
 
 #endif // ADDFUELDELIVERYDIALOG_H

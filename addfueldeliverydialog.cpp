@@ -9,11 +9,6 @@ AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->dateEdit_Wood->setDate(QDate::currentDate());
-    ui->dateEdit_SecondaryFuel->setDate(QDate::currentDate());
-    ui->dateEdit_NaturalGas->setDate(QDate::currentDate());
-    ui->dateEdit_Electricity->setDate(QDate::currentDate());
-
     connect(ui->radioButton_Wood, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToWood()));
     connect(ui->radioButton_SecondaryFuel, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToSecondaryFuel()));
     connect(ui->radioButton_Electricity, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToElectricity()));
@@ -22,6 +17,24 @@ AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
 AddFuelDeliveryDialog::~AddFuelDeliveryDialog()
 {
     delete ui;
+}
+
+void AddFuelDeliveryDialog::resetValues()
+{
+    ui->dateEdit_Wood->setDate(QDate::currentDate());
+    ui->doubleSpinBox_Wood->setValue(0);
+    ui->doubleSpinBox_WoodMoisture->setValue(0);
+    ui->doubleSpinBox_WoodBill->setValue(0);
+
+    ui->dateEdit_SecondaryFuel->setDate(QDate::currentDate());
+    ui->doubleSpinBox_SecondaryFuel->setValue(0);
+    ui->doubleSpinBox_SecondaryFuelBill->setValue(0);
+
+    ui->dateEdit_NaturalGas->setDate(QDate::currentDate());
+    ui->spinBox_NaturalGas->setValue(0);
+
+    ui->dateEdit_Electricity->setDate(QDate::currentDate());
+    ui->spinBox_Electricity->setValue(0);
 }
 
 void AddFuelDeliveryDialog::readSettings()
@@ -107,4 +120,70 @@ void AddFuelDeliveryDialog::changeSelectionToElectricity()
     ui->groupBox_SecondaryFuel->setEnabled(false);
     ui->groupBox_NaturalGas->setEnabled(false);
     ui->groupBox_Electricity->setEnabled(true);
+}
+
+void AddFuelDeliveryDialog::on_buttonBox_accepted()
+{
+    QSettings settings;
+
+    //1. Wood
+    if (ui->doubleSpinBox_Wood->value() > 0)
+    {
+        int currentSize = settings.value("woodDeliveries/size").toInt();
+
+        settings.beginWriteArray("woodDeliveries");
+        settings.setArrayIndex(currentSize);
+
+        settings.setValue("date", ui->dateEdit_Wood->date());
+        settings.setValue("quantity", ui->doubleSpinBox_Wood->value());
+        settings.setValue("unit", ui->comboBox_WoodUnit->currentIndex());
+        settings.setValue("moisture", ui->doubleSpinBox_WoodMoisture->value());
+        settings.setValue("bill", ui->doubleSpinBox_WoodBill->value());
+
+        settings.endArray();
+    }
+
+    //2. Secondary fuel
+    if (ui->doubleSpinBox_SecondaryFuel->value() > 0)
+    {
+        int currentSize = settings.value("secondaryFuelDeliveries/size").toInt();
+
+        settings.beginWriteArray("secondaryFuelDeliveries");
+        settings.setArrayIndex(currentSize);
+
+        settings.setValue("date", ui->dateEdit_SecondaryFuel->date());
+        settings.setValue("quantity", ui->doubleSpinBox_SecondaryFuel->value());
+        settings.setValue("unit", ui->comboBox_SecondaryFuelUnit->currentIndex());
+        settings.setValue("bill", ui->doubleSpinBox_SecondaryFuelBill->value());
+
+        settings.endArray();
+    }
+
+    //3. Natural gas
+    if (ui->spinBox_NaturalGas->value() > 0)
+    {
+        int currentSize = settings.value("naturalGasIndex/size").toInt();
+
+        settings.beginWriteArray("naturalGasIndex");
+        settings.setArrayIndex(currentSize);
+
+        settings.setValue("date", ui->dateEdit_NaturalGas->date());
+        settings.setValue("index", ui->spinBox_NaturalGas->value());
+
+        settings.endArray();
+    }
+
+    //3. Electricity
+    if (ui->spinBox_Electricity->value() > 0)
+    {
+        int currentSize = settings.value("electricityIndex/size").toInt();
+
+        settings.beginWriteArray("electricityIndex");
+        settings.setArrayIndex(currentSize);
+
+        settings.setValue("date", ui->dateEdit_Electricity->date());
+        settings.setValue("index", ui->spinBox_Electricity->value());
+
+        settings.endArray();
+    }
 }
