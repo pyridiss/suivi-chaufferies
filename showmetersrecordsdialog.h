@@ -24,6 +24,9 @@ private:
 public slots:
     void readSettings();
     void recordChanged(int, int);
+
+signals:
+    void settingsChanged();
 };
 
 #endif // SHOWMETERSRECORDSDIALOG_H

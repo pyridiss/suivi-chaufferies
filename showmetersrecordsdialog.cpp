@@ -202,4 +202,6 @@ void ShowMetersRecordsDialog::recordChanged(int x, int y)
    }
 
    settings.endArray();
+
+   emit settingsChanged();
 }

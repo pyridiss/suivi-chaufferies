@@ -42,6 +42,7 @@ private slots:
 
 public slots:
     void readSettings();
+    void updateEnergyConsumptionChart();
 };
 
 #endif // MAINWINDOW_H

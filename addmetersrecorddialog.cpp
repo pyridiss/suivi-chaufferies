@@ -93,4 +93,6 @@ void AddMetersRecordDialog::on_buttonBox_accepted()
             settings.endArray();
         }
     }
+
+    emit settingsChanged();
 }
