@@ -17,17 +17,20 @@ SOURCES += main.cpp\
     configurationdialog.cpp \
     qcustomplot/qcustomplot.cpp \
     addfueldeliverydialog.cpp \
-    addmetersrecorddialog.cpp
+    addmetersrecorddialog.cpp \
+    showmetersrecordsdialog.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
     qcustomplot/qcustomplot.h \
     addfueldeliverydialog.h \
-    addmetersrecorddialog.h
+    addmetersrecorddialog.h \
+    showmetersrecordsdialog.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
     addfueldeliverydialog.ui \
-    addmetersrecorddialog.ui
+    addmetersrecorddialog.ui \
+    showmetersrecordsdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11

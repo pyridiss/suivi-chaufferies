@@ -6,6 +6,7 @@
 #include <configurationdialog.h>
 #include <addfueldeliverydialog.h>
 #include <addmetersrecorddialog.h>
+#include <showmetersrecordsdialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,7 @@ private:
     ConfigurationDialog *mConfigurationDialog;
     AddFuelDeliveryDialog *mAddFullDeliveryDialog;
     AddMetersRecordDialog *mAddMetersRecordDialog;
+    ShowMetersRecordsDialog *mShowMetersRecordsDialog;
 
 private slots:
     void on_actionConfigureBoilerRoom_triggered();

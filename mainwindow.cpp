@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mConfigurationDialog = new ConfigurationDialog(this);
     mAddFullDeliveryDialog = new AddFuelDeliveryDialog(this);
     mAddMetersRecordDialog = new AddMetersRecordDialog(this);
+    mShowMetersRecordsDialog = new ShowMetersRecordsDialog(this);
 
     connect(mConfigurationDialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
 }
@@ -60,7 +61,9 @@ void MainWindow::on_actionShowDeliveries_triggered()
 
 void MainWindow::on_actionShowMetersRecord_triggered()
 {
-    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+    mShowMetersRecordsDialog->resetValues();
+    mShowMetersRecordsDialog->readSettings();
+    mShowMetersRecordsDialog->show();
 }
 
 void MainWindow::on_actionAboutSoftware_triggered()
