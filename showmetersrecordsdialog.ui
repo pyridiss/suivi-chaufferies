@@ -6,15 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>770</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Relevé des compteurs</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="clock"/>
+   <iconset theme="clock">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -29,12 +30,21 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
      <property name="horizontalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>120</number>
+     </attribute>
+     <attribute name="verticalHeaderDefaultSectionSize">
+      <number>27</number>
+     </attribute>
     </widget>
    </item>
    <item>

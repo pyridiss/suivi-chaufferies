@@ -41,7 +41,7 @@ void ShowMetersRecordsDialog::readSettings()
     //Be careful: we must start at the second column (column == 1) because the first one (column == 0) will be used to store dates.
 
     int substationsNumber = settings.beginReadArray("substations");
-    ui->tableWidget->setColumnCount(substationsNumber + 1);
+    ui->tableWidget->setColumnCount(substationsNumber + 3);
 
     for (int i = 0 ; i < substationsNumber ; ++i)
     {
@@ -73,6 +73,7 @@ void ShowMetersRecordsDialog::readSettings()
                 //Then we store the index.
                 QTableWidgetItem *item = new QTableWidgetItem;
                 item->setData(Qt::EditRole, index);
+                item->setTextAlignment(Qt::AlignCenter);
                 ui->tableWidget->setItem(1, i+1, item);
             }
             else
@@ -82,18 +83,82 @@ void ShowMetersRecordsDialog::readSettings()
 
                 QTableWidgetItem *item = new QTableWidgetItem;
                 item->setData(Qt::EditRole, index);
+                item->setTextAlignment(Qt::AlignCenter);
                 ui->tableWidget->setItem(row, i+1, item);
             }
         }
         settings.endArray();
     }
 
-    //3. All indexes are stored in the table. We must sort them now (by date).
+    //3. We add a 'sum' column
+    ui->tableWidget->setHorizontalHeaderItem(ui->tableWidget->columnCount() - 2, new QTableWidgetItem("Somme"));
+    for (int i = 1 ; i < ui->tableWidget->rowCount() ; ++i)
+    {
+        int sum = 0;
+        for (int j = 1 ; j < ui->tableWidget->columnCount() - 2 ; ++j)
+        {
+            sum += ui->tableWidget->item(i, j)->data(Qt::EditRole).toInt();
+        }
+        QTableWidgetItem *item = new QTableWidgetItem(QString::number(sum));
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::NoItemFlags);
+        ui->tableWidget->setItem(i, ui->tableWidget->columnCount() - 2, item);
+    }
+
+    //4. We add a column for the main meter
+    if (settings.value("boilerRoom/mainHeatMeter").toBool() == true)
+    {
+        ui->tableWidget->setHorizontalHeaderItem(ui->tableWidget->columnCount() - 1, new QTableWidgetItem("Compteur principal"));
+        ui->tableWidget->setItem(0, ui->tableWidget->columnCount() - 1, new QTableWidgetItem("mainHeatMeterRecords"));
+
+        int recordsNumber = settings.beginReadArray("mainHeatMeterRecords");
+
+        for (int i = 0 ; i < recordsNumber ; ++i)
+        {
+            settings.setArrayIndex(i);
+            QDate date = settings.value("date").toDate();
+            int index = settings.value("index").toInt();
+
+            //If a row has already to added for this date, we must use the same. Else, we create a new one.
+            if (ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).empty())
+            {
+                //Insert a new row at position 1, and store the date in the first column.
+                ui->tableWidget->insertRow(1);
+                ui->tableWidget->setItem(1, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+
+                //Then we store the index.
+                QTableWidgetItem *item = new QTableWidgetItem;
+                item->setData(Qt::EditRole, index);
+                item->setTextAlignment(Qt::AlignCenter);
+                item->setTextColor(Qt::red);
+                ui->tableWidget->setItem(1, ui->tableWidget->columnCount() - 1, item);
+            }
+            else
+            {
+                //A row exists for this date; we get it and add the index in it.
+                int row = ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).first()->row();
+
+                QTableWidgetItem *item = new QTableWidgetItem;
+                item->setData(Qt::EditRole, index);
+                item->setTextAlignment(Qt::AlignCenter);
+                item->setTextColor(Qt::red);
+                ui->tableWidget->setItem(row, ui->tableWidget->columnCount() - 1, item);
+            }
+        }
+        settings.endArray();
+    }
+    else
+    {
+        //There is no main meter; we can remove the last column.
+        ui->tableWidget->removeColumn(ui->tableWidget->columnCount() - 1);
+    }
+
+    //5. All indexes are stored in the table. We must sort them now (by date).
     //A '0' is stored in the cell (0, 0) to prevent the first row to be moved.
     ui->tableWidget->setItem(0, 0, new QTableWidgetItem("0"));
     ui->tableWidget->sortItems(0);
 
-    //4. Rows are sorted. We copy the first column in vertical header.
+    //6. Rows are sorted. We copy the first column in vertical header.
     QStringList headers;
     headers.push_back("0"); //First row with substations numbers.
 
@@ -106,11 +171,11 @@ void ShowMetersRecordsDialog::readSettings()
 
     ui->tableWidget->setVerticalHeaderLabels(headers);
 
-    //5. We can hide first row and first column.
+    //7. We can hide first row and first column.
     ui->tableWidget->hideRow(0);
     ui->tableWidget->hideColumn(0);
 
-    //6. We connect the table to the method recordChanged() to automatically save any change made be the user.
+    //8. We connect the table to the method recordChanged() to automatically save any change made be the user.
     connect(ui->tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged(int, int)));
 }
 
