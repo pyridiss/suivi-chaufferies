@@ -22,6 +22,8 @@ private:
 
 public slots:
     void readSettings();
+private slots:
+    void on_buttonBox_accepted();
 };
 
 #endif // ADDMETERSRECORDDIALOG_H

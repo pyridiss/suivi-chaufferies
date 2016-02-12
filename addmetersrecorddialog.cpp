@@ -55,3 +55,42 @@ void AddMetersRecordDialog::readSettings()
     settings.endArray();
 
 }
+
+void AddMetersRecordDialog::on_buttonBox_accepted()
+{
+    QSettings settings;
+
+    //1. Main heat meter
+    if (ui->spinBox_MainHeatMeter->value() > 0)
+    {
+        int currentSize = settings.value("mainHeatMeterRecords/size", 0).toInt();
+
+        settings.beginWriteArray("mainHeatMeterRecords");
+        settings.setArrayIndex(currentSize);
+
+        settings.setValue("date", ui->dateEdit_RecordDate->date());
+        settings.setValue("index", ui->spinBox_MainHeatMeter->value());
+
+        settings.endArray();
+    }
+
+    //2. Substation meters
+    for (int i = 0 ; i < spinBoxes.length() ; ++i)
+    {
+        QSpinBox* spinBox = spinBoxes[i];
+        if (spinBox->value() > 0)
+        {
+            //Not to be confused, substation number is i+1 to follow the numbers used in the [substations] section of the settings file.
+            QString category = "substation" + QVariant(i+1).toString();
+            int currentSize = settings.value(category + "/size", 0).toInt();
+
+            settings.beginWriteArray(category);
+            settings.setArrayIndex(currentSize);
+
+            settings.setValue("date", ui->dateEdit_RecordDate->date());
+            settings.setValue("index", spinBox->value());
+
+            settings.endArray();
+        }
+    }
+}
