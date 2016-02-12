@@ -29,3 +29,5 @@ FORMS    += mainwindow.ui \
     configurationdialog.ui \
     addfueldeliverydialog.ui \
     addmetersrecorddialog.ui
+
+QMAKE_CXXFLAGS += -std=c++11
