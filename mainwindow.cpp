@@ -53,6 +53,26 @@ void MainWindow::on_actionDownloadData_triggered()
     QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
 }
 
+void MainWindow::on_actionShowDeliveries_triggered()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_actionShowMetersRecord_triggered()
+{
+    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+}
+
+void MainWindow::on_actionAboutSoftware_triggered()
+{
+    QMessageBox::about(this, "À propos du logiciel", "Logiciel développé par l'ALE 08.");
+}
+
+void MainWindow::on_actionAboutQt_triggered()
+{
+    QMessageBox::aboutQt(this, "À propos de Qt");
+}
+
 void MainWindow::on_actionExit_triggered()
 {
     qApp->exit();

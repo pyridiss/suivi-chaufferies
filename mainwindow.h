@@ -31,6 +31,10 @@ private slots:
     void on_actionSend_triggered();
     void on_actionDownloadData_triggered();
     void on_actionExit_triggered();
+    void on_actionShowDeliveries_triggered();
+    void on_actionShowMetersRecord_triggered();
+    void on_actionAboutSoftware_triggered();
+    void on_actionAboutQt_triggered();
     void on_pushButton_AddFuelDelivery_clicked();
     void on_pushButton_AddMetersRecord_clicked();
 

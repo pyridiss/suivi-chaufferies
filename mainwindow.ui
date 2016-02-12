@@ -14,7 +14,8 @@
    <string>Outil de suivi des chaufferies</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="clock"/>
+   <iconset theme="clock">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0">
@@ -146,15 +147,43 @@
     <property name="title">
      <string>Fic&amp;hier</string>
     </property>
-    <addaction name="actionConfigureBoilerRoom"/>
     <addaction name="actionExport"/>
-    <addaction name="actionSend"/>
-    <addaction name="actionDownloadData"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuDonn_es">
+    <property name="title">
+     <string>Données</string>
+    </property>
+    <addaction name="actionShowDeliveries"/>
+    <addaction name="actionShowMetersRecord"/>
+    <addaction name="actionSend"/>
+    <addaction name="actionDownloadData"/>
+   </widget>
+   <widget class="QMenu" name="menuConfiguration">
+    <property name="title">
+     <string>Confi&amp;guration</string>
+    </property>
+    <addaction name="actionConfigureBoilerRoom"/>
+   </widget>
+   <widget class="QMenu" name="menuAide">
+    <property name="title">
+     <string>Aide</string>
+    </property>
+    <addaction name="actionAboutSoftware"/>
+    <addaction name="actionAboutQt"/>
+   </widget>
    <addaction name="menuFichier"/>
+   <addaction name="menuDonn_es"/>
+   <addaction name="menuConfiguration"/>
+   <addaction name="menuAide"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Afficher la barre d'outils</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonFollowStyle</enum>
    </property>
@@ -164,10 +193,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionConfigureBoilerRoom"/>
-   <addaction name="actionExport"/>
-   <addaction name="actionSend"/>
-   <addaction name="actionDownloadData"/>
+   <addaction name="actionShowDeliveries"/>
+   <addaction name="actionShowMetersRecord"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConfigureBoilerRoom">
@@ -176,7 +203,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Configurer la chaufferie</string>
+    <string>&amp;Configurer la chaufferie</string>
    </property>
    <property name="toolTip">
     <string>Configurer la chaufferie</string>
@@ -193,26 +220,63 @@
   </action>
   <action name="actionExport">
    <property name="icon">
-    <iconset theme="x-office-document"/>
+    <iconset theme="x-office-document">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Exporter les données dans un fichier</string>
+    <string>Exporter les &amp;données dans un fichier</string>
    </property>
   </action>
   <action name="actionSend">
    <property name="icon">
-    <iconset theme="document-export"/>
+    <iconset theme="document-export">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Envoyer les données à l'ALE 08</string>
+    <string>Envoyer &amp;les données à l'ALE 08</string>
    </property>
   </action>
   <action name="actionDownloadData">
    <property name="icon">
-    <iconset theme="download"/>
+    <iconset theme="download">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Mettre à jour les données de prix des énergies et de température</string>
+    <string>&amp;Mettre à jour les données de prix des énergies et de température</string>
+   </property>
+  </action>
+  <action name="actionShowDeliveries">
+   <property name="icon">
+    <iconset theme="table">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Afficher les livraisons de combustible</string>
+   </property>
+  </action>
+  <action name="actionShowMetersRecord">
+   <property name="icon">
+    <iconset theme="table">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Afficher les &amp;relevés des compteurs</string>
+   </property>
+  </action>
+  <action name="actionAboutSoftware">
+   <property name="icon">
+    <iconset theme="dialog-information"/>
+   </property>
+   <property name="text">
+    <string>À propos du logiciel</string>
+   </property>
+  </action>
+  <action name="actionAboutQt">
+   <property name="icon">
+    <iconset theme="dialog-information"/>
+   </property>
+   <property name="text">
+    <string>À propos de Qt</string>
    </property>
   </action>
  </widget>
