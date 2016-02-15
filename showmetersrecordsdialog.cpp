@@ -1,5 +1,6 @@
 #include <QDate>
 #include <QSettings>
+#include <QColor>
 
 #include "showmetersrecordsdialog.h"
 #include "ui_showmetersrecordsdialog.h"
@@ -97,7 +98,8 @@ void ShowMetersRecordsDialog::readSettings()
         int sum = 0;
         for (int j = 1 ; j < ui->tableWidget->columnCount() - 2 ; ++j)
         {
-            sum += ui->tableWidget->item(i, j)->data(Qt::EditRole).toInt();
+            if (ui->tableWidget->item(i, j) != 0)
+                sum += ui->tableWidget->item(i, j)->data(Qt::EditRole).toInt();
         }
         QTableWidgetItem *item = new QTableWidgetItem(QString::number(sum));
         item->setTextAlignment(Qt::AlignCenter);
@@ -171,11 +173,26 @@ void ShowMetersRecordsDialog::readSettings()
 
     ui->tableWidget->setVerticalHeaderLabels(headers);
 
-    //7. We can hide first row and first column.
+    //7. Empty cells should be non-editable
+    for (int i = 0 ; i < ui->tableWidget->rowCount() ; ++i)
+    {
+        for (int j = 0 ; j < ui->tableWidget->columnCount() ; ++j)
+        {
+            if (ui->tableWidget->item(i, j) == 0)
+            {
+                QTableWidgetItem *item = new QTableWidgetItem();
+                item->setFlags(Qt::NoItemFlags);
+                item->setBackgroundColor(QColor::fromRgb(224, 224, 224));
+                ui->tableWidget->setItem(i, j, item);
+            }
+        }
+    }
+
+    //8. We can hide first row and first column.
     ui->tableWidget->hideRow(0);
     ui->tableWidget->hideColumn(0);
 
-    //8. We connect the table to the method recordChanged() to automatically save any change made be the user.
+    //9. We connect the table to the method recordChanged() to automatically save any change made be the user.
     connect(ui->tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged(int, int)));
 }
 
@@ -186,22 +203,33 @@ void ShowMetersRecordsDialog::recordChanged(int x, int y)
     QTableWidgetItem* itemDate = ui->tableWidget->item(x, 0);
     QTableWidgetItem* itemSubstation = ui->tableWidget->item(0, y);
 
-   QSettings settings;
+    QSettings settings;
 
-   //2. We enter the records for the changed substation.
-   int size = settings.beginReadArray(itemSubstation->text());
-   for (int i = 0 ; i < size ; ++i)
-   {
-       settings.setArrayIndex(i);
-       //For each saved record, we check if the date is the same as the modified index.
-       if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
-       {
-           //Update index.
-           settings.setValue("index", item->data(Qt::EditRole));
-       }
-   }
+    //2. We enter the records for the changed substation.
+    int size = settings.beginReadArray(itemSubstation->text());
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        //For each saved record, we check if the date is the same as the modified index.
+        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        {
+            //Update index.
+            settings.setValue("index", item->data(Qt::EditRole));
+        }
+    }
 
-   settings.endArray();
+    settings.endArray();
 
-   emit settingsChanged();
+    //3. Update sums
+    for (int i = 1 ; i < ui->tableWidget->rowCount() ; ++i)
+    {
+        int sum = 0;
+        for (int j = 1 ; j < ui->tableWidget->columnCount() - 2 ; ++j)
+        {
+            sum += ui->tableWidget->item(i, j)->data(Qt::EditRole).toInt();
+        }
+        if (sum != 0) ui->tableWidget->item(i, ui->tableWidget->columnCount() - 2)->setText(QString::number(sum));
+    }
+
+    emit settingsChanged();
 }
