@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     addfueldeliverydialog.cpp \
     addmetersrecorddialog.cpp \
     showmetersrecordsdialog.cpp \
-    showfueldeliveriesdialog.cpp
+    showfueldeliveriesdialog.cpp \
+    delegates/comboboxdelegate.cpp \
+    delegates/doublespinboxdelegate.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -27,7 +29,9 @@ HEADERS  += mainwindow.h \
     addfueldeliverydialog.h \
     addmetersrecorddialog.h \
     showmetersrecordsdialog.h \
-    showfueldeliveriesdialog.h
+    showfueldeliveriesdialog.h \
+    delegates/comboboxdelegate.h \
+    delegates/doublespinboxdelegate.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
