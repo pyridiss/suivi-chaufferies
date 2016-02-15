@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mAddFullDeliveryDialog = new AddFuelDeliveryDialog(this);
     mAddMetersRecordDialog = new AddMetersRecordDialog(this);
     mShowMetersRecordsDialog = new ShowMetersRecordsDialog(this);
+    mShowFuelDeliveriesDialog = new ShowFuelDeliveriesDialog(this);
 
     connect(mConfigurationDialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
     connect(mAddMetersRecordDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
@@ -132,7 +133,9 @@ void MainWindow::on_actionDownloadData_triggered()
 
 void MainWindow::on_actionShowDeliveries_triggered()
 {
-    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+    mShowFuelDeliveriesDialog->resetValues();
+    mShowFuelDeliveriesDialog->readSettings();
+    mShowFuelDeliveriesDialog->show();
 }
 
 void MainWindow::on_actionShowMetersRecord_triggered()
