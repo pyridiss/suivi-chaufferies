@@ -122,16 +122,16 @@ ShowFuelDeliveriesDialog::~ShowFuelDeliveriesDialog()
 
 void ShowFuelDeliveriesDialog::resetValues()
 {
-    disconnect(ui->tableWidget_Wood, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged()));
+    disconnect(ui->tableWidget_Wood, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Wood(int, int)));
     while (ui->tableWidget_Wood->rowCount() > 0) ui->tableWidget_Wood->removeRow(0);
 
-    disconnect(ui->tableWidget_SecondaryFuel, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged()));
+    disconnect(ui->tableWidget_SecondaryFuel, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_SecondaryFuel(int, int)));
     while (ui->tableWidget_SecondaryFuel->rowCount() > 0) ui->tableWidget_SecondaryFuel->removeRow(0);
 
-    disconnect(ui->tableWidget_NaturalGas, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged()));
+    disconnect(ui->tableWidget_NaturalGas, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_NaturalGas(int, int)));
     while (ui->tableWidget_NaturalGas->columnCount() > 0) ui->tableWidget_NaturalGas->removeColumn(0);
 
-    disconnect(ui->tableWidget_Electricity, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged()));
+    disconnect(ui->tableWidget_Electricity, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Electricity(int, int)));
     while (ui->tableWidget_Electricity->columnCount() > 0) ui->tableWidget_Electricity->removeColumn(0);
 }
 
@@ -314,9 +314,141 @@ void ShowFuelDeliveriesDialog::readSettings()
     }
 
     settings.endArray();
+
+    //Connect's
+    connect(ui->tableWidget_Wood, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Wood(int,int)));
+    connect(ui->tableWidget_SecondaryFuel, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_SecondaryFuel(int,int)));
+    connect(ui->tableWidget_NaturalGas, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_NaturalGas(int,int)));
+    connect(ui->tableWidget_Electricity, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Electricity(int,int)));
 }
 
-void ShowFuelDeliveriesDialog::recordChanged()
+void ShowFuelDeliveriesDialog::recordChanged_Wood(int x, int y)
 {
+    //1. First, we get the item changed and corresponding date and substation.
+    QTableWidgetItem* item = ui->tableWidget_Wood->item(x, y);
+    QTableWidgetItem* itemDate = ui->tableWidget_Wood->item(x, 0);
+
+    QSettings settings;
+
+    //2. We enter the records for the changed substation.
+    int size = settings.beginReadArray("woodDeliveries");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        //For each saved record, we check if the date is the same as the modified index.
+        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        {
+            //Update value
+            switch (y)
+            {
+                case 1: //Quantity
+                    settings.setValue("quantity", item->data(Qt::EditRole));
+                    break;
+                case 2: //Unit
+                    settings.setValue("unit", item->data(Qt::EditRole));
+                    break;
+                case 3: //Moisture
+                    settings.setValue("moisture", item->data(Qt::EditRole));
+                    break;
+                case 5: //Bill
+                    settings.setValue("bill", item->data(Qt::EditRole));
+                    break;
+            }
+        }
+    }
+
+    settings.endArray();
+
+    //3. Update sums
+
+    emit settingsChanged();
+}
+
+void ShowFuelDeliveriesDialog::recordChanged_SecondaryFuel(int x, int y)
+{
+    //1. First, we get the item changed and corresponding date and substation.
+    QTableWidgetItem* item = ui->tableWidget_SecondaryFuel->item(x, y);
+    QTableWidgetItem* itemDate = ui->tableWidget_SecondaryFuel->item(x, 0);
+
+    QSettings settings;
+
+    //2. We enter the records for the changed substation.
+    int size = settings.beginReadArray("secondaryFuelDeliveries");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        //For each saved record, we check if the date is the same as the modified index.
+        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        {
+            //Update value
+            switch (y)
+            {
+                case 1: //Quantity
+                    settings.setValue("quantity", item->data(Qt::EditRole));
+                    break;
+                case 2: //Unit
+                    settings.setValue("unit", item->data(Qt::EditRole));
+                    break;
+                case 4: //Bill
+                    settings.setValue("bill", item->data(Qt::EditRole));
+                    break;
+            }
+        }
+    }
+
+    settings.endArray();
+
+    emit settingsChanged();
+}
+
+void ShowFuelDeliveriesDialog::recordChanged_NaturalGas(int x, int y)
+{
+    //1. First, we get the item changed and corresponding date and substation.
+    QTableWidgetItem* item = ui->tableWidget_NaturalGas->item(x, y);
+    QTableWidgetItem* itemDate = ui->tableWidget_NaturalGas->item(0, y);
+
+    QSettings settings;
+
+    //2. We enter the records for the changed substation.
+    int size = settings.beginReadArray("naturalGasIndex");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        //For each saved record, we check if the date is the same as the modified index.
+        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        {
+            //Update value
+            settings.setValue("index", item->data(Qt::EditRole));
+        }
+    }
+
+    settings.endArray();
+
+    emit settingsChanged();
+}
+
+void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
+{
+    //1. First, we get the item changed and corresponding date and substation.
+    QTableWidgetItem* item = ui->tableWidget_Electricity->item(x, y);
+    QTableWidgetItem* itemDate = ui->tableWidget_Electricity->item(0, y);
+
+    QSettings settings;
+
+    //2. We enter the records for the changed substation.
+    int size = settings.beginReadArray("electricityIndex");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        //For each saved record, we check if the date is the same as the modified index.
+        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        {
+            //Update value
+            settings.setValue("index", item->data(Qt::EditRole));
+        }
+    }
+
+    settings.endArray();
+
     emit settingsChanged();
 }

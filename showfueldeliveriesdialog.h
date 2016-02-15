@@ -23,7 +23,10 @@ private:
 
 public slots:
     void readSettings();
-    void recordChanged();
+    void recordChanged_Wood(int x, int y);
+    void recordChanged_SecondaryFuel(int x, int y);
+    void recordChanged_NaturalGas(int x, int y);
+    void recordChanged_Electricity(int x, int y);
 
 signals:
     void settingsChanged();
