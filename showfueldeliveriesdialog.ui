@@ -98,11 +98,6 @@
      </column>
      <column>
       <property name="text">
-       <string>Unité</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Énergie livrée</string>
       </property>
      </column>

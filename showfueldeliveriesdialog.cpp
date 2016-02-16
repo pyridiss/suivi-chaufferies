@@ -66,36 +66,26 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Date shouldn't be shown
     ui->tableWidget_SecondaryFuel->hideColumn(0);
 
-    //Fuel units will be edited with a ComboBox
-    ComboBoxDelegate *delegateUnit_Fuel = new ComboBoxDelegate(this);
-    QVector<QString> items_Fuel;
-    items_Fuel.push_back("litres");
-    items_Fuel.push_back("tonnes");
-    items_Fuel.push_back("mètres-cube");
-    items_Fuel.push_back("kWh");
-    delegateUnit_Fuel->setItems(items_Fuel);
-    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(2, delegateUnit_Fuel);
-
     //Fuel energy will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateEnergy_Fuel = new DoubleSpinBoxDelegate(this);
     delegateEnergy_Fuel->setSuffix(" MWh");
     delegateEnergy_Fuel->setPrecision(4);
-    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(3, delegateEnergy_Fuel);
+    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(2, delegateEnergy_Fuel);
 
     //Fuel bill will be edited with a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateBill_Fuel = new DoubleSpinBoxDelegate(this);
     delegateBill_Fuel->setSuffix(" €");
     delegateBill_Fuel->setPrecision(6);
-    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(4, delegateBill_Fuel);
+    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(3, delegateBill_Fuel);
 
     //Fuel price per MWh will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegatePricePerMWh_Fuel = new DoubleSpinBoxDelegate(this);
     delegatePricePerMWh_Fuel->setSuffix(" € / MWh");
     delegatePricePerMWh_Fuel->setPrecision(4);
-    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(5, delegatePricePerMWh_Fuel);
+    ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(4, delegatePricePerMWh_Fuel);
 
     //Last column allows user to delete records
-    ui->tableWidget_SecondaryFuel->setColumnWidth(6, 34);
+    ui->tableWidget_SecondaryFuel->setColumnWidth(5, 34);
 
     /*
      * Configure table 'Natural gas' columns
@@ -146,6 +136,10 @@ void ShowFuelDeliveriesDialog::resetValues()
 
 void ShowFuelDeliveriesDialog::updateSums()
 {
+    QSettings settings;
+
+    int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
+
     //1. Wood
     for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
     {
@@ -153,7 +147,7 @@ void ShowFuelDeliveriesDialog::updateSums()
         double quantity = ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole).toDouble();
         int unit        = ui->tableWidget_Wood->item(i, 2)->text().toInt();
         double moisture = ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole).toDouble() / 100;
-        double energy = 0;
+        double energy   = 0;
 
         //Assuming 20% softwood + 80% hardwood
         double pci = (0.2 * (5.1 - moisture * 100 / 16.4) + 0.8 * (4.9 - moisture * 100 / 18.34));
@@ -179,45 +173,43 @@ void ShowFuelDeliveriesDialog::updateSums()
         ui->tableWidget_Wood->item(i, 6)->setData(Qt::DisplayRole, bill / energy);
     }
 
-    //1. Secondary fuel
-    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    //2. Secondary fuel
+    if (secondaryFuel == 2 || secondaryFuel == 3)
     {
-        QSettings settings;
-
-        //Energy
-        int fuel        = settings.value("boilerRoom/secondaryHeatSource").toInt();
-        double quantity = ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole).toDouble();
-        int unit        = ui->tableWidget_SecondaryFuel->item(i, 2)->text().toInt();
-        double energy = 0;
-
-        switch (fuel)
+        for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
         {
-            case 2: //Fuel oil
-                if (unit == 0) energy = 9.96 * quantity / 1000; //litres
-                else if (unit == 1) ; //tonnes
-                else if (unit == 2) ; //mètres-cube
-                else energy = quantity / 1000; //kWh
-                break;
-            case 3: //Propane
-                if (unit == 0) ; //litres
-                else if (unit == 1) energy = 12.9 * quantity; //tonnes
-                else if (unit == 2) ; //mètres-cube
-                else energy = quantity / 1000; //kWh
-                break;
+            QSettings settings;
+
+            //Energy
+            int fuel        = settings.value("boilerRoom/secondaryHeatSource").toInt();
+            double quantity = ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole).toDouble();
+            double energy   = 0;
+
+            switch (fuel)
+            {
+                case 2: //Fuel oil
+                    energy = 9.96 * quantity / 1000;
+                    break;
+                case 3: //Propane
+                    energy = 12.9 * quantity / 1000;
+                    break;
+            }
+
+            ui->tableWidget_SecondaryFuel->item(i, 2)->setData(Qt::DisplayRole, energy);
+
+            //Price per MWh
+            double bill = ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole).toDouble();
+            if (energy == 0) energy = 1000000;
+            ui->tableWidget_SecondaryFuel->item(i, 4)->setData(Qt::DisplayRole, bill / energy);
         }
-
-        ui->tableWidget_SecondaryFuel->item(i, 3)->setData(Qt::DisplayRole, energy);
-
-        //Price per MWh
-        double bill = ui->tableWidget_SecondaryFuel->item(i, 4)->data(Qt::EditRole).toDouble();
-        if (energy == 0) energy = 1000000;
-        ui->tableWidget_SecondaryFuel->item(i, 5)->setData(Qt::DisplayRole, bill / energy);
     }
 }
 
 void ShowFuelDeliveriesDialog::readSettings()
 {
     QSettings settings;
+
+    int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
 
     //1. Wood
     int woodDeliveriesNumber = settings.beginReadArray("woodDeliveries");
@@ -288,96 +280,111 @@ void ShowFuelDeliveriesDialog::readSettings()
     settings.endArray();
 
     //2. Secondary fuel
-    int secondaryFuelDeliviriesNumber = settings.beginReadArray("secondaryFuelDeliveries");
-    for (int i = 0 ; i < secondaryFuelDeliviriesNumber ; ++i)
+    if (secondaryFuel == 2 || secondaryFuel == 3) //2 is fuel oil, 3 is propane
     {
-        settings.setArrayIndex(i);
-        ui->tableWidget_SecondaryFuel->insertRow(0);
-        QDate date = settings.value("date").toDate();
-        double quantity = settings.value("quantity").toDouble();
-        int unit = settings.value("unit").toInt();
-        double bill = settings.value("bill").toDouble();
+        //Delegate quantity column to show a suffix
+        DoubleSpinBoxDelegate *delegateQuantity_SecondaryFuel = new DoubleSpinBoxDelegate(this);
+        delegateQuantity_SecondaryFuel->setSuffix((secondaryFuel == 2) ? " litres" : " kg");
+        delegateQuantity_SecondaryFuel->setPrecision(4);
+        ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(1, delegateQuantity_SecondaryFuel);
 
-        //Date
-        ui->tableWidget_SecondaryFuel->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
-
-        //Quantity
-        QTableWidgetItem *itemQuantity = new QTableWidgetItem;
-        itemQuantity->setData(Qt::EditRole, quantity);
-        itemQuantity->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget_SecondaryFuel->setItem(0, 1, itemQuantity);
-
-        //Unit
-        QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(unit));
-        ui->tableWidget_SecondaryFuel->setItem(0, 2, itemUnit);
-
-        //Energy
-        QTableWidgetItem *itemEnergy = new QTableWidgetItem();
-        itemEnergy->setFlags(Qt::NoItemFlags);
-        ui->tableWidget_SecondaryFuel->setItem(0, 3, itemEnergy);
-
-        //Bill
-        QTableWidgetItem *itemBill = new QTableWidgetItem;
-        itemBill->setData(Qt::EditRole, bill);
-        ui->tableWidget_SecondaryFuel->setItem(0, 4, itemBill);
-
-        //Price per MWh
-        QTableWidgetItem *itemPrice = new QTableWidgetItem();
-        itemPrice->setFlags(Qt::NoItemFlags);
-        ui->tableWidget_SecondaryFuel->setItem(0, 5, itemPrice);
-
-        //Delete button
-        QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
-        itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
-        itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
-        ui->tableWidget_SecondaryFuel->setCellWidget(0, 6, itemDelete);
-        connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteSecondaryFuelDelivery()));
-
-        //Sort deliveries
-        ui->tableWidget_SecondaryFuel->sortItems(0);
-
-        //Copy dates in vertical header
-        QStringList headers;
-        for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+        int secondaryFuelDeliviriesNumber = settings.beginReadArray("secondaryFuelDeliveries");
+        for (int i = 0 ; i < secondaryFuelDeliviriesNumber ; ++i)
         {
-            QString q = ui->tableWidget_SecondaryFuel->item(i, 0)->text();
-            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
-            headers.push_back(q);
-        }
-        ui->tableWidget_SecondaryFuel->setVerticalHeaderLabels(headers);
-    }
+            settings.setArrayIndex(i);
+            ui->tableWidget_SecondaryFuel->insertRow(0);
+            QDate date = settings.value("date").toDate();
+            double quantity = settings.value("quantity").toDouble();
+            double bill = settings.value("bill").toDouble();
 
-    settings.endArray();
+            //Date
+            ui->tableWidget_SecondaryFuel->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+
+            //Quantity
+            QTableWidgetItem *itemQuantity = new QTableWidgetItem;
+            itemQuantity->setData(Qt::EditRole, quantity);
+            itemQuantity->setTextAlignment(Qt::AlignCenter);
+            ui->tableWidget_SecondaryFuel->setItem(0, 1, itemQuantity);
+
+            //Energy
+            QTableWidgetItem *itemEnergy = new QTableWidgetItem();
+            itemEnergy->setFlags(Qt::NoItemFlags);
+            ui->tableWidget_SecondaryFuel->setItem(0, 2, itemEnergy);
+
+            //Bill
+            QTableWidgetItem *itemBill = new QTableWidgetItem;
+            itemBill->setData(Qt::EditRole, bill);
+            ui->tableWidget_SecondaryFuel->setItem(0, 3, itemBill);
+
+            //Price per MWh
+            QTableWidgetItem *itemPrice = new QTableWidgetItem();
+            itemPrice->setFlags(Qt::NoItemFlags);
+            ui->tableWidget_SecondaryFuel->setItem(0, 4, itemPrice);
+
+            //Delete button
+            QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
+            itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
+            itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+            ui->tableWidget_SecondaryFuel->setCellWidget(0, 5, itemDelete);
+            connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteSecondaryFuelDelivery()));
+
+            //Sort deliveries
+            ui->tableWidget_SecondaryFuel->sortItems(0);
+
+            //Copy dates in vertical header
+            QStringList headers;
+            for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+            {
+                QString q = ui->tableWidget_SecondaryFuel->item(i, 0)->text();
+                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
+                headers.push_back(q);
+            }
+            ui->tableWidget_SecondaryFuel->setVerticalHeaderLabels(headers);
+        }
+
+        settings.endArray();
+    }
+    else // No secondary fuel, or natural gas, or elecrticity
+    {
+        //Hide table !
+    }
 
     //3. Natural gas
-    int naturalGasIndexesNumber = settings.beginReadArray("naturalGasIndex");
-    for (int i = 0 ; i < naturalGasIndexesNumber ; ++i)
+    if (secondaryFuel == 1)
     {
-        settings.setArrayIndex(i);
-        ui->tableWidget_NaturalGas->insertColumn(0);
-        QDate date = settings.value("date").toDate();
-        int index = settings.value("index").toInt();
-
-        //Date
-        ui->tableWidget_NaturalGas->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
-
-        //Index
-        QTableWidgetItem *itemIndex = new QTableWidgetItem;
-        itemIndex->setData(Qt::EditRole, index);
-        ui->tableWidget_NaturalGas->setItem(1, 0, itemIndex);
-
-        //Copy dates in horizontal header
-        QStringList headers;
-        for (int i = 0 ; i < ui->tableWidget_NaturalGas->columnCount() ; ++i)
+        int naturalGasIndexesNumber = settings.beginReadArray("naturalGasIndex");
+        for (int i = 0 ; i < naturalGasIndexesNumber ; ++i)
         {
-            QString q = ui->tableWidget_NaturalGas->item(0, i)->text();
-            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd/MM/yyyy");
-            headers.push_back(q);
-        }
-        ui->tableWidget_NaturalGas->setHorizontalHeaderLabels(headers);
-    }
+            settings.setArrayIndex(i);
+            ui->tableWidget_NaturalGas->insertColumn(0);
+            QDate date = settings.value("date").toDate();
+            int index = settings.value("index").toInt();
 
-    settings.endArray();
+            //Date
+            ui->tableWidget_NaturalGas->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+
+            //Index
+            QTableWidgetItem *itemIndex = new QTableWidgetItem;
+            itemIndex->setData(Qt::EditRole, index);
+            ui->tableWidget_NaturalGas->setItem(1, 0, itemIndex);
+
+            //Copy dates in horizontal header
+            QStringList headers;
+            for (int i = 0 ; i < ui->tableWidget_NaturalGas->columnCount() ; ++i)
+            {
+                QString q = ui->tableWidget_NaturalGas->item(0, i)->text();
+                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd/MM/yyyy");
+                headers.push_back(q);
+            }
+            ui->tableWidget_NaturalGas->setHorizontalHeaderLabels(headers);
+        }
+
+        settings.endArray();
+    }
+    else
+    {
+        //Hide !
+    }
 
     //4. Electricity
     int electricityIndexesNumber = settings.beginReadArray("electricityIndex");
@@ -482,10 +489,7 @@ void ShowFuelDeliveriesDialog::recordChanged_SecondaryFuel(int x, int y)
                 case 1: //Quantity
                     settings.setValue("quantity", item->data(Qt::EditRole));
                     break;
-                case 2: //Unit
-                    settings.setValue("unit", item->data(Qt::EditRole));
-                    break;
-                case 4: //Bill
+                case 3: //Bill
                     settings.setValue("bill", item->data(Qt::EditRole));
                     break;
             }
@@ -603,8 +607,7 @@ void ShowFuelDeliveriesDialog::deleteSecondaryFuelDelivery()
         {
             settings.setValue("date",       QDate::fromString(ui->tableWidget_SecondaryFuel->item(i, 0)->text(), "yyyy-MM-dd"));
             settings.setValue("quantity",   ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole));
-            settings.setValue("unit",       ui->tableWidget_SecondaryFuel->item(i, 2)->data(Qt::EditRole));
-            settings.setValue("bill",       ui->tableWidget_SecondaryFuel->item(i, 4)->data(Qt::EditRole));
+            settings.setValue("bill",       ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole));
             ++index;
         }
         else rowToRemove = i;
