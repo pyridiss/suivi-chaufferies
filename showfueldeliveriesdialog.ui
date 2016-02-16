@@ -6,170 +6,234 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
+    <width>820</width>
     <height>670</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Livraisons de combsutible</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,2,0,2,0,1,0,1,0">
+  <property name="windowIcon">
+   <iconset theme="clock"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
+    <widget class="QGroupBox" name="groupBox_Wood">
+     <property name="title">
       <string>Livraisons de bois</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Vous pouvez modifier les caractéristiques des livraisons enregistrées  à partir du tableau ci-dessous. La dernière colonne vous permet de supprimer des livraisons si nécessaire.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="tableWidget_Wood">
+        <property name="verticalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Quantité livrée</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Unité</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Humidité</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Énergie livrée</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Facture</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Prix au MWh</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string/>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget_Wood">
-     <property name="verticalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <column>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Quantité livrée</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Unité</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Humidité</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Énergie livrée</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Facture</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Prix au MWh</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string/>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_4">
-     <property name="text">
+    <widget class="QGroupBox" name="groupBox_SecondaryFuel">
+     <property name="title">
       <string>Livraisons de combustible d'appoint</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Utilisez la dernière colonne pour supprimer des livraisons si nécessaire.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="tableWidget_SecondaryFuel">
+        <property name="verticalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Quantité livrée</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Énergie livrée</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Facture</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Prix au MWh</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string/>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget_SecondaryFuel">
-     <property name="verticalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
+    <widget class="QGroupBox" name="groupBox_NaturalGas">
+     <property name="title">
+      <string>Index du compteur de gaz naturel</string>
      </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <column>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Quantité livrée</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Énergie livrée</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Facture</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Prix au MWh</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string/>
-      </property>
-     </column>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QTableWidget" name="tableWidget_NaturalGas">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="verticalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <row>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Index</string>
+         </property>
+        </row>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Index gaz naturel</string>
+    <widget class="QGroupBox" name="groupBox_Electricity">
+     <property name="title">
+      <string>Index du compteur d'électricité</string>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTableWidget" name="tableWidget_NaturalGas">
-     <property name="verticalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <row>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Index</string>
-      </property>
-     </row>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Index d'électricité</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTableWidget" name="tableWidget_Electricity">
-     <property name="verticalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <row>
-      <property name="text">
-       <string>Date</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Index</string>
-      </property>
-     </row>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QTableWidget" name="tableWidget_Electricity">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="verticalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <property name="horizontalScrollMode">
+         <enum>QAbstractItemView::ScrollPerPixel</enum>
+        </property>
+        <row>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Index</string>
+         </property>
+        </row>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

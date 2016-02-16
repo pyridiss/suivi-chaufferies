@@ -96,7 +96,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
 
     //Gas index will be edited by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateIndex_NaturalGas = new DoubleSpinBoxDelegate(this);
-    delegateIndex_NaturalGas->setSuffix(" kWh");
+    delegateIndex_NaturalGas->setSuffix(" m³");
     delegateIndex_NaturalGas->setPrecision(5);
     ui->tableWidget_NaturalGas->setItemDelegateForRow(1, delegateIndex_NaturalGas);
 
@@ -189,79 +189,92 @@ void ShowFuelDeliveriesDialog::readSettings()
 {
     QSettings settings;
 
+    int mainFuel      = settings.value("boilerRoom/mainHeatSource").toInt();
     int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
 
     //1. Wood
-    int woodDeliveriesNumber = settings.beginReadArray("woodDeliveries");
-    for (int i = 0 ; i < woodDeliveriesNumber ; ++i)
+    if (mainFuel == 0 || mainFuel == 1)
     {
-        settings.setArrayIndex(i);
-        ui->tableWidget_Wood->insertRow(0);
-        QDate date = settings.value("date").toDate();
-        double quantity = settings.value("quantity").toDouble();
-        int unit = settings.value("unit").toInt();
-        double moisture = settings.value("moisture").toDouble();
-        double bill = settings.value("bill").toDouble();
+        ui->groupBox_Wood->show();
 
-        //Date
-        ui->tableWidget_Wood->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
-
-        //Quantity
-        QTableWidgetItem *itemQuantity = new QTableWidgetItem;
-        itemQuantity->setData(Qt::EditRole, quantity);
-        itemQuantity->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget_Wood->setItem(0, 1, itemQuantity);
-
-        //Unit
-        QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(unit));
-        ui->tableWidget_Wood->setItem(0, 2, itemUnit);
-
-        //Moisture
-        QTableWidgetItem *itemMoisture = new QTableWidgetItem;
-        itemMoisture->setData(Qt::EditRole, moisture);
-        ui->tableWidget_Wood->setItem(0, 3, itemMoisture);
-
-        //Energy
-        QTableWidgetItem *itemEnergy = new QTableWidgetItem();
-        itemEnergy->setFlags(Qt::NoItemFlags);
-        ui->tableWidget_Wood->setItem(0, 4, itemEnergy);
-
-        //Bill
-        QTableWidgetItem *itemBill = new QTableWidgetItem;
-        itemBill->setData(Qt::EditRole, bill);
-        ui->tableWidget_Wood->setItem(0, 5, itemBill);
-
-        //Price per MWh
-        QTableWidgetItem *itemPrice = new QTableWidgetItem();
-        itemPrice->setFlags(Qt::NoItemFlags);
-        ui->tableWidget_Wood->setItem(0, 6, itemPrice);
-
-        //Delete button
-        QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
-        itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
-        itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
-        ui->tableWidget_Wood->setCellWidget(0, 7, itemDelete);
-        connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteWoodDelivery()));
-
-        //Sort deliveries
-        ui->tableWidget_Wood->sortItems(0);
-
-        //Copy dates in vertical header
-        QStringList headers;
-        for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+        int woodDeliveriesNumber = settings.beginReadArray("woodDeliveries");
+        for (int i = 0 ; i < woodDeliveriesNumber ; ++i)
         {
-            QString q = ui->tableWidget_Wood->item(i, 0)->text();
-            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
-            headers.push_back(q);
-        }
-        ui->tableWidget_Wood->setVerticalHeaderLabels(headers);
-    }
+            settings.setArrayIndex(i);
+            ui->tableWidget_Wood->insertRow(0);
+            QDate date = settings.value("date").toDate();
+            double quantity = settings.value("quantity").toDouble();
+            int unit = settings.value("unit").toInt();
+            double moisture = settings.value("moisture").toDouble();
+            double bill = settings.value("bill").toDouble();
 
-    settings.endArray();
+            //Date
+            ui->tableWidget_Wood->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+
+            //Quantity
+            QTableWidgetItem *itemQuantity = new QTableWidgetItem;
+            itemQuantity->setData(Qt::EditRole, quantity);
+            itemQuantity->setTextAlignment(Qt::AlignCenter);
+            ui->tableWidget_Wood->setItem(0, 1, itemQuantity);
+
+            //Unit
+            QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(unit));
+            ui->tableWidget_Wood->setItem(0, 2, itemUnit);
+
+            //Moisture
+            QTableWidgetItem *itemMoisture = new QTableWidgetItem;
+            itemMoisture->setData(Qt::EditRole, moisture);
+            ui->tableWidget_Wood->setItem(0, 3, itemMoisture);
+
+            //Energy
+            QTableWidgetItem *itemEnergy = new QTableWidgetItem();
+            itemEnergy->setFlags(Qt::NoItemFlags);
+            ui->tableWidget_Wood->setItem(0, 4, itemEnergy);
+
+            //Bill
+            QTableWidgetItem *itemBill = new QTableWidgetItem;
+            itemBill->setData(Qt::EditRole, bill);
+            ui->tableWidget_Wood->setItem(0, 5, itemBill);
+
+            //Price per MWh
+            QTableWidgetItem *itemPrice = new QTableWidgetItem();
+            itemPrice->setFlags(Qt::NoItemFlags);
+            ui->tableWidget_Wood->setItem(0, 6, itemPrice);
+
+            //Delete button
+            QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
+            itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
+            itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+            ui->tableWidget_Wood->setCellWidget(0, 7, itemDelete);
+            connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteWoodDelivery()));
+
+            //Sort deliveries
+            ui->tableWidget_Wood->sortItems(0);
+
+            //Copy dates in vertical header
+            QStringList headers;
+            for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+            {
+                QString q = ui->tableWidget_Wood->item(i, 0)->text();
+                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
+                headers.push_back(q);
+            }
+            ui->tableWidget_Wood->setVerticalHeaderLabels(headers);
+        }
+
+        settings.endArray();
+    }
+    else
+    {
+        ui->groupBox_Wood->hide();
+        resize(size().width(), layout()->minimumSize().height());
+    }
 
     //2. Secondary fuel
     if (secondaryFuel == 2 || secondaryFuel == 3) //2 is fuel oil, 3 is propane
     {
+        ui->groupBox_SecondaryFuel->show();
+
         //Delegate quantity column to show a suffix
         DoubleSpinBoxDelegate *delegateQuantity_SecondaryFuel = new DoubleSpinBoxDelegate(this);
         delegateQuantity_SecondaryFuel->setSuffix((secondaryFuel == 2) ? " litres" : " kg");
@@ -326,27 +339,38 @@ void ShowFuelDeliveriesDialog::readSettings()
     }
     else // No secondary fuel, or natural gas, or elecrticity
     {
-        //Hide table !
+        ui->groupBox_SecondaryFuel->hide();
     }
 
     //3. Natural gas
     if (secondaryFuel == 1)
     {
+        ui->groupBox_NaturalGas->show();
+
         int naturalGasIndexesNumber = settings.beginReadArray("naturalGasIndex");
         for (int i = 0 ; i < naturalGasIndexesNumber ; ++i)
         {
             settings.setArrayIndex(i);
-            ui->tableWidget_NaturalGas->insertColumn(0);
-            QDate date = settings.value("date").toDate();
+            QString date = settings.value("date").toDate().toString("yyyy-MM-dd");
             int index = settings.value("index").toInt();
 
+            //Find the best column to add the new value
+            int column = 0;
+            for (int i = 0 ; i < ui->tableWidget_NaturalGas->columnCount() ; ++i)
+            {
+                if (ui->tableWidget_NaturalGas->item(0, i)->text() < date)
+                    ++column;
+                else break;
+            }
+            ui->tableWidget_NaturalGas->insertColumn(column);
+
             //Date
-            ui->tableWidget_NaturalGas->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+            ui->tableWidget_NaturalGas->setItem(0, column, new QTableWidgetItem(date));
 
             //Index
             QTableWidgetItem *itemIndex = new QTableWidgetItem;
             itemIndex->setData(Qt::EditRole, index);
-            ui->tableWidget_NaturalGas->setItem(1, 0, itemIndex);
+            ui->tableWidget_NaturalGas->setItem(1, column, itemIndex);
 
             //Copy dates in horizontal header
             QStringList headers;
@@ -363,7 +387,7 @@ void ShowFuelDeliveriesDialog::readSettings()
     }
     else
     {
-        //Hide !
+        ui->groupBox_NaturalGas->hide();
     }
 
     //4. Electricity
@@ -371,17 +395,26 @@ void ShowFuelDeliveriesDialog::readSettings()
     for (int i = 0 ; i < electricityIndexesNumber ; ++i)
     {
         settings.setArrayIndex(i);
-        ui->tableWidget_Electricity->insertColumn(0);
-        QDate date = settings.value("date").toDate();
+        QString date = settings.value("date").toDate().toString("yyyy-MM-dd");
         int index = settings.value("index").toInt();
 
+        //Find the best column to add the new value
+        int column = 0;
+        for (int i = 0 ; i < ui->tableWidget_Electricity->columnCount() ; ++i)
+        {
+            if (ui->tableWidget_Electricity->item(0, i)->text() < date)
+                ++column;
+            else break;
+        }
+        ui->tableWidget_Electricity->insertColumn(column);
+
         //Date
-        ui->tableWidget_Electricity->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+        ui->tableWidget_Electricity->setItem(0, column, new QTableWidgetItem(date));
 
         //Index
         QTableWidgetItem *itemIndex = new QTableWidgetItem;
         itemIndex->setData(Qt::EditRole, index);
-        ui->tableWidget_Electricity->setItem(1, 0, itemIndex);
+        ui->tableWidget_Electricity->setItem(1, column, itemIndex);
 
         //Copy dates in horizontal header
         QStringList headers;
