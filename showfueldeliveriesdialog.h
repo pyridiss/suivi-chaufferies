@@ -27,6 +27,8 @@ public slots:
     void recordChanged_SecondaryFuel(int x, int y);
     void recordChanged_NaturalGas(int x, int y);
     void recordChanged_Electricity(int x, int y);
+    void deleteWoodDelivery();
+    void deleteSecondaryFuelDelivery();
 
 signals:
     void settingsChanged();

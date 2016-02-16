@@ -1,5 +1,6 @@
 #include <QSettings>
 #include <QDate>
+#include <QPushButton>
 
 #include <delegates/comboboxdelegate.h>
 #include <delegates/doublespinboxdelegate.h>
@@ -53,6 +54,9 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     delegatePricePerMWh_Wood->setPrecision(5);
     ui->tableWidget_Wood->setItemDelegateForColumn(6, delegatePricePerMWh_Wood);
 
+    //Last column allows user to delete records
+    ui->tableWidget_Wood->setColumnWidth(7, 34);
+
     /*
      * Configure table 'Secondary fuel' columns
      */
@@ -87,6 +91,9 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     delegatePricePerMWh_Fuel->setSuffix(" € / MWh");
     delegatePricePerMWh_Fuel->setPrecision(5);
     ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(5, delegatePricePerMWh_Fuel);
+
+    //Last column allows user to delete records
+    ui->tableWidget_SecondaryFuel->setColumnWidth(6, 34);
 
     /*
      * Configure table 'Natural gas' columns
@@ -184,6 +191,13 @@ void ShowFuelDeliveriesDialog::readSettings()
         itemPrice->setFlags(Qt::NoItemFlags);
         ui->tableWidget_Wood->setItem(0, 6, itemPrice);
 
+        //Delete button
+        QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
+        itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
+        itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+        ui->tableWidget_Wood->setCellWidget(0, 7, itemDelete);
+        connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteWoodDelivery()));
+
         //Sort deliveries
         ui->tableWidget_Wood->sortItems(0);
 
@@ -238,6 +252,13 @@ void ShowFuelDeliveriesDialog::readSettings()
         QTableWidgetItem *itemPrice = new QTableWidgetItem();
         itemPrice->setFlags(Qt::NoItemFlags);
         ui->tableWidget_SecondaryFuel->setItem(0, 5, itemPrice);
+
+        //Delete button
+        QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
+        itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
+        itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+        ui->tableWidget_SecondaryFuel->setCellWidget(0, 6, itemDelete);
+        connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteSecondaryFuelDelivery()));
 
         //Sort deliveries
         ui->tableWidget_SecondaryFuel->sortItems(0);
@@ -449,6 +470,75 @@ void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
     }
 
     settings.endArray();
+
+    emit settingsChanged();
+}
+
+void ShowFuelDeliveriesDialog::deleteWoodDelivery()
+{
+    //1. The corresponding date has been saved in the properties of the sender.
+    QString date = sender()->property("record").toString();
+
+    QSettings settings;
+
+    //2. QSettings has no good function to remove one entry from arrays; we will write a new array from ui->tableWidget_Wood
+    settings.remove("woodDeliveries");
+    settings.beginWriteArray("woodDeliveries");
+    int index = 0;
+    int rowToRemove = -1;
+    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    {
+        settings.setArrayIndex(index);
+        if (ui->tableWidget_Wood->item(i, 0)->text() != date)
+        {
+            settings.setValue("date",       QDate::fromString(ui->tableWidget_Wood->item(i, 0)->text(), "yyyy-MM-dd"));
+            settings.setValue("quantity",   ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole));
+            settings.setValue("unit",       ui->tableWidget_Wood->item(i, 2)->data(Qt::EditRole));
+            settings.setValue("moisture",   ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole));
+            settings.setValue("bill",       ui->tableWidget_Wood->item(i, 5)->data(Qt::EditRole));
+            ++index;
+        }
+        else rowToRemove = i;
+    }
+
+    settings.endArray();
+
+    //3. Update table
+    if (rowToRemove != -1) ui->tableWidget_Wood->removeRow(rowToRemove);
+
+    emit settingsChanged();
+}
+
+void ShowFuelDeliveriesDialog::deleteSecondaryFuelDelivery()
+{
+    //1. The corresponding date has been saved in the properties of the sender.
+    QString date = sender()->property("record").toString();
+
+    QSettings settings;
+
+    //2. QSettings has no good function to remove one entry from arrays; we will write a new array from ui->tableWidget_SecondaryFuel
+    settings.remove("secondaryFuelDeliveries");
+    settings.beginWriteArray("secondaryFuelDeliveries");
+    int index = 0;
+    int rowToRemove = -1;
+    for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+    {
+        settings.setArrayIndex(index);
+        if (ui->tableWidget_SecondaryFuel->item(i, 0)->text() != date)
+        {
+            settings.setValue("date",       QDate::fromString(ui->tableWidget_SecondaryFuel->item(i, 0)->text(), "yyyy-MM-dd"));
+            settings.setValue("quantity",   ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole));
+            settings.setValue("unit",       ui->tableWidget_SecondaryFuel->item(i, 2)->data(Qt::EditRole));
+            settings.setValue("bill",       ui->tableWidget_SecondaryFuel->item(i, 4)->data(Qt::EditRole));
+            ++index;
+        }
+        else rowToRemove = i;
+    }
+
+    settings.endArray();
+
+    //3. Update table
+    if (rowToRemove != -1) ui->tableWidget_SecondaryFuel->removeRow(rowToRemove);
 
     emit settingsChanged();
 }
