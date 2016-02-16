@@ -27,11 +27,11 @@ void AddFuelDeliveryDialog::resetValues()
     ui->doubleSpinBox_WoodBill->setValue(0);
 
     ui->dateEdit_SecondaryFuel->setDate(QDate::currentDate());
-    ui->doubleSpinBox_SecondaryFuel->setValue(0);
+    ui->spinBox_SecondaryFuel->setValue(0);
     ui->doubleSpinBox_SecondaryFuelBill->setValue(0);
 
     ui->dateEdit_NaturalGas->setDate(QDate::currentDate());
-    ui->spinBox_NaturalGas->setValue(0);
+    ui->doubleSpinBox_NaturalGas->setValue(0);
 
     ui->dateEdit_Electricity->setDate(QDate::currentDate());
     ui->spinBox_Electricity->setValue(0);
@@ -81,12 +81,14 @@ void AddFuelDeliveryDialog::readSettings()
             ui->groupBox_SecondaryFuel->setTitle("Livraison de fioul");
             ui->radioButton_SecondaryFuel->show();
             ui->radioButton_SecondaryFuel->setText("Fioul");
+            ui->spinBox_SecondaryFuel->setSuffix(" litres");
             break;
         case 3: //Propane
             ui->groupBox_SecondaryFuel->show();
             ui->groupBox_SecondaryFuel->setTitle("Livraison de propane");
             ui->radioButton_SecondaryFuel->show();
             ui->radioButton_SecondaryFuel->setText("Propane");
+            ui->spinBox_SecondaryFuel->setSuffix(" kilogrammes");
             break;
         case 4: //Electricity
             break;
@@ -144,7 +146,7 @@ void AddFuelDeliveryDialog::on_buttonBox_accepted()
     }
 
     //2. Secondary fuel
-    if (ui->doubleSpinBox_SecondaryFuel->value() > 0)
+    if (ui->spinBox_SecondaryFuel->value() > 0)
     {
         int currentSize = settings.value("secondaryFuelDeliveries/size").toInt();
 
@@ -152,15 +154,14 @@ void AddFuelDeliveryDialog::on_buttonBox_accepted()
         settings.setArrayIndex(currentSize);
 
         settings.setValue("date", ui->dateEdit_SecondaryFuel->date());
-        settings.setValue("quantity", ui->doubleSpinBox_SecondaryFuel->value());
-        settings.setValue("unit", ui->comboBox_SecondaryFuelUnit->currentIndex());
+        settings.setValue("quantity", ui->spinBox_SecondaryFuel->value());
         settings.setValue("bill", ui->doubleSpinBox_SecondaryFuelBill->value());
 
         settings.endArray();
     }
 
     //3. Natural gas
-    if (ui->spinBox_NaturalGas->value() > 0)
+    if (ui->doubleSpinBox_NaturalGas->value() > 0)
     {
         int currentSize = settings.value("naturalGasIndex/size").toInt();
 
@@ -168,12 +169,12 @@ void AddFuelDeliveryDialog::on_buttonBox_accepted()
         settings.setArrayIndex(currentSize);
 
         settings.setValue("date", ui->dateEdit_NaturalGas->date());
-        settings.setValue("index", ui->spinBox_NaturalGas->value());
+        settings.setValue("index", ui->doubleSpinBox_NaturalGas->value());
 
         settings.endArray();
     }
 
-    //3. Electricity
+    //4. Electricity
     if (ui->spinBox_Electricity->value() > 0)
     {
         int currentSize = settings.value("electricityIndex/size").toInt();
