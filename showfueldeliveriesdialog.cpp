@@ -137,69 +137,49 @@ void ShowFuelDeliveriesDialog::resetValues()
 void ShowFuelDeliveriesDialog::updateSums()
 {
     QSettings settings;
-
+    int mainFuel      = settings.value("boilerRoom/mainHeatSource").toInt();
     int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
 
     //1. Wood
-    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    if (mainFuel == 0 || mainFuel == 1)
     {
-        //Energy
-        double quantity = ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole).toDouble();
-        int unit        = ui->tableWidget_Wood->item(i, 2)->text().toInt();
-        double moisture = ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole).toDouble() / 100;
-        double energy   = 0;
-
-        //Assuming 20% softwood + 80% hardwood
-        double pci = (0.2 * (5.1 - moisture * 100 / 16.4) + 0.8 * (4.9 - moisture * 100 / 18.34));
-
-        switch (unit)
+        for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
         {
-            case 0: //MAP
-                energy = pci * (0.2 * ((160 * moisture * 100) / (100 - moisture * 100) + 160) + 0.8 * ((220 * moisture * 100) / (100 - moisture * 100) + 220)) * quantity / 1000;
-                break;
-            case 1: //tonnes
-                energy = pci * quantity;
-                break;
-            case 2: //MWh
-                energy = quantity;
-                break;
+            double quantity = ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole).toDouble();
+            int unit        = ui->tableWidget_Wood->item(i, 2)->text().toInt();
+            double moisture = ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole).toDouble() / 100;
+            double bill     = ui->tableWidget_Wood->item(i, 5)->data(Qt::EditRole).toDouble();
+
+            //Assuming 20% softwood + 80% hardwood
+            double energy  = 0;
+            double lhv     = (0.2 * (5.1 - moisture * 100 / 16.4) + 0.8 * (4.9 - moisture * 100 / 18.34));
+            double density = (0.2 * ((160 * moisture * 100) / (100 - moisture * 100) + 160) + 0.8 * ((220 * moisture * 100) / (100 - moisture * 100) + 220)) / 1000;
+
+            if (unit == 0) energy = quantity * lhv * density;
+            if (unit == 1) energy = quantity * lhv;
+            if (unit == 2) energy = quantity;
+
+            if (energy == 0) energy = 1;
+
+            ui->tableWidget_Wood->item(i, 4)->setData(Qt::DisplayRole, energy);
+            ui->tableWidget_Wood->item(i, 6)->setData(Qt::DisplayRole, bill / energy);
         }
-
-        ui->tableWidget_Wood->item(i, 4)->setData(Qt::DisplayRole, energy);
-
-        //Price per MWh
-        double bill = ui->tableWidget_Wood->item(i, 5)->data(Qt::EditRole).toDouble();
-        if (energy == 0) energy = 1000000;
-        ui->tableWidget_Wood->item(i, 6)->setData(Qt::DisplayRole, bill / energy);
     }
 
     //2. Secondary fuel
     if (secondaryFuel == 2 || secondaryFuel == 3)
     {
-        for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+        for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
         {
-            QSettings settings;
-
-            //Energy
-            int fuel        = settings.value("boilerRoom/secondaryHeatSource").toInt();
             double quantity = ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole).toDouble();
-            double energy   = 0;
+            double bill     = ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole).toDouble();
 
-            switch (fuel)
-            {
-                case 2: //Fuel oil
-                    energy = 9.96 * quantity / 1000;
-                    break;
-                case 3: //Propane
-                    energy = 12.9 * quantity / 1000;
-                    break;
-            }
+            double lhv    = (secondaryFuel == 2) ? 9.96 : 12.9;
+            double energy = quantity * lhv / 1000;
+
+            if (energy == 0) energy = 1;
 
             ui->tableWidget_SecondaryFuel->item(i, 2)->setData(Qt::DisplayRole, energy);
-
-            //Price per MWh
-            double bill = ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole).toDouble();
-            if (energy == 0) energy = 1000000;
             ui->tableWidget_SecondaryFuel->item(i, 4)->setData(Qt::DisplayRole, bill / energy);
         }
     }
