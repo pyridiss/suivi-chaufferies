@@ -14,6 +14,8 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(this, SIGNAL(settingsChanged()), this, SLOT(updateSums()));
+
     /*
      * Configure table 'Wood' columns
      */
@@ -39,7 +41,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Wood energy will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateEnergy_Wood = new DoubleSpinBoxDelegate(this);
     delegateEnergy_Wood->setSuffix(" MWh");
-    delegateEnergy_Wood->setPrecision(5);
+    delegateEnergy_Wood->setPrecision(4);
     ui->tableWidget_Wood->setItemDelegateForColumn(4, delegateEnergy_Wood);
 
     //Wood bill will be edited with a DoubleSpinBox with extra parameters
@@ -51,7 +53,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Wood price per MWh will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegatePricePerMWh_Wood = new DoubleSpinBoxDelegate(this);
     delegatePricePerMWh_Wood->setSuffix(" € / MWh");
-    delegatePricePerMWh_Wood->setPrecision(5);
+    delegatePricePerMWh_Wood->setPrecision(4);
     ui->tableWidget_Wood->setItemDelegateForColumn(6, delegatePricePerMWh_Wood);
 
     //Last column allows user to delete records
@@ -77,7 +79,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Fuel energy will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateEnergy_Fuel = new DoubleSpinBoxDelegate(this);
     delegateEnergy_Fuel->setSuffix(" MWh");
-    delegateEnergy_Fuel->setPrecision(5);
+    delegateEnergy_Fuel->setPrecision(4);
     ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(3, delegateEnergy_Fuel);
 
     //Fuel bill will be edited with a DoubleSpinBox with extra parameters
@@ -89,7 +91,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Fuel price per MWh will be shown by a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegatePricePerMWh_Fuel = new DoubleSpinBoxDelegate(this);
     delegatePricePerMWh_Fuel->setSuffix(" € / MWh");
-    delegatePricePerMWh_Fuel->setPrecision(5);
+    delegatePricePerMWh_Fuel->setPrecision(4);
     ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(5, delegatePricePerMWh_Fuel);
 
     //Last column allows user to delete records
@@ -140,6 +142,77 @@ void ShowFuelDeliveriesDialog::resetValues()
 
     disconnect(ui->tableWidget_Electricity, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Electricity(int, int)));
     while (ui->tableWidget_Electricity->columnCount() > 0) ui->tableWidget_Electricity->removeColumn(0);
+}
+
+void ShowFuelDeliveriesDialog::updateSums()
+{
+    //1. Wood
+    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    {
+        //Energy
+        double quantity = ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole).toDouble();
+        int unit        = ui->tableWidget_Wood->item(i, 2)->text().toInt();
+        double moisture = ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole).toDouble() / 100;
+        double energy = 0;
+
+        //Assuming 20% softwood + 80% hardwood
+        double pci = (0.2 * (5.1 - moisture * 100 / 16.4) + 0.8 * (4.9 - moisture * 100 / 18.34));
+
+        switch (unit)
+        {
+            case 0: //MAP
+                energy = pci * (0.2 * ((160 * moisture * 100) / (100 - moisture * 100) + 160) + 0.8 * ((220 * moisture * 100) / (100 - moisture * 100) + 220)) * quantity / 1000;
+                break;
+            case 1: //tonnes
+                energy = pci * quantity;
+                break;
+            case 2: //MWh
+                energy = quantity;
+                break;
+        }
+
+        ui->tableWidget_Wood->item(i, 4)->setData(Qt::DisplayRole, energy);
+
+        //Price per MWh
+        double bill = ui->tableWidget_Wood->item(i, 5)->data(Qt::EditRole).toDouble();
+        if (energy == 0) energy = 1000000;
+        ui->tableWidget_Wood->item(i, 6)->setData(Qt::DisplayRole, bill / energy);
+    }
+
+    //1. Secondary fuel
+    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    {
+        QSettings settings;
+
+        //Energy
+        int fuel        = settings.value("boilerRoom/secondaryHeatSource").toInt();
+        double quantity = ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole).toDouble();
+        int unit        = ui->tableWidget_SecondaryFuel->item(i, 2)->text().toInt();
+        double energy = 0;
+
+        switch (fuel)
+        {
+            case 2: //Fuel oil
+                if (unit == 0) energy = 9.96 * quantity / 1000; //litres
+                else if (unit == 1) ; //tonnes
+                else if (unit == 2) ; //mètres-cube
+                else energy = quantity / 1000; //kWh
+                break;
+            case 3: //Propane
+                if (unit == 0) ; //litres
+                else if (unit == 1) energy = 12.9 * quantity; //tonnes
+                else if (unit == 2) ; //mètres-cube
+                else energy = quantity / 1000; //kWh
+                break;
+        }
+
+        ui->tableWidget_SecondaryFuel->item(i, 3)->setData(Qt::DisplayRole, energy);
+
+        //Price per MWh
+        double bill = ui->tableWidget_SecondaryFuel->item(i, 4)->data(Qt::EditRole).toDouble();
+        if (energy == 0) energy = 1000000;
+        ui->tableWidget_SecondaryFuel->item(i, 5)->setData(Qt::DisplayRole, bill / energy);
+    }
 }
 
 void ShowFuelDeliveriesDialog::readSettings()
@@ -335,6 +408,8 @@ void ShowFuelDeliveriesDialog::readSettings()
     }
 
     settings.endArray();
+
+    updateSums();
 
     //Connect's
     connect(ui->tableWidget_Wood, SIGNAL(cellChanged(int,int)), this, SLOT(recordChanged_Wood(int,int)));

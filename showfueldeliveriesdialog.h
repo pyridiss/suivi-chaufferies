@@ -29,6 +29,7 @@ public slots:
     void recordChanged_Electricity(int x, int y);
     void deleteWoodDelivery();
     void deleteSecondaryFuelDelivery();
+    void updateSums();
 
 signals:
     void settingsChanged();
