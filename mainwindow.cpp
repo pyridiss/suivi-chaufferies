@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
      */
 
     ui->chart_EnergyConsumption->setLocale(QLocale(QLocale::French, QLocale::France));
+    ui->chart_EnergyConsumption->plotLayout()->insertRow(0);
+    ui->chart_EnergyConsumption->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui->chart_EnergyConsumption, "Consommations de chaleur en sous-station"));
 
     //Legend
     ui->chart_EnergyConsumption->legend->setVisible(true);
@@ -55,8 +57,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     ui->chart_EnergyConsumption->xAxis->setTickVector(ticks);
 
-    //Y-Axis: set range lower
+    //Y-Axis
+    ui->chart_EnergyConsumption->yAxis->setLabel("Consommation (MWh)");
     ui->chart_EnergyConsumption->yAxis->setRangeLower(0);
+    ui->chart_EnergyConsumption->yAxis->setAutoTickStep(false);
 
     //Add graphs. 0 will be 'real sum of meters in substations', 1 will be 'theoretic sum based on real DJU', 2 will be 'theoretic sum based on theoric DJU'
     ui->chart_EnergyConsumption->addGraph();
@@ -96,7 +100,30 @@ void MainWindow::updateEnergyConsumptionChart()
 {
     QSettings settings;
 
-    double theoreticAnnualConsumption = 2000;
+    double theoreticAnnualConsumption = 0;
+
+    //Remove data from ui->tableWidget_chartResults
+    while (ui->tableWidget_chartResults->rowCount() > 0)
+        ui->tableWidget_chartResults->removeRow(0);
+
+    int size = settings.beginReadArray("substations");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+        theoreticAnnualConsumption += settings.value("consumption", 0).toDouble();
+
+        //ui->tableWidget_chartResults will be filled with consumptions. These values will be used later.
+        QString name = settings.value("name", 0).toString();
+        QTableWidgetItem *newItem = new QTableWidgetItem();
+        newItem->setData(Qt::EditRole, settings.value("consumption", 0).toDouble());
+        newItem->setFlags(Qt::NoItemFlags);
+        newItem->setTextAlignment(Qt::AlignCenter);
+        newItem->setTextColor(Qt::black);
+        ui->tableWidget_chartResults->insertRow(i);
+        ui->tableWidget_chartResults->setItem(i, 0, newItem);
+        ui->tableWidget_chartResults->setVerticalHeaderItem(i, new QTableWidgetItem(name));
+    }
+    settings.endArray();
 
     //1. Graph 0: 'real sum of meters in substations'.
     QMap<QDate, int> meterRecords;
@@ -127,7 +154,7 @@ void MainWindow::updateEnergyConsumptionChart()
     for (int i = 0 ; i < meterRecords.size() ; ++i)
     {
         x0[i] = QDateTime(it.key()).toTime_t();
-        y0[i] = it.value();
+        y0[i] = it.value() / 1000.f;
         ++it;
     }
 
@@ -184,6 +211,17 @@ void MainWindow::updateEnergyConsumptionChart()
 
     //4. Replot
     ui->chart_EnergyConsumption->yAxis->setRangeUpper(theoreticAnnualConsumption * 1.2);
+
+    double step = theoreticAnnualConsumption * 1.2;
+    int power = 0;
+    while (step > 10)
+    {
+        step /= 10;
+        ++power;
+    }
+    step = round(step) * pow(10, power);
+    ui->chart_EnergyConsumption->yAxis->setTickStep(step / 10);
+
     ui->chart_EnergyConsumption->replot();
 }
 
