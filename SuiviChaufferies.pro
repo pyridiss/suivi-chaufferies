@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     showmetersrecordsdialog.cpp \
     showfueldeliveriesdialog.cpp \
     delegates/comboboxdelegate.cpp \
-    delegates/doublespinboxdelegate.cpp
+    delegates/doublespinboxdelegate.cpp \
+    dju.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     showmetersrecordsdialog.h \
     showfueldeliveriesdialog.h \
     delegates/comboboxdelegate.h \
-    delegates/doublespinboxdelegate.h
+    delegates/doublespinboxdelegate.h \
+    dju.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
