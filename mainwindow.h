@@ -8,6 +8,7 @@
 #include <addmetersrecorddialog.h>
 #include <showmetersrecordsdialog.h>
 #include <showfueldeliveriesdialog.h>
+#include <dju.h>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,9 @@ private:
     AddMetersRecordDialog *mAddMetersRecordDialog;
     ShowMetersRecordsDialog *mShowMetersRecordsDialog;
     ShowFuelDeliveriesDialog *mShowFuelDeliveriesDialog;
+
+private:
+    DJU mDJU;
 
 private slots:
     void on_actionConfigureBoilerRoom_triggered();

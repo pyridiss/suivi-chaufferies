@@ -21,9 +21,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mAddMetersRecordDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
 
+    mDJU.load();
+
     /*
      * Set Energy Consumption chart design
      */
+
+    ui->chart_EnergyConsumption->setLocale(QLocale(QLocale::French, QLocale::France));
+
+    //Legend
+    ui->chart_EnergyConsumption->legend->setVisible(true);
+    QFont legendFont = font();
+    legendFont.setPointSize(7);
+    ui->chart_EnergyConsumption->legend->setFont(legendFont);
+    ui->chart_EnergyConsumption->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignLeft);
 
     //X-Axis: X-Axis is based on time and range match the heating season.
     ui->chart_EnergyConsumption->xAxis->setTickLabelType(QCPAxis::ltDateTime);
@@ -47,8 +58,20 @@ MainWindow::MainWindow(QWidget *parent) :
     //Y-Axis: set range lower
     ui->chart_EnergyConsumption->yAxis->setRangeLower(0);
 
-    //Add graphs. 0 will be 'sum of meters in substations'.
+    //Add graphs. 0 will be 'real sum of meters in substations', 1 will be 'theoretic sum based on real DJU', 2 will be 'theoretic sum based on theoric DJU'
     ui->chart_EnergyConsumption->addGraph();
+    ui->chart_EnergyConsumption->graph(0)->setName("Relevés des compteurs de chaleur");
+
+    ui->chart_EnergyConsumption->addGraph();
+    ui->chart_EnergyConsumption->graph(1)->setPen(QPen(Qt::red));
+    ui->chart_EnergyConsumption->graph(1)->setName("Estimation à partir des données réelles de température");
+
+    ui->chart_EnergyConsumption->addGraph();
+    QPen redDotPen;
+    redDotPen.setColor(Qt::red);
+    redDotPen.setStyle(Qt::DotLine);
+    ui->chart_EnergyConsumption->graph(2)->setPen(redDotPen);
+    ui->chart_EnergyConsumption->graph(2)->setName("Estimation à partir de données théoriques de température");
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +95,10 @@ void MainWindow::readSettings()
 void MainWindow::updateEnergyConsumptionChart()
 {
     QSettings settings;
+
+    double theoreticAnnualConsumption = 2000;
+
+    //1. Graph 0: 'real sum of meters in substations'.
     QMap<QDate, int> meterRecords;
 
     int substationsNumber = settings.value("substations/size").toInt();
@@ -94,19 +121,69 @@ void MainWindow::updateEnergyConsumptionChart()
         settings.endArray();
     }
 
-    QVector<double> x(meterRecords.size()), y(meterRecords.size());
+    QVector<double> x0(meterRecords.size()), y0(meterRecords.size());
 
     QMap<QDate, int>::iterator it = meterRecords.begin();
     for (int i = 0 ; i < meterRecords.size() ; ++i)
     {
-        x[i] = QDateTime(it.key()).toTime_t();
-        y[i] = it.value();
+        x0[i] = QDateTime(it.key()).toTime_t();
+        y0[i] = it.value();
         ++it;
     }
 
-    ui->chart_EnergyConsumption->graph(0)->setData(x, y);
-    ui->chart_EnergyConsumption->graph(0)->rescaleValueAxis();
+    ui->chart_EnergyConsumption->graph(0)->setData(x0, y0);
 
+    //2. Graph 1: 'theoretic sum based on real DJU'
+
+    QDate heatingSeasonBegin(2015, 7, 1);
+    QDate heatingSeasonEnd  (2016, 6, 30);
+    QDate lastKnownTemperature = QDate::fromString(mDJU.getLastDataDate(), "yyyy-MM-dd");
+
+    double averageDJUOfHeatingSeason = mDJU.getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+
+    int size1 = heatingSeasonBegin.daysTo(lastKnownTemperature) + 1;
+    QVector <double> x1(size1), y1(size1);
+
+    QDate d = heatingSeasonBegin;
+
+    x1[0] = QDateTime(d).toTime_t();
+    y1[0] = mDJU.getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+
+    for (int i = 1 ; i < size1 ; ++i)
+    {
+        d = d.addDays(1);
+
+        x1[i] = QDateTime(d).toTime_t();
+        y1[i] = y1[i-1] + mDJU.getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+    }
+
+    ui->chart_EnergyConsumption->graph(1)->setData(x1, y1);
+
+    //3. Graph 2: 'theoretic sum based on theoric DJU'
+
+    double DJUSinceBeginningOfHeatingSeason = mDJU.getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastKnownTemperature.toString("yyyy-MM-dd"));
+    double DJURestOfHeatingSeason           = mDJU.getAverageDJU(lastKnownTemperature.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+
+    int size2 = lastKnownTemperature.daysTo(heatingSeasonEnd) + 1;
+    QVector <double> x2(size2), y2(size2);
+
+    d = lastKnownTemperature;
+
+    x2[0] = QDateTime(d).toTime_t();
+    y2[0] = y1[size1 - 1];
+
+    for (int i = 1 ; i < size2 ; ++i)
+    {
+        d = d.addDays(1);
+
+        x2[i] = QDateTime(d).toTime_t();
+        y2[i] = y2[i-1] + mDJU.getAverageDJU(d.toString("yyyy-MM-dd")) / (DJUSinceBeginningOfHeatingSeason + DJURestOfHeatingSeason) * theoreticAnnualConsumption;
+    }
+
+    ui->chart_EnergyConsumption->graph(2)->setData(x2, y2);
+
+    //4. Replot
+    ui->chart_EnergyConsumption->yAxis->setRangeUpper(theoreticAnnualConsumption * 1.2);
     ui->chart_EnergyConsumption->replot();
 }
 
