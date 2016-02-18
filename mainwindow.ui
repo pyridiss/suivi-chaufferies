@@ -18,7 +18,7 @@
     <normaloff>.</normaloff>.</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0">
+   <layout class="QGridLayout" name="gridLayout">
     <item row="2" column="1">
      <widget class="QPushButton" name="pushButton_AddMetersRecord">
       <property name="text">
@@ -33,7 +33,7 @@
       </property>
       <widget class="QWidget" name="tabChart">
        <attribute name="title">
-        <string>Évolution de la consommation d'énergie</string>
+        <string>Consommations de chaleur en sous-stations</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3" columnstretch="2,1">
         <item row="1" column="1">
@@ -89,29 +89,23 @@
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-          <property name="currentIndex">
-           <number>1</number>
-          </property>
           <widget class="QWidget" name="page">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>307</width>
-             <height>255</height>
+             <width>311</width>
+             <height>259</height>
             </rect>
            </property>
            <attribute name="label">
-            <string>Résultats généraux</string>
+            <string>Consommations de chaleur</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Consommation de bois prévue pour cette saison de chauffe :</string>
+               <string>Consommation de chaleur théorique pour cette saison de chauffe :</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -122,32 +116,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="label_ExpectedConsumption">
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;0 MAP / 0 MWh / 0 tonnes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Consommation de bois de la saison de chauffe corrigée du climat :</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;0 MAP / 0 MWh / 0 tonnes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;0 MWh&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -157,7 +128,7 @@
             <item>
              <widget class="QLabel" name="label_8">
               <property name="text">
-               <string>Écart consommation réelle / consommation théorique après correction du climat :</string>
+               <string>Écart entre la consommation réelle actuelle et la consommation théorique :</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -168,9 +139,32 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_9">
+             <widget class="QLabel" name="label_Shift">
               <property name="text">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;+ / - 0 %&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Estimation de la consommation de chaleur en sous-stations pour une année moyenne &lt;span style=&quot; font-style:italic;&quot;&gt;(à partir des consommations de cette année)&lt;/span&gt; :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_ExpectedCorrectedConsumption">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;0 MAP / 0 MWh / 0 tonnes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -184,8 +178,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>307</width>
-             <height>255</height>
+             <width>311</width>
+             <height>259</height>
             </rect>
            </property>
            <attribute name="label">
@@ -232,6 +226,48 @@
         </item>
         <item row="1" column="0" rowspan="3">
          <widget class="QCustomPlot" name="chart_EnergyConsumption" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabTechnicalData">
+       <attribute name="title">
+        <string>Données techniques de la chaufferie</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QGroupBox" name="groupBox_DataWoodChips">
+          <property name="title">
+           <string>Chaudière au bois déchiqueté</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_DataPellets">
+          <property name="title">
+           <string>Chaudière au granulé</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_DataGeothermalPower">
+          <property name="title">
+           <string>Système géothermique</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_DataSecondaryFuel">
+          <property name="title">
+           <string>Chaudière d'appoint</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_DataElectricity">
+          <property name="title">
+           <string>Consommations électriques</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

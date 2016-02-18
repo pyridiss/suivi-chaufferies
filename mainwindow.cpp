@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->chart_EnergyConsumption->setLocale(QLocale(QLocale::French, QLocale::France));
     ui->chart_EnergyConsumption->plotLayout()->insertRow(0);
-    ui->chart_EnergyConsumption->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui->chart_EnergyConsumption, "Consommations de chaleur en sous-station"));
+    ui->chart_EnergyConsumption->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui->chart_EnergyConsumption, "Total des consommations de chaleur des sous-stations"));
 
     //Legend
     ui->chart_EnergyConsumption->legend->setVisible(true);
@@ -223,6 +223,41 @@ void MainWindow::updateEnergyConsumptionChart()
     ui->chart_EnergyConsumption->yAxis->setTickStep(step / 10);
 
     ui->chart_EnergyConsumption->replot();
+
+    //5. Results
+
+    QLocale locale;
+
+    //Expected consumption
+    double expectedConsumptionMWh = y2[size2 - 1];
+    ui->label_ExpectedConsumption->setText("<b>" + locale.toString(expectedConsumptionMWh, 'g', 3) + " MWh</b>");
+
+    //Shift
+    double theoreticConsumption = 0;
+    if (meterRecords.lastKey() <= lastKnownTemperature)
+        theoreticConsumption = y1[heatingSeasonBegin.daysTo(meterRecords.lastKey()) - 1];
+    else
+        theoreticConsumption = y2[lastKnownTemperature.daysTo(meterRecords.lastKey()) - 1];
+
+    double shift = (meterRecords.last() / 1000.f - theoreticConsumption) / theoreticConsumption * 100.f;
+    ui->label_Shift->setText(((shift >= 0) ? "<b>+ " : "<b>- ") + locale.toString((shift >= 0) ? shift : -shift, 'g', 3) + " %</b>");
+
+    //Expected corrected consumption
+    double DJUcovered = 0;
+
+    d = heatingSeasonBegin;
+    while (d < meterRecords.lastKey())
+    {
+        if (d <= lastKnownTemperature)
+            DJUcovered += mDJU.getDJU(d.toString("yyyy-MM-dd"));
+        else
+            DJUcovered += mDJU.getAverageDJU(d.toString("yyyy-MM-dd"));
+
+        d = d.addDays(1);
+    }
+
+    double expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * mDJU.getAverageDJU("2010-01-01", "2010-12-31");
+    ui->label_ExpectedCorrectedConsumption->setText("<b>" + locale.toString(expectedCorrectedConsumptionMWh, 'g', 3) + " MWh</b>");
 }
 
 void MainWindow::on_actionConfigureBoilerRoom_triggered()
