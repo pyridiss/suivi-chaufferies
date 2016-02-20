@@ -168,7 +168,7 @@ void MainWindow::updateEnergyConsumptionChart()
 
     double averageDJUOfHeatingSeason = mDJU.getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
 
-    int size1 = heatingSeasonBegin.daysTo(lastKnownTemperature) + 1;
+    int size1 = qMax(qint64(1), heatingSeasonBegin.daysTo(lastKnownTemperature) + 1);
     QVector <double> x1(size1), y1(size1);
 
     QDate d = heatingSeasonBegin;
@@ -234,19 +234,24 @@ void MainWindow::updateEnergyConsumptionChart()
 
     //Shift
     double theoreticConsumption = 0;
-    if (meterRecords.lastKey() <= lastKnownTemperature)
-        theoreticConsumption = y1[heatingSeasonBegin.daysTo(meterRecords.lastKey()) - 1];
-    else
-        theoreticConsumption = y2[lastKnownTemperature.daysTo(meterRecords.lastKey()) - 1];
+    if (!meterRecords.isEmpty())
+    {
+        if (meterRecords.lastKey() <= lastKnownTemperature)
+            theoreticConsumption = y1[heatingSeasonBegin.daysTo(meterRecords.lastKey()) - 1];
+        else
+            theoreticConsumption = y2[lastKnownTemperature.daysTo(meterRecords.lastKey()) - 1];
+    }
 
-    double shift = (meterRecords.last() / 1000.f - theoreticConsumption) / theoreticConsumption * 100.f;
+    double shift = 0;
+    if (!meterRecords.isEmpty())
+        shift = (meterRecords.last() / 1000.f - theoreticConsumption) / theoreticConsumption * 100.f;
     ui->label_Shift->setText(((shift >= 0) ? "<b>+ " : "<b>- ") + locale.toString((shift >= 0) ? shift : -shift, 'g', 3) + " %</b>");
 
     //Expected corrected consumption
     double DJUcovered = 0;
 
     d = heatingSeasonBegin;
-    while (d < meterRecords.lastKey())
+    while (!meterRecords.isEmpty() && d < meterRecords.lastKey())
     {
         if (d <= lastKnownTemperature)
             DJUcovered += mDJU.getDJU(d.toString("yyyy-MM-dd"));
@@ -256,7 +261,9 @@ void MainWindow::updateEnergyConsumptionChart()
         d = d.addDays(1);
     }
 
-    double expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * mDJU.getAverageDJU("2010-01-01", "2010-12-31");
+    double expectedCorrectedConsumptionMWh = 0;
+    if (!meterRecords.isEmpty())
+        expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * mDJU.getAverageDJU("2010-01-01", "2010-12-31");
     ui->label_ExpectedCorrectedConsumption->setText("<b>" + locale.toString(expectedCorrectedConsumptionMWh, 'g', 3) + " MWh</b>");
 }
 

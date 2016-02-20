@@ -113,6 +113,7 @@ double DJU::getDJU(QString date1, QString date2)
 
 QString DJU::getLastDataDate()
 {
+    if (mDJU.isEmpty()) return "2000-01-01";
     return mDJU.lastKey();
 }
 
