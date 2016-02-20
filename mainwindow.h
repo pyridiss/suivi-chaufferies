@@ -45,6 +45,7 @@ private slots:
     void on_actionAboutQt_triggered();
     void on_pushButton_AddFuelDelivery_clicked();
     void on_pushButton_AddMetersRecord_clicked();
+    void fileDownloaded(QByteArray *file);
 
 public slots:
     void readSettings();

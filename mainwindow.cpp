@@ -1,6 +1,7 @@
 #include <QSettings>
 
 #include "qcustomplot/qcustomplot.h"
+#include "filedownloader.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -285,7 +286,16 @@ void MainWindow::on_actionSend_triggered()
 
 void MainWindow::on_actionDownloadData_triggered()
 {
-    QMessageBox::information(this, "Information", "Cette fonction n'est pas encore implémentée.");
+    QUrl DJUFile("http://www.ale08.org/dju.xml");
+    FileDownloader *downloader = new FileDownloader(DJUFile, this);
+
+    QMessageBox *box = new QMessageBox(QMessageBox::Information,
+                                       "Téléchargement en cours…",
+                                       "Le fichier est en cours de téléchargement");
+    box->show();
+
+    connect(downloader, SIGNAL(downloaded(QByteArray*)), box, SLOT(close()));
+    connect(downloader, SIGNAL(downloaded(QByteArray*)), this, SLOT(fileDownloaded(QByteArray*)));
 }
 
 void MainWindow::on_actionShowDeliveries_triggered()
@@ -328,4 +338,22 @@ void MainWindow::on_pushButton_AddMetersRecord_clicked()
 {
     mAddMetersRecordDialog->readSettings();
     mAddMetersRecordDialog->show();
+}
+
+void MainWindow::fileDownloaded(QByteArray* file)
+{
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
+
+    if (!dir.exists())
+    {
+        dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
+    }
+
+    QFile outFile(dir.filePath("dju.xml"));
+    outFile.open(QIODevice::WriteOnly);
+    outFile.write(*file);
+
+    QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
+
+    mDJU.load();
 }

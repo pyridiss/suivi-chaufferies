@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     showfueldeliveriesdialog.cpp \
     delegates/comboboxdelegate.cpp \
     delegates/doublespinboxdelegate.cpp \
-    dju.cpp
+    dju.cpp \
+    filedownloader.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     showfueldeliveriesdialog.h \
     delegates/comboboxdelegate.h \
     delegates/doublespinboxdelegate.h \
-    dju.h
+    dju.h \
+    filedownloader.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
