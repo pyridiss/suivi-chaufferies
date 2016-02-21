@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     delegates/comboboxdelegate.cpp \
     delegates/doublespinboxdelegate.cpp \
     dju.cpp \
-    filedownloader.cpp
+    filedownloader.cpp \
+    heatingsystem.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     delegates/comboboxdelegate.h \
     delegates/doublespinboxdelegate.h \
     dju.h \
-    filedownloader.h
+    filedownloader.h \
+    heatingsystem.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
