@@ -344,11 +344,6 @@ void MainWindow::fileDownloaded(QByteArray* file)
 {
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
-    if (!dir.exists())
-    {
-        dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
-    }
-
     QFile outFile(dir.filePath("dju.xml"));
     outFile.open(QIODevice::WriteOnly);
     outFile.write(*file);
