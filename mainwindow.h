@@ -9,6 +9,7 @@
 #include <showmetersrecordsdialog.h>
 #include <showfueldeliveriesdialog.h>
 #include <dju.h>
+#include <heatingsystem.h>
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,8 @@ private:
 
 private:
     DJU mDJU;
+    QMap<QString, HeatingSystem*> mHeatingSystems;
+    QString mCurrentHeatingSystem;
 
 private slots:
     void on_actionConfigureBoilerRoom_triggered();
@@ -49,6 +52,7 @@ private slots:
 
 public slots:
     void readSettings();
+    void changeCurrentHeatingSystem();
     void updateEnergyConsumptionChart();
 };
 

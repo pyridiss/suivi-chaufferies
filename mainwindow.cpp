@@ -113,27 +113,42 @@ void MainWindow::readSettings()
         settings.setArrayIndex(i);
 
         QString name = settings.value("name").toString();
+        QString filename = settings.value("filename").toString();
+
+        //Load the heating system if not done yet
+        if (mHeatingSystems.find(filename) == mHeatingSystems.end())
+        {
+            HeatingSystem *newHeatingSystem = new HeatingSystem(this);
+            newHeatingSystem->load(filename);
+            mHeatingSystems.insert(filename, newHeatingSystem);
+        }
 
         QAction *heatingSystem = heatingSystemsGroup->addAction(name);
         heatingSystem->setCheckable(true);
+        heatingSystem->setProperty("filename", filename);
 
         if (name == lastHeatingSystem)
             heatingSystem->setChecked(true);
 
+        connect(heatingSystem, SIGNAL(triggered(bool)), this, SLOT(changeCurrentHeatingSystem()));
     }
     settings.endArray();
 
     menu->addActions(heatingSystemsGroup->actions());
 
-    //Set the menu and button properties
     toolButton->setMenu(menu);
+}
 
-    /*
-     * Set properties for the selected heating system
-     */
+void MainWindow::changeCurrentHeatingSystem()
+{
+    QString newHeatingSystem = sender()->property("filename").toString();
+
+    if (newHeatingSystem == mCurrentHeatingSystem) return;
+
+    mCurrentHeatingSystem = newHeatingSystem;
 
     QString name = "<p align=\"center\"><span style=\"font-weight:600;\">";
-    name += settings.value("boilerRoom/boilerRoomName", "Nom de la chaufferie").toString();
+    name += mHeatingSystems[mCurrentHeatingSystem]->getName();
     name += "</span></p>";
 
     ui->labelBoilerRoomName->setText(name);
