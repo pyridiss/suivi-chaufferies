@@ -127,10 +127,13 @@ void MainWindow::readSettings()
         heatingSystem->setCheckable(true);
         heatingSystem->setProperty("filename", filename);
 
-        if (name == lastHeatingSystem)
-            heatingSystem->setChecked(true);
-
         connect(heatingSystem, SIGNAL(triggered(bool)), this, SLOT(changeCurrentHeatingSystem()));
+
+        if (name == lastHeatingSystem)
+        {
+            heatingSystem->setChecked(true);
+            heatingSystem->trigger();
+        }
     }
     settings.endArray();
 
