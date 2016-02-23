@@ -88,6 +88,50 @@ void MainWindow::readSettings()
 {
     QSettings settings;
 
+    /*
+     * Set menu for heating systems
+     */
+
+    //Get the QToolButton
+    QToolButton *toolButton = static_cast<QToolButton*>(ui->mainToolBar->widgetForAction(ui->actionHeatingSystems));
+    toolButton->setPopupMode(QToolButton::InstantPopup);
+
+    //Construct a menu for this button
+    QMenu* menu = new QMenu(this);
+
+    QAction *actionNewHeatingSystem = menu->addAction("Créer une nouvelle chaufferie");
+
+    menu->addSection("Chaufferies existantes");
+
+    QActionGroup *heatingSystemsGroup = new QActionGroup(this);
+
+    QString lastHeatingSystem = settings.value("boilerRoom/lastHeatingSystem").toString();
+
+    int size = settings.beginReadArray("heatingSystems");
+    for (int i = 0 ; i < size ; ++i)
+    {
+        settings.setArrayIndex(i);
+
+        QString name = settings.value("name").toString();
+
+        QAction *heatingSystem = heatingSystemsGroup->addAction(name);
+        heatingSystem->setCheckable(true);
+
+        if (name == lastHeatingSystem)
+            heatingSystem->setChecked(true);
+
+    }
+    settings.endArray();
+
+    menu->addActions(heatingSystemsGroup->actions());
+
+    //Set the menu and button properties
+    toolButton->setMenu(menu);
+
+    /*
+     * Set properties for the selected heating system
+     */
+
     QString name = "<p align=\"center\"><span style=\"font-weight:600;\">";
     name += settings.value("boilerRoom/boilerRoomName", "Nom de la chaufferie").toString();
     name += "</span></p>";
