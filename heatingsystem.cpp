@@ -140,3 +140,8 @@ void HeatingSystem::load(QString fileName)
 
     file->close();
 }
+
+QString HeatingSystem::getName()
+{
+    return mName;
+}

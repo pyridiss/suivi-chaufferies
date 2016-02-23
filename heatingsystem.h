@@ -36,6 +36,7 @@ public:
 
 public:
     void load(QString fileName);
+    QString getName();
 
 signals:
 
