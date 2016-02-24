@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDate>
 
+typedef QList< QPair<QString, double> > SubstationsList;
+
 class HeatingSystem : public QObject
 {
     Q_OBJECT
@@ -36,19 +38,18 @@ public:
 
 public:
     void load(QString fileName);
-    QString getName();
 
 signals:
 
 public slots:
 
-private:
+public:
     QString mName;
 
     MainHeatSource mMainHeatSource;
     SecondHeatSource mSecondHeatSource;
 
-    QList<QString> mSubstations;
+    SubstationsList mSubstations;
 
     double mInvestment;
     double mSubsidies;
@@ -59,6 +60,7 @@ private:
     double mAnnualWoodConsumption;
     double mBoilerEfficiency;
     double mNetworkEfficiency;
+    bool mMainHeatMeter;
 
     bool mHeatSellActivated;
     bool mHeatSellElectricity;

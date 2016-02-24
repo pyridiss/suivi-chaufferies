@@ -66,8 +66,15 @@ void HeatingSystem::load(QString fileName)
             }
             if (xml.name() == "add_substation")
             {
+                double consumption = 0;
+                QXmlStreamAttributes xmlAttributes = xml.attributes();
+                foreach (QXmlStreamAttribute a, xmlAttributes)
+                {
+                    if (a.name() == "consumption")
+                        consumption = a.value().toDouble();
+                }
                 QString substation = xml.readElementText();
-                mSubstations.push_back(substation);
+                mSubstations.push_back(QPair<QString, double>(substation, consumption));
             }
             if (xml.name() == "economy")
             {
@@ -97,6 +104,8 @@ void HeatingSystem::load(QString fileName)
                         mBoilerEfficiency = a.value().toDouble();
                     if (a.name() == "networkEfficiency")
                         mNetworkEfficiency = a.value().toDouble();
+                    if (a.name() == "mainHeatMeter")
+                        mMainHeatMeter = a.value().toInt();
                 }
             }
             if (xml.name() == "heatSell")
@@ -139,9 +148,4 @@ void HeatingSystem::load(QString fileName)
     }
 
     file->close();
-}
-
-QString HeatingSystem::getName()
-{
-    return mName;
 }
