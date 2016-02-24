@@ -151,7 +151,7 @@ void MainWindow::changeCurrentHeatingSystem()
     mCurrentHeatingSystem = newHeatingSystem;
 
     QString name = "<p align=\"center\"><span style=\"font-weight:600;\">";
-    name += mHeatingSystems[mCurrentHeatingSystem]->getName();
+    name += mHeatingSystems[mCurrentHeatingSystem]->mName;
     name += "</span></p>";
 
     ui->labelBoilerRoomName->setText(name);
@@ -332,7 +332,7 @@ void MainWindow::updateEnergyConsumptionChart()
 
 void MainWindow::on_actionConfigureBoilerRoom_triggered()
 {
-    mConfigurationDialog->readSettings();
+    mConfigurationDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
     mConfigurationDialog->show();
 }
 

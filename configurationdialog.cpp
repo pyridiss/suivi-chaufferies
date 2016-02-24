@@ -1,5 +1,3 @@
-#include <QSettings>
-
 #include "delegates/doublespinboxdelegate.h"
 
 #include "configurationdialog.h"
@@ -15,11 +13,9 @@ ConfigurationDialog::ConfigurationDialog(QWidget *parent) :
     DoubleSpinBoxDelegate *delegateSubstationsConsumptions = new DoubleSpinBoxDelegate(this);
     delegateSubstationsConsumptions->setSuffix(" MWh");
     delegateSubstationsConsumptions->setMaximum(100000);
-    ui->tableWidget_SubstationsConsumptions->setItemDelegateForRow(1, delegateSubstationsConsumptions);
+    ui->editSubstations->setItemDelegateForColumn(1, delegateSubstationsConsumptions);
 
-    ui->tableWidget_SubstationsConsumptions->hideRow(0);
-
-    connect(ui->checkBox_HeatSell, SIGNAL(stateChanged(int)), this, SLOT(setHeatSell(int)));
+    connect(ui->editHeatSell_Activated, SIGNAL(stateChanged(int)), this, SLOT(setHeatSell(int)));
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -27,55 +23,55 @@ ConfigurationDialog::~ConfigurationDialog()
     delete ui;
 }
 
-void ConfigurationDialog::readSettings()
+void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
 {
-    QSettings settings;
+    mHeatingSystem = system;
 
-    ui->lineEdit_BoilerRoomName->setText(settings.value("boilerRoom/boilerRoomName", "").toString());
-    ui->comboBox_MainHeatSource->setCurrentIndex(settings.value("boilerRoom/mainHeatSource", 0).toInt());
-    ui->comboBox_SecondaryHeatSource->setCurrentIndex(settings.value("boilerRoom/secondaryHeatSource", 0).toInt());
-    ui->checkBox_MainHeatMeter->setChecked(settings.value("boilerRoom/mainHeatMeter", 0).toBool());
+    //Set the 'general' tab
+    ui->editHeatingSystemName->setText(system->mName);
+    ui->editMainHeatSource   ->setCurrentIndex(system->mMainHeatSource);
+    ui->editSecondHeatSource ->setCurrentIndex(system->mSecondHeatSource);
 
-    ui->listWidget_Substations->clear();
-    while (ui->tableWidget_SubstationsConsumptions->columnCount() > 0)
-        ui->tableWidget_SubstationsConsumptions->removeColumn(0);
-
-    int size = settings.beginReadArray("substations");
-    for (int i = 0 ; i < size ; ++i)
+    //Clear substations table
+    while (ui->editSubstations->rowCount() > 0)
     {
-        settings.setArrayIndex(i);
+        ui->editSubstations->removeRow(0);
+    }
 
-        QString name = settings.value("name").toString();
+    //Set the 'substations' tab
+    for(int i = 0 ; i < system->mSubstations.size() ; ++i)
+    {
+        const QPair<QString, double>& substation = system->mSubstations.at(i);
 
-        QListWidgetItem *newListItem = new QListWidgetItem(ui->listWidget_Substations);
-        newListItem->setText(name);
-        newListItem->setFlags(newListItem->flags () | Qt::ItemIsEditable);
+        ui->editSubstations->insertRow(i);
+
+        ui->editSubstations->setItem(i, 0, new QTableWidgetItem(substation.first));
 
         QTableWidgetItem *newTableItem = new QTableWidgetItem();
-        newTableItem->setData(Qt::EditRole, settings.value("consumption", 0).toDouble());
-        ui->tableWidget_SubstationsConsumptions->insertColumn(i);
-        ui->tableWidget_SubstationsConsumptions->setItem(0, i, new QTableWidgetItem(name));
-        ui->tableWidget_SubstationsConsumptions->setItem(1, i, newTableItem);
-        ui->tableWidget_SubstationsConsumptions->setHorizontalHeaderItem(i, new QTableWidgetItem(name));
+        newTableItem->setData(Qt::EditRole, substation.second);
+        ui->editSubstations->setItem(i, 1, newTableItem);
     }
-    settings.endArray();
 
-    ui->checkBox_HeatSell->setChecked(settings.value("heatSell/heatSell", false).toBool());
-    ui->comboBox_HeatSell_Electricity->setCurrentIndex(settings.value("heatSell/electricity", 0).toInt());
-    ui->comboBox_HeatSell_RoutineMaintenance->setCurrentIndex(settings.value("heatSell/routineMaintenance", 0).toInt());
-    ui->comboBox_HeatSell_MajorMaintenance->setCurrentIndex(settings.value("heatSell/majorMaintenance", 0).toInt());
-    ui->comboBox_HeatSell_LoanAmortization->setCurrentIndex(settings.value("heatSell/loanAmortization", 0).toInt());
-    ui->comboBox_HeatSell_LoanInterest->setCurrentIndex(settings.value("heatSell/loanInterest", 0).toInt());
+    //Set the 'heat sell' tab
+    ui->editHeatSell_Activated         ->setChecked(system->mHeatSellActivated);
+    ui->editHeatSell_Electricity       ->setChecked(system->mHeatSellElectricity);
+    ui->editHeatSell_RoutineMaintenance->setChecked(system->mHeatSellRoutineMaintenance);
+    ui->editHeatSell_MajorMaintenance  ->setChecked(system->mHeatSellMajorMaintenance);
+    ui->editHeatSell_LoanAmortization  ->setChecked(system->mHeatSellLoanAmortization);
+    ui->editHeatSell_LoanInterest      ->setChecked(system->mHeatSellLoanInterest);
 
-    ui->doubleSpinBox_Investment->setValue(settings.value("economy/investment", 0).toDouble());
-    ui->doubleSpinBox_Subsidies->setValue(settings.value("economy/subsidies", 0).toDouble());
-    ui->doubleSpinBox_Loan->setValue(settings.value("economy/loan", 0).toDouble());
-    ui->spinBox_LoanPeriod->setValue(settings.value("economy/loanPeriod", 0).toInt());
-    ui->doubleSpinBox_LoanRate->setValue(settings.value("economy/loanRate", 0).toDouble());
+    //Set the 'economic data' tab
+    ui->doubleSpinBox_Investment->setValue(system->mInvestment);
+    ui->doubleSpinBox_Subsidies ->setValue(system->mSubsidies);
+    ui->doubleSpinBox_Loan      ->setValue(system->mLoan);
+    ui->spinBox_LoanPeriod      ->setValue(system->mLoanPeriod);
+    ui->doubleSpinBox_LoanRate  ->setValue(system->mLoanRate);
 
-    ui->doubleSpinBox_WoodBoilerEfficiency->setValue(settings.value("technic/woodBoilerEfficiency", 0).toDouble());
-    ui->doubleSpinBox_HeatingNetworkEfficiency->setValue(settings.value("technic/heatingNetworkEfficiency", 0).toDouble());
-    ui->spinBox_AnnualWoodConsumption->setValue(settings.value("technic/annualWoodConsumption", 0).toInt());
+    //Set the 'technic data' tab
+    ui->editBoilerEfficiency     ->setValue(system->mBoilerEfficiency);
+    ui->editNetworkEfficiency    ->setValue(system->mNetworkEfficiency);
+    ui->editAnnualWoodConsumption->setValue(system->mAnnualWoodConsumption);
+    ui->editMainHeatMeter        ->setChecked(system->mMainHeatMeter);
 }
 
 void ConfigurationDialog::setHeatSell(int state)
@@ -85,61 +81,60 @@ void ConfigurationDialog::setHeatSell(int state)
 
 void ConfigurationDialog::on_pushButton_AddSubstation_clicked()
 {
-    QListWidgetItem *newListItem = new QListWidgetItem(ui->listWidget_Substations);
-    newListItem->setText("Nouvelle sous-station");
-    newListItem->setFlags(newListItem->flags () | Qt::ItemIsEditable);
+    int newRow = ui->editSubstations->rowCount();
+    ui->editSubstations->insertRow(newRow);
 
-    QTableWidgetItem *newTableItem = new QTableWidgetItem();
-    ui->tableWidget_SubstationsConsumptions->insertColumn(ui->tableWidget_SubstationsConsumptions->columnCount());
-    ui->tableWidget_SubstationsConsumptions->setItem(1, ui->tableWidget_SubstationsConsumptions->columnCount() - 1, newTableItem);
-
-    //TODO: When the name is edited, tableWidget_SubstationsConsumptions should be updated.
+    ui->editSubstations->setItem(newRow, 0, new QTableWidgetItem("Nouvelle sous-station"));
+    ui->editSubstations->setItem(newRow, 1, new QTableWidgetItem());
 }
 
 void ConfigurationDialog::on_pushButton_RemoveSubstation_clicked()
 {
     //TODO: Records should be removed from settings file.
-    //TODO: Substation should be delete from tableWidget_SubstationsConsumptions.
 
-    if (ui->listWidget_Substations->currentItem() != 0)
+    if (ui->editSubstations->currentItem() != 0)
     {
-        delete ui->listWidget_Substations->currentItem();
+        ui->editSubstations->removeRow(ui->editSubstations->currentRow());
     }
 }
 
 void ConfigurationDialog::on_buttonBox_accepted()
 {
-    QSettings settings;
+    /*
+     * Values from the ui will be saved in the heating system
+     */
 
-    settings.setValue("boilerRoom/boilerRoomName",      ui->lineEdit_BoilerRoomName->text());
-    settings.setValue("boilerRoom/mainHeatSource",      ui->comboBox_MainHeatSource->currentIndex());
-    settings.setValue("boilerRoom/secondaryHeatSource", ui->comboBox_SecondaryHeatSource->currentIndex());
-    settings.setValue("boilerRoom/mainHeatMeter",       ui->checkBox_MainHeatMeter->isChecked());
+    mHeatingSystem->mName             = ui->editHeatingSystemName->text();
+    mHeatingSystem->mMainHeatSource   = (HeatingSystem::MainHeatSource)ui->editMainHeatSource->currentIndex();
+    mHeatingSystem->mSecondHeatSource = (HeatingSystem::SecondHeatSource)ui->editSecondHeatSource->currentIndex();
 
-    settings.beginWriteArray("substations");
-    for (int i = 0; i < ui->listWidget_Substations->count(); ++i) {
-        settings.setArrayIndex(i);
-        settings.setValue("name", ui->listWidget_Substations->item(i)->text());
-        settings.setValue("consumption", ui->tableWidget_SubstationsConsumptions->item(1, i)->data(Qt::EditRole).toDouble());
+    mHeatingSystem->mSubstations.clear();
+
+    for (int i = 0 ; i < ui->editSubstations->rowCount() ; ++i)
+    {
+        QString name       = ui->editSubstations->item(i, 0)->text();
+        double consumption = ui->editSubstations->item(i, 1)->data(Qt::EditRole).toDouble();
+
+        mHeatingSystem->mSubstations.push_back(QPair<QString, double>(name, consumption));
     }
-    settings.endArray();
 
-    settings.setValue("heatSell/heatSell",           ui->checkBox_HeatSell->isChecked());
-    settings.setValue("heatSell/electricity",        ui->comboBox_HeatSell_Electricity->currentIndex());
-    settings.setValue("heatSell/routineMaintenance", ui->comboBox_HeatSell_RoutineMaintenance->currentIndex());
-    settings.setValue("heatSell/majorMaintenance",   ui->comboBox_HeatSell_MajorMaintenance->currentIndex());
-    settings.setValue("heatSell/loanAmortization",   ui->comboBox_HeatSell_LoanAmortization->currentIndex());
-    settings.setValue("heatSell/loanInterest",       ui->comboBox_HeatSell_LoanInterest->currentIndex());
+    mHeatingSystem->mHeatSellActivated          = ui->editHeatSell_Activated->isChecked();
+    mHeatingSystem->mHeatSellElectricity        = ui->editHeatSell_Electricity->isChecked();
+    mHeatingSystem->mHeatSellRoutineMaintenance = ui->editHeatSell_RoutineMaintenance->isChecked();
+    mHeatingSystem->mHeatSellMajorMaintenance   = ui->editHeatSell_MajorMaintenance->isChecked();
+    mHeatingSystem->mHeatSellLoanAmortization   = ui->editHeatSell_LoanAmortization->isChecked();
+    mHeatingSystem->mHeatSellLoanInterest       = ui->editHeatSell_LoanInterest->isChecked();
 
-    settings.setValue("economy/investment", ui->doubleSpinBox_Investment->value());
-    settings.setValue("economy/subsidies",  ui->doubleSpinBox_Subsidies->value());
-    settings.setValue("economy/loan",       ui->doubleSpinBox_Loan->value());
-    settings.setValue("economy/loanPeriod", ui->spinBox_LoanPeriod->value());
-    settings.setValue("economy/loanRate",   ui->doubleSpinBox_LoanRate->value());
+    mHeatingSystem->mInvestment = ui->doubleSpinBox_Investment->value();
+    mHeatingSystem->mSubsidies  = ui->doubleSpinBox_Subsidies->value();
+    mHeatingSystem->mLoan       = ui->doubleSpinBox_Loan->value();
+    mHeatingSystem->mLoanPeriod = ui->spinBox_LoanPeriod->value();
+    mHeatingSystem->mLoanRate   = ui->doubleSpinBox_LoanRate->value();
 
-    settings.setValue("technic/woodBoilerEfficiency",     ui->doubleSpinBox_WoodBoilerEfficiency->value());
-    settings.setValue("technic/heatingNetworkEfficiency", ui->doubleSpinBox_HeatingNetworkEfficiency->value());
-    settings.setValue("technic/annualWoodConsumption",    ui->spinBox_AnnualWoodConsumption->value());
+    mHeatingSystem->mBoilerEfficiency      = ui->editBoilerEfficiency->value();
+    mHeatingSystem->mNetworkEfficiency     = ui->editNetworkEfficiency->value();
+    mHeatingSystem->mAnnualWoodConsumption = ui->editAnnualWoodConsumption->value();
+    mHeatingSystem->mMainHeatMeter         = ui->editMainHeatMeter->isChecked();
 
     emit settingsChanged();
 }

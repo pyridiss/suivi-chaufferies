@@ -2,6 +2,7 @@
 #define CONFIGURATIONDIALOG_H
 
 #include <QDialog>
+#include <heatingsystem.h>
 
 namespace Ui {
 class ConfigurationDialog;
@@ -16,10 +17,11 @@ public:
     ~ConfigurationDialog();
 
 public:
-    void readSettings();
+    void setHeatingSystem(HeatingSystem *system);
 
 private:
     Ui::ConfigurationDialog *ui;
+    HeatingSystem *mHeatingSystem;
 
 public slots:
     void setHeatSell(int state);
