@@ -56,21 +56,6 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <item>
-          <property name="text">
-           <string>Bois déchiqueté</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Granulés de bois</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Géothermie</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="2" column="0">
@@ -88,36 +73,6 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <item>
-          <property name="text">
-           <string>Aucune</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Appoint / Secours au gaz naturel</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Appoint / Secours au fioul</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Appoint / Secours au propane</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Appoint / Secours électrique</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Autre</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>

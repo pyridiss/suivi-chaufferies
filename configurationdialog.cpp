@@ -9,6 +9,17 @@ ConfigurationDialog::ConfigurationDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //setup fuels selections
+    ui->editMainHeatSource->addItem("Bois déchiqueté", HeatingSystem::WoodChips);
+    ui->editMainHeatSource->addItem("Granulés",        HeatingSystem::Pellets);
+    ui->editMainHeatSource->addItem("Géothermie",      HeatingSystem::GeothermalPower);
+    ui->editSecondHeatSource->addItem("Aucune",                           HeatingSystem::NoFuel);
+    ui->editSecondHeatSource->addItem("Appoint / Secours au gaz naturel", HeatingSystem::NaturalGas);
+    ui->editSecondHeatSource->addItem("Appoint / Secours au fioul",       HeatingSystem::FuelOil);
+    ui->editSecondHeatSource->addItem("Appoint / Secours au propane",     HeatingSystem::Propane);
+    ui->editSecondHeatSource->addItem("Appoint / Secours électrique",     HeatingSystem::Electricity);
+    ui->editSecondHeatSource->addItem("Autre",                            HeatingSystem::Other);
+
     //Substations consumptions will be edited with a DoubleSpinBox with extra parameters
     DoubleSpinBoxDelegate *delegateSubstationsConsumptions = new DoubleSpinBoxDelegate(this);
     delegateSubstationsConsumptions->setSuffix(" MWh");
@@ -29,8 +40,16 @@ void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
 
     //Set the 'general' tab
     ui->editHeatingSystemName->setText(system->mName);
-    ui->editMainHeatSource   ->setCurrentIndex(system->mMainHeatSource);
-    ui->editSecondHeatSource ->setCurrentIndex(system->mSecondHeatSource);
+    for (int i = 0 ; i < ui->editMainHeatSource->count() ; ++i)
+    {
+        if (ui->editMainHeatSource->itemData(i) == system->mMainHeatSource)
+            ui->editMainHeatSource->setCurrentIndex(i);
+    }
+    for (int i = 0 ; i < ui->editSecondHeatSource->count() ; ++i)
+    {
+        if (ui->editSecondHeatSource->itemData(i) == system->mSecondHeatSource)
+            ui->editSecondHeatSource->setCurrentIndex(i);
+    }
 
     //Clear substations table
     while (ui->editSubstations->rowCount() > 0)
@@ -105,8 +124,8 @@ void ConfigurationDialog::on_buttonBox_accepted()
      */
 
     mHeatingSystem->mName             = ui->editHeatingSystemName->text();
-    mHeatingSystem->mMainHeatSource   = (HeatingSystem::MainHeatSource)ui->editMainHeatSource->currentIndex();
-    mHeatingSystem->mSecondHeatSource = (HeatingSystem::SecondHeatSource)ui->editSecondHeatSource->currentIndex();
+    mHeatingSystem->mMainHeatSource   = (HeatingSystem::Fuel)ui->editMainHeatSource->currentData().toInt();
+    mHeatingSystem->mSecondHeatSource = (HeatingSystem::Fuel)ui->editSecondHeatSource->currentData().toInt();
 
     mHeatingSystem->mSubstations.clear();
 
