@@ -2,6 +2,7 @@
 #define ADDFUELDELIVERYDIALOG_H
 
 #include <QDialog>
+#include <heatingsystem.h>
 
 namespace Ui {
 class AddFuelDeliveryDialog;
@@ -20,9 +21,10 @@ public:
 
 private:
     Ui::AddFuelDeliveryDialog *ui;
+    HeatingSystem* mHeatingSystem;
 
 public slots:
-    void readSettings();
+    void setHeatingSystem(HeatingSystem *system);
     void changeSelectionToWood();
     void changeSelectionToSecondaryFuel();
     void changeSelectionToElectricity();

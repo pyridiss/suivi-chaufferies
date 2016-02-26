@@ -37,62 +37,54 @@ void AddFuelDeliveryDialog::resetValues()
     ui->spinBox_Electricity->setValue(0);
 }
 
-void AddFuelDeliveryDialog::readSettings()
+void AddFuelDeliveryDialog::setHeatingSystem(HeatingSystem *system)
 {
-    QSettings settings;
+    mHeatingSystem = system;
 
-    //1. Wood chips
-    if (settings.value("boilerRoom/mainHeatSource").toInt() == 0)
-    {
-        ui->groupBox_Wood->show();
-        ui->radioButton_Wood->show();
-    }
-
-    //2. Pellets
-    if (settings.value("boilerRoom/mainHeatSource").toInt() == 1)
-    {
-        ui->groupBox_Wood->show();
-        ui->radioButton_Wood->show();
-    }
-
-    //3. Geothermal power
-    if (settings.value("boilerRoom/mainHeatSource").toInt() == 2)
+    if (system->mMainHeatSource == HeatingSystem::GeothermalPower)
     {
         ui->groupBox_Wood->hide();
         ui->radioButton_Wood->hide();
     }
+    else //WoodChips or Pellets
+    {
+        ui->groupBox_Wood->show();
+        ui->radioButton_Wood->show();
+    }
 
-    //Secondary fuel
+    //Second fuel
     ui->groupBox_SecondaryFuel->hide();
     ui->groupBox_NaturalGas->hide();
     ui->radioButton_SecondaryFuel->hide();
 
-    switch (settings.value("boilerRoom/secondaryHeatSource").toInt())
+    switch (system->mSecondHeatSource)
     {
-        case 0: //None
+        case HeatingSystem::NoFuel:
             break;
-        case 1: //Natural Gas
+        case HeatingSystem::NaturalGas:
             ui->groupBox_NaturalGas->show();
             ui->radioButton_SecondaryFuel->show();
             ui->radioButton_SecondaryFuel->setText("Gaz naturel");
             break;
-        case 2: //Fuel oil
+        case HeatingSystem::FuelOil:
             ui->groupBox_SecondaryFuel->show();
             ui->groupBox_SecondaryFuel->setTitle("Livraison de fioul");
             ui->radioButton_SecondaryFuel->show();
             ui->radioButton_SecondaryFuel->setText("Fioul");
             ui->spinBox_SecondaryFuel->setSuffix(" litres");
             break;
-        case 3: //Propane
+        case HeatingSystem::Propane:
             ui->groupBox_SecondaryFuel->show();
             ui->groupBox_SecondaryFuel->setTitle("Livraison de propane");
             ui->radioButton_SecondaryFuel->show();
             ui->radioButton_SecondaryFuel->setText("Propane");
             ui->spinBox_SecondaryFuel->setSuffix(" kilogrammes");
             break;
-        case 4: //Electricity
+        case HeatingSystem::Electricity:
             break;
-        case 5: //Other
+        case HeatingSystem::Other:
+            break;
+        default:
             break;
     }
 
