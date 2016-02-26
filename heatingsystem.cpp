@@ -59,9 +59,9 @@ void HeatingSystem::load(QString fileName)
                 foreach (QXmlStreamAttribute a, xmlAttributes)
                 {
                     if (a.name() == "first")
-                        mMainHeatSource = (HeatingSystem::MainHeatSource) a.value().toInt();
+                        mMainHeatSource = (HeatingSystem::Fuel) a.value().toInt();
                     if (a.name() == "second")
-                        mSecondHeatSource = (HeatingSystem::SecondHeatSource) a.value().toInt();
+                        mSecondHeatSource = (HeatingSystem::Fuel) a.value().toInt(); //TODO: Error here!
                 }
             }
             if (xml.name() == "add_substation")
@@ -134,7 +134,7 @@ void HeatingSystem::load(QString fileName)
                 QXmlStreamAttributes xmlAttributes = xml.attributes();
                 newRecord.mSubstation = xmlAttributes.value("", "substation").toString();
                 newRecord.mDate = QDate::fromString(xmlAttributes.value("", "date").toString(), "yyyy-MM-dd");
-                newRecord.value = xml.readElementText().toDouble();
+                newRecord.mValue = xml.readElementText().toDouble();
 
                 mRecords.push_back(newRecord);
             }

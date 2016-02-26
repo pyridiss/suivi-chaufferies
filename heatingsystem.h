@@ -11,26 +11,54 @@ class HeatingSystem : public QObject
     Q_OBJECT
 
 public:
-    enum MainHeatSource
+    enum Fuel
     {
+        NoFuel,
         WoodChips,
         Pellets,
-        GeothermalPower
-    };
-    enum SecondHeatSource
-    {
-        NoSecondHeatSource,
+        GeothermalPower,
         NaturalGas,
         FuelOil,
         Propane,
         Electricity,
         Other
     };
+    Q_ENUM(Fuel)
+
     struct Record
     {
         QString mSubstation;
         QDate mDate;
-        double value;
+        double mValue;
+
+        Record()
+        {
+        }
+
+        Record(QString substation, QDate date, double value)
+        {
+            mSubstation = substation;
+            mDate = date;
+            mValue = value;
+        }
+    };
+
+    struct FuelDelivery
+    {
+        Fuel mFuel;
+        QDate mDate;
+        double mValue;
+
+        FuelDelivery()
+        {
+        }
+
+        FuelDelivery(Fuel fuel, QDate date, double value)
+        {
+            mFuel = fuel;
+            mDate = date;
+            mValue = value;
+        }
     };
 
 public:
@@ -46,8 +74,8 @@ public slots:
 public:
     QString mName;
 
-    MainHeatSource mMainHeatSource;
-    SecondHeatSource mSecondHeatSource;
+    Fuel mMainHeatSource;
+    Fuel mSecondHeatSource;
 
     SubstationsList mSubstations;
 
@@ -70,6 +98,7 @@ public:
     bool mHeatSellLoanInterest;
 
     QList<Record> mRecords;
+    QList<FuelDelivery> mFuelDeliveries;
 };
 
 #endif // HEATINGSYSTEM_H
