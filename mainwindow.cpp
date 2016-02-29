@@ -169,24 +169,21 @@ void MainWindow::updateEnergyConsumptionChart()
     while (ui->tableWidget_chartResults->rowCount() > 0)
         ui->tableWidget_chartResults->removeRow(0);
 
-    int size = settings.beginReadArray("substations");
-    for (int i = 0 ; i < size ; ++i)
+    for (QPair<QString, double> &substation : mHeatingSystems[mCurrentHeatingSystem]->mSubstations)
     {
-        settings.setArrayIndex(i);
-        theoreticAnnualConsumption += settings.value("consumption", 0).toDouble();
+        theoreticAnnualConsumption += substation.second;
 
         //ui->tableWidget_chartResults will be filled with consumptions. These values will be used later.
-        QString name = settings.value("name", 0).toString();
+        int i = ui->tableWidget_chartResults->rowCount();
         QTableWidgetItem *newItem = new QTableWidgetItem();
-        newItem->setData(Qt::EditRole, settings.value("consumption", 0).toDouble());
+        newItem->setData(Qt::EditRole, substation.second);
         newItem->setFlags(Qt::NoItemFlags);
         newItem->setTextAlignment(Qt::AlignCenter);
         newItem->setTextColor(Qt::black);
         ui->tableWidget_chartResults->insertRow(i);
         ui->tableWidget_chartResults->setItem(i, 0, newItem);
-        ui->tableWidget_chartResults->setVerticalHeaderItem(i, new QTableWidgetItem(name));
+        ui->tableWidget_chartResults->setVerticalHeaderItem(i, new QTableWidgetItem(substation.first));
     }
-    settings.endArray();
 
     //1. Graph 0: 'real sum of meters in substations'.
     QMap<QDate, int> meterRecords;
