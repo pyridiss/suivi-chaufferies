@@ -1,4 +1,3 @@
-#include <QSettings>
 #include <QDate>
 #include <QPushButton>
 
@@ -136,12 +135,7 @@ void ShowFuelDeliveriesDialog::resetValues()
 
 void ShowFuelDeliveriesDialog::updateSums()
 {
-    QSettings settings;
-    int mainFuel      = settings.value("boilerRoom/mainHeatSource").toInt();
-    int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
-
-    //1. Wood
-    if (mainFuel == 0 || mainFuel == 1)
+    if (mHeatingSystem->mMainHeatSource == HeatingSystem::WoodChips || mHeatingSystem->mMainHeatSource == HeatingSystem::Pellets)
     {
         for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
         {
@@ -166,15 +160,14 @@ void ShowFuelDeliveriesDialog::updateSums()
         }
     }
 
-    //2. Secondary fuel
-    if (secondaryFuel == 2 || secondaryFuel == 3)
+    if (mHeatingSystem->mSecondHeatSource == HeatingSystem::FuelOil || mHeatingSystem->mSecondHeatSource == HeatingSystem::Propane)
     {
         for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
         {
             double quantity = ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole).toDouble();
             double bill     = ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole).toDouble();
 
-            double lhv    = (secondaryFuel == 2) ? 9.96 : 12.9;
+            double lhv    = (mHeatingSystem->mSecondHeatSource == HeatingSystem::FuelOil) ? 9.96 : 12.9;
             double energy = quantity * lhv / 1000;
 
             if (energy == 0) energy = 1;
@@ -185,45 +178,38 @@ void ShowFuelDeliveriesDialog::updateSums()
     }
 }
 
-void ShowFuelDeliveriesDialog::readSettings()
+void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
 {
-    QSettings settings;
+    mHeatingSystem = system;
 
-    int mainFuel      = settings.value("boilerRoom/mainHeatSource").toInt();
-    int secondaryFuel = settings.value("boilerRoom/secondaryHeatSource").toInt();
+    /*
+     * Wood (wood chips and pellets)
+     */
 
-    //1. Wood
-    if (mainFuel == 0 || mainFuel == 1)
+    if (system->mMainHeatSource == HeatingSystem::WoodChips || system->mMainHeatSource == HeatingSystem::Pellets)
     {
         ui->groupBox_Wood->show();
 
-        int woodDeliveriesNumber = settings.beginReadArray("woodDeliveries");
-        for (int i = 0 ; i < woodDeliveriesNumber ; ++i)
+        foreach (const HeatingSystem::FuelDelivery &delivery, system->mWoodDeliveries)
         {
-            settings.setArrayIndex(i);
             ui->tableWidget_Wood->insertRow(0);
-            QDate date = settings.value("date").toDate();
-            double quantity = settings.value("quantity").toDouble();
-            int unit = settings.value("unit").toInt();
-            double moisture = settings.value("moisture").toDouble();
-            double bill = settings.value("bill").toDouble();
 
             //Date
-            ui->tableWidget_Wood->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+            ui->tableWidget_Wood->setItem(0, 0, new QTableWidgetItem(delivery.mDate.toString("yyyy-MM-dd")));
 
             //Quantity
             QTableWidgetItem *itemQuantity = new QTableWidgetItem;
-            itemQuantity->setData(Qt::EditRole, quantity);
+            itemQuantity->setData(Qt::EditRole, delivery.mValue);
             itemQuantity->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget_Wood->setItem(0, 1, itemQuantity);
 
             //Unit
-            QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(unit));
+            QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(delivery.mWoodUnit));
             ui->tableWidget_Wood->setItem(0, 2, itemUnit);
 
             //Moisture
             QTableWidgetItem *itemMoisture = new QTableWidgetItem;
-            itemMoisture->setData(Qt::EditRole, moisture);
+            itemMoisture->setData(Qt::EditRole, delivery.mWoodMoisture);
             ui->tableWidget_Wood->setItem(0, 3, itemMoisture);
 
             //Energy
@@ -233,7 +219,7 @@ void ShowFuelDeliveriesDialog::readSettings()
 
             //Bill
             QTableWidgetItem *itemBill = new QTableWidgetItem;
-            itemBill->setData(Qt::EditRole, bill);
+            itemBill->setData(Qt::EditRole, delivery.mBill);
             ui->tableWidget_Wood->setItem(0, 5, itemBill);
 
             //Price per MWh
@@ -244,25 +230,23 @@ void ShowFuelDeliveriesDialog::readSettings()
             //Delete button
             QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
             itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
-            itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+            itemDelete->setProperty("record", delivery.getHash());
             ui->tableWidget_Wood->setCellWidget(0, 7, itemDelete);
             connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteWoodDelivery()));
-
-            //Sort deliveries
-            ui->tableWidget_Wood->sortItems(0);
-
-            //Copy dates in vertical header
-            QStringList headers;
-            for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
-            {
-                QString q = ui->tableWidget_Wood->item(i, 0)->text();
-                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
-                headers.push_back(q);
-            }
-            ui->tableWidget_Wood->setVerticalHeaderLabels(headers);
         }
 
-        settings.endArray();
+        //Sort deliveries
+        ui->tableWidget_Wood->sortItems(0);
+
+        //Copy dates in vertical header
+        QStringList headers;
+        for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+        {
+            QString q = ui->tableWidget_Wood->item(i, 0)->text();
+            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
+            headers.push_back(q);
+        }
+        ui->tableWidget_Wood->setVerticalHeaderLabels(headers);
     }
     else
     {
@@ -270,32 +254,30 @@ void ShowFuelDeliveriesDialog::readSettings()
         resize(size().width(), layout()->minimumSize().height());
     }
 
-    //2. Secondary fuel
-    if (secondaryFuel == 2 || secondaryFuel == 3) //2 is fuel oil, 3 is propane
+    /*
+     * Oil fuel and propane
+     */
+
+    if (system->mSecondHeatSource == HeatingSystem::FuelOil || system->mSecondHeatSource == HeatingSystem::Propane)
     {
         ui->groupBox_SecondaryFuel->show();
 
         //Delegate quantity column to show a suffix
         DoubleSpinBoxDelegate *delegateQuantity_SecondaryFuel = new DoubleSpinBoxDelegate(this);
-        delegateQuantity_SecondaryFuel->setSuffix((secondaryFuel == 2) ? " litres" : " kg");
+        delegateQuantity_SecondaryFuel->setSuffix((system->mSecondHeatSource == HeatingSystem::FuelOil) ? " litres" : " kg");
         delegateQuantity_SecondaryFuel->setPrecision(4);
         ui->tableWidget_SecondaryFuel->setItemDelegateForColumn(1, delegateQuantity_SecondaryFuel);
 
-        int secondaryFuelDeliviriesNumber = settings.beginReadArray("secondaryFuelDeliveries");
-        for (int i = 0 ; i < secondaryFuelDeliviriesNumber ; ++i)
+        foreach (const HeatingSystem::FuelDelivery &delivery, system->mFossilFuelDeliveries)
         {
-            settings.setArrayIndex(i);
             ui->tableWidget_SecondaryFuel->insertRow(0);
-            QDate date = settings.value("date").toDate();
-            double quantity = settings.value("quantity").toDouble();
-            double bill = settings.value("bill").toDouble();
 
             //Date
-            ui->tableWidget_SecondaryFuel->setItem(0, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+            ui->tableWidget_SecondaryFuel->setItem(0, 0, new QTableWidgetItem(delivery.mDate.toString("yyyy-MM-dd")));
 
             //Quantity
             QTableWidgetItem *itemQuantity = new QTableWidgetItem;
-            itemQuantity->setData(Qt::EditRole, quantity);
+            itemQuantity->setData(Qt::EditRole, delivery.mValue);
             itemQuantity->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget_SecondaryFuel->setItem(0, 1, itemQuantity);
 
@@ -306,7 +288,7 @@ void ShowFuelDeliveriesDialog::readSettings()
 
             //Bill
             QTableWidgetItem *itemBill = new QTableWidgetItem;
-            itemBill->setData(Qt::EditRole, bill);
+            itemBill->setData(Qt::EditRole, delivery.mBill);
             ui->tableWidget_SecondaryFuel->setItem(0, 3, itemBill);
 
             //Price per MWh
@@ -317,42 +299,40 @@ void ShowFuelDeliveriesDialog::readSettings()
             //Delete button
             QPushButton* itemDelete = new QPushButton(ui->tableWidget_Wood);
             itemDelete->setIcon(QIcon::fromTheme("edit-delete"));
-            itemDelete->setProperty("record", date.toString("yyyy-MM-dd"));
+            itemDelete->setProperty("record", delivery.getHash());
             ui->tableWidget_SecondaryFuel->setCellWidget(0, 5, itemDelete);
             connect(itemDelete, SIGNAL(clicked(bool)), this, SLOT(deleteSecondaryFuelDelivery()));
-
-            //Sort deliveries
-            ui->tableWidget_SecondaryFuel->sortItems(0);
-
-            //Copy dates in vertical header
-            QStringList headers;
-            for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
-            {
-                QString q = ui->tableWidget_SecondaryFuel->item(i, 0)->text();
-                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
-                headers.push_back(q);
-            }
-            ui->tableWidget_SecondaryFuel->setVerticalHeaderLabels(headers);
         }
 
-        settings.endArray();
+        //Sort deliveries
+        ui->tableWidget_SecondaryFuel->sortItems(0);
+
+        //Copy dates in vertical header
+        QStringList headers;
+        for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+        {
+            QString q = ui->tableWidget_SecondaryFuel->item(i, 0)->text();
+            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd MMMM yyyy");
+            headers.push_back(q);
+        }
+        ui->tableWidget_SecondaryFuel->setVerticalHeaderLabels(headers);
     }
     else // No secondary fuel, or natural gas, or elecrticity
     {
         ui->groupBox_SecondaryFuel->hide();
     }
 
-    //3. Natural gas
-    if (secondaryFuel == 1)
+    /*
+     * Natural gas
+     */
+
+    if (system->mSecondHeatSource == HeatingSystem::NaturalGas)
     {
         ui->groupBox_NaturalGas->show();
 
-        int naturalGasIndexesNumber = settings.beginReadArray("naturalGasIndex");
-        for (int i = 0 ; i < naturalGasIndexesNumber ; ++i)
+        foreach (const HeatingSystem::FuelIndex &index, system->mNaturalGasIndexes)
         {
-            settings.setArrayIndex(i);
-            QString date = settings.value("date").toDate().toString("yyyy-MM-dd");
-            int index = settings.value("index").toInt();
+            QString date = index.mDate.toString("yyyy-MM-dd");
 
             //Find the best column to add the new value
             int column = 0;
@@ -369,34 +349,32 @@ void ShowFuelDeliveriesDialog::readSettings()
 
             //Index
             QTableWidgetItem *itemIndex = new QTableWidgetItem;
-            itemIndex->setData(Qt::EditRole, index);
+            itemIndex->setData(Qt::EditRole, index.mIndex);
             ui->tableWidget_NaturalGas->setItem(1, column, itemIndex);
-
-            //Copy dates in horizontal header
-            QStringList headers;
-            for (int i = 0 ; i < ui->tableWidget_NaturalGas->columnCount() ; ++i)
-            {
-                QString q = ui->tableWidget_NaturalGas->item(0, i)->text();
-                q = QDate::fromString(q, "yyyy-MM-dd").toString("dd/MM/yyyy");
-                headers.push_back(q);
-            }
-            ui->tableWidget_NaturalGas->setHorizontalHeaderLabels(headers);
         }
 
-        settings.endArray();
+        //Copy dates in horizontal header
+        QStringList headers;
+        for (int i = 0 ; i < ui->tableWidget_NaturalGas->columnCount() ; ++i)
+        {
+            QString q = ui->tableWidget_NaturalGas->item(0, i)->text();
+            q = QDate::fromString(q, "yyyy-MM-dd").toString("dd/MM/yyyy");
+            headers.push_back(q);
+        }
+        ui->tableWidget_NaturalGas->setHorizontalHeaderLabels(headers);
     }
     else
     {
         ui->groupBox_NaturalGas->hide();
     }
 
-    //4. Electricity
-    int electricityIndexesNumber = settings.beginReadArray("electricityIndex");
-    for (int i = 0 ; i < electricityIndexesNumber ; ++i)
+    /*
+     * Electricity
+     */
+
+    foreach (const HeatingSystem::FuelIndex &index, system->mElectricityIndexes)
     {
-        settings.setArrayIndex(i);
-        QString date = settings.value("date").toDate().toString("yyyy-MM-dd");
-        int index = settings.value("index").toInt();
+        QString date = index.mDate.toString("yyyy-MM-dd");
 
         //Find the best column to add the new value
         int column = 0;
@@ -413,7 +391,7 @@ void ShowFuelDeliveriesDialog::readSettings()
 
         //Index
         QTableWidgetItem *itemIndex = new QTableWidgetItem;
-        itemIndex->setData(Qt::EditRole, index);
+        itemIndex->setData(Qt::EditRole, index.mIndex);
         ui->tableWidget_Electricity->setItem(1, column, itemIndex);
 
         //Copy dates in horizontal header
@@ -426,8 +404,6 @@ void ShowFuelDeliveriesDialog::readSettings()
         }
         ui->tableWidget_Electricity->setHorizontalHeaderLabels(headers);
     }
-
-    settings.endArray();
 
     updateSums();
 
@@ -444,38 +420,30 @@ void ShowFuelDeliveriesDialog::recordChanged_Wood(int x, int y)
     QTableWidgetItem* item = ui->tableWidget_Wood->item(x, y);
     QTableWidgetItem* itemDate = ui->tableWidget_Wood->item(x, 0);
 
-    QSettings settings;
-
     //2. We enter the records for the changed substation.
-    int size = settings.beginReadArray("woodDeliveries");
-    for (int i = 0 ; i < size ; ++i)
+    for (HeatingSystem::FuelDelivery &delivery : mHeatingSystem->mWoodDeliveries)
     {
-        settings.setArrayIndex(i);
         //For each saved record, we check if the date is the same as the modified index.
-        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        if (delivery.mDate.toString("yyyy-MM-dd") == itemDate->text())
         {
             //Update value
             switch (y)
             {
                 case 1: //Quantity
-                    settings.setValue("quantity", item->data(Qt::EditRole));
+                    delivery.mValue = item->data(Qt::EditRole).toDouble();
                     break;
                 case 2: //Unit
-                    settings.setValue("unit", item->data(Qt::EditRole));
+                    delivery.mWoodUnit = item->data(Qt::EditRole).toInt();
                     break;
                 case 3: //Moisture
-                    settings.setValue("moisture", item->data(Qt::EditRole));
+                    delivery.mWoodMoisture = item->data(Qt::EditRole).toDouble();
                     break;
                 case 5: //Bill
-                    settings.setValue("bill", item->data(Qt::EditRole));
+                    delivery.mBill = item->data(Qt::EditRole).toDouble();
                     break;
             }
         }
     }
-
-    settings.endArray();
-
-    //3. Update sums
 
     emit settingsChanged();
 }
@@ -486,30 +454,24 @@ void ShowFuelDeliveriesDialog::recordChanged_SecondaryFuel(int x, int y)
     QTableWidgetItem* item = ui->tableWidget_SecondaryFuel->item(x, y);
     QTableWidgetItem* itemDate = ui->tableWidget_SecondaryFuel->item(x, 0);
 
-    QSettings settings;
-
     //2. We enter the records for the changed substation.
-    int size = settings.beginReadArray("secondaryFuelDeliveries");
-    for (int i = 0 ; i < size ; ++i)
+    for (HeatingSystem::FuelDelivery &delivery : mHeatingSystem->mFossilFuelDeliveries)
     {
-        settings.setArrayIndex(i);
         //For each saved record, we check if the date is the same as the modified index.
-        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        if (delivery.mDate.toString("yyyy-MM-dd") == itemDate->text())
         {
             //Update value
             switch (y)
             {
                 case 1: //Quantity
-                    settings.setValue("quantity", item->data(Qt::EditRole));
+                    delivery.mValue = item->data(Qt::EditRole).toDouble();
                     break;
                 case 3: //Bill
-                    settings.setValue("bill", item->data(Qt::EditRole));
+                    delivery.mBill = item->data(Qt::EditRole).toDouble();
                     break;
             }
         }
     }
-
-    settings.endArray();
 
     emit settingsChanged();
 }
@@ -520,22 +482,16 @@ void ShowFuelDeliveriesDialog::recordChanged_NaturalGas(int x, int y)
     QTableWidgetItem* item = ui->tableWidget_NaturalGas->item(x, y);
     QTableWidgetItem* itemDate = ui->tableWidget_NaturalGas->item(0, y);
 
-    QSettings settings;
-
     //2. We enter the records for the changed substation.
-    int size = settings.beginReadArray("naturalGasIndex");
-    for (int i = 0 ; i < size ; ++i)
+    for (HeatingSystem::FuelIndex &index : mHeatingSystem->mNaturalGasIndexes)
     {
-        settings.setArrayIndex(i);
         //For each saved record, we check if the date is the same as the modified index.
-        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        if (index.mDate.toString("yyyy-MM-dd") == itemDate->text())
         {
             //Update value
-            settings.setValue("index", item->data(Qt::EditRole));
+            index.mIndex = item->data(Qt::EditRole).toInt();
         }
     }
-
-    settings.endArray();
 
     emit settingsChanged();
 }
@@ -546,57 +502,45 @@ void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
     QTableWidgetItem* item = ui->tableWidget_Electricity->item(x, y);
     QTableWidgetItem* itemDate = ui->tableWidget_Electricity->item(0, y);
 
-    QSettings settings;
-
     //2. We enter the records for the changed substation.
-    int size = settings.beginReadArray("electricityIndex");
-    for (int i = 0 ; i < size ; ++i)
+    for (HeatingSystem::FuelIndex &index : mHeatingSystem->mElectricityIndexes)
     {
-        settings.setArrayIndex(i);
         //For each saved record, we check if the date is the same as the modified index.
-        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        if (index.mDate.toString("yyyy-MM-dd") == itemDate->text())
         {
             //Update value
-            settings.setValue("index", item->data(Qt::EditRole));
+            index.mIndex = item->data(Qt::EditRole).toInt();
         }
     }
-
-    settings.endArray();
 
     emit settingsChanged();
 }
 
 void ShowFuelDeliveriesDialog::deleteWoodDelivery()
 {
-    //1. The corresponding date has been saved in the properties of the sender.
-    QString date = sender()->property("record").toString();
+    //The corresponding date has been saved in the properties of the sender.
+    QString hash = sender()->property("record").toString();
+    QString date; //TODO: Remove this workaround
 
-    QSettings settings;
-
-    //2. QSettings has no good function to remove one entry from arrays; we will write a new array from ui->tableWidget_Wood
-    settings.remove("woodDeliveries");
-    settings.beginWriteArray("woodDeliveries");
-    int index = 0;
-    int rowToRemove = -1;
-    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    foreach (const HeatingSystem::FuelDelivery &delivery, mHeatingSystem->mWoodDeliveries)
     {
-        settings.setArrayIndex(index);
-        if (ui->tableWidget_Wood->item(i, 0)->text() != date)
+        if (delivery.getHash() == hash)
         {
-            settings.setValue("date",       QDate::fromString(ui->tableWidget_Wood->item(i, 0)->text(), "yyyy-MM-dd"));
-            settings.setValue("quantity",   ui->tableWidget_Wood->item(i, 1)->data(Qt::EditRole));
-            settings.setValue("unit",       ui->tableWidget_Wood->item(i, 2)->data(Qt::EditRole));
-            settings.setValue("moisture",   ui->tableWidget_Wood->item(i, 3)->data(Qt::EditRole));
-            settings.setValue("bill",       ui->tableWidget_Wood->item(i, 5)->data(Qt::EditRole));
-            ++index;
+            date = delivery.mDate.toString("yy-MM-dd");
+            mHeatingSystem->mWoodDeliveries.removeAll(delivery);
+            break;
         }
-        else rowToRemove = i;
     }
 
-    settings.endArray();
-
-    //3. Update table
-    if (rowToRemove != -1) ui->tableWidget_Wood->removeRow(rowToRemove);
+    //Update table
+    for (int i = 0 ; i < ui->tableWidget_Wood->rowCount() ; ++i)
+    {
+        if (ui->tableWidget_Wood->item(i, 0)->text() == date)
+        {
+            ui->tableWidget_Wood->removeRow(i);
+            break;
+        }
+    }
 
     emit settingsChanged();
 }
@@ -604,32 +548,28 @@ void ShowFuelDeliveriesDialog::deleteWoodDelivery()
 void ShowFuelDeliveriesDialog::deleteSecondaryFuelDelivery()
 {
     //1. The corresponding date has been saved in the properties of the sender.
-    QString date = sender()->property("record").toString();
+    QString hash = sender()->property("record").toString();
+    QString date; //TODO: Remove this workaround
 
-    QSettings settings;
-
-    //2. QSettings has no good function to remove one entry from arrays; we will write a new array from ui->tableWidget_SecondaryFuel
-    settings.remove("secondaryFuelDeliveries");
-    settings.beginWriteArray("secondaryFuelDeliveries");
-    int index = 0;
-    int rowToRemove = -1;
-    for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+    foreach (const HeatingSystem::FuelDelivery &delivery, mHeatingSystem->mFossilFuelDeliveries)
     {
-        settings.setArrayIndex(index);
-        if (ui->tableWidget_SecondaryFuel->item(i, 0)->text() != date)
+        if (delivery.getHash() == hash)
         {
-            settings.setValue("date",       QDate::fromString(ui->tableWidget_SecondaryFuel->item(i, 0)->text(), "yyyy-MM-dd"));
-            settings.setValue("quantity",   ui->tableWidget_SecondaryFuel->item(i, 1)->data(Qt::EditRole));
-            settings.setValue("bill",       ui->tableWidget_SecondaryFuel->item(i, 3)->data(Qt::EditRole));
-            ++index;
+            date = delivery.mDate.toString("yy-MM-dd");
+            mHeatingSystem->mFossilFuelDeliveries.removeAll(delivery);
+            break;
         }
-        else rowToRemove = i;
     }
 
-    settings.endArray();
-
-    //3. Update table
-    if (rowToRemove != -1) ui->tableWidget_SecondaryFuel->removeRow(rowToRemove);
+    //Update table
+    for (int i = 0 ; i < ui->tableWidget_SecondaryFuel->rowCount() ; ++i)
+    {
+        if (ui->tableWidget_SecondaryFuel->item(i, 0)->text() == date)
+        {
+            ui->tableWidget_SecondaryFuel->removeRow(i);
+            break;
+        }
+    }
 
     emit settingsChanged();
 }

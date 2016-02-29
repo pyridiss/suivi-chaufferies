@@ -363,7 +363,7 @@ void MainWindow::on_actionDownloadData_triggered()
 void MainWindow::on_actionShowDeliveries_triggered()
 {
     mShowFuelDeliveriesDialog->resetValues();
-    mShowFuelDeliveriesDialog->readSettings();
+    mShowFuelDeliveriesDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
     mShowFuelDeliveriesDialog->show();
 }
 

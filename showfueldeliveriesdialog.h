@@ -2,6 +2,7 @@
 #define SHOWFUELDELIVERIESDIALOG_H
 
 #include <QDialog>
+#include <heatingsystem.h>
 
 namespace Ui {
 class ShowFuelDeliveriesDialog;
@@ -20,9 +21,10 @@ public:
 
 private:
     Ui::ShowFuelDeliveriesDialog *ui;
+    HeatingSystem* mHeatingSystem;
 
 public slots:
-    void readSettings();
+    void setHeatingSystem(HeatingSystem *system);
     void recordChanged_Wood(int x, int y);
     void recordChanged_SecondaryFuel(int x, int y);
     void recordChanged_NaturalGas(int x, int y);
