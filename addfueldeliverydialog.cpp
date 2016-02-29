@@ -1,5 +1,3 @@
-#include <QSettings>
-
 #include "addfueldeliverydialog.h"
 #include "ui_addfueldeliverydialog.h"
 
@@ -118,65 +116,43 @@ void AddFuelDeliveryDialog::changeSelectionToElectricity()
 
 void AddFuelDeliveryDialog::on_buttonBox_accepted()
 {
-    QSettings settings;
-
     //1. Wood
     if (ui->doubleSpinBox_Wood->value() > 0)
     {
-        int currentSize = settings.value("woodDeliveries/size").toInt();
-
-        settings.beginWriteArray("woodDeliveries");
-        settings.setArrayIndex(currentSize);
-
-        settings.setValue("date", ui->dateEdit_Wood->date());
-        settings.setValue("quantity", ui->doubleSpinBox_Wood->value());
-        settings.setValue("unit", ui->comboBox_WoodUnit->currentIndex());
-        settings.setValue("moisture", ui->doubleSpinBox_WoodMoisture->value());
-        settings.setValue("bill", ui->doubleSpinBox_WoodBill->value());
-
-        settings.endArray();
+        HeatingSystem::FuelDelivery delivery(mHeatingSystem->mMainHeatSource,
+                                             ui->dateEdit_Wood->date(),
+                                             ui->doubleSpinBox_Wood->value(),
+                                             ui->doubleSpinBox_WoodBill->value(),
+                                             ui->comboBox_WoodUnit->currentIndex(),
+                                             ui->doubleSpinBox_WoodMoisture->value());
+        mHeatingSystem->mWoodDeliveries.push_back(delivery);
     }
 
     //2. Secondary fuel
     if (ui->spinBox_SecondaryFuel->value() > 0)
     {
-        int currentSize = settings.value("secondaryFuelDeliveries/size").toInt();
-
-        settings.beginWriteArray("secondaryFuelDeliveries");
-        settings.setArrayIndex(currentSize);
-
-        settings.setValue("date", ui->dateEdit_SecondaryFuel->date());
-        settings.setValue("quantity", ui->spinBox_SecondaryFuel->value());
-        settings.setValue("bill", ui->doubleSpinBox_SecondaryFuelBill->value());
-
-        settings.endArray();
+        HeatingSystem::FuelDelivery delivery(mHeatingSystem->mSecondHeatSource,
+                                             ui->dateEdit_SecondaryFuel->date(),
+                                             ui->spinBox_SecondaryFuel->value(),
+                                             ui->doubleSpinBox_SecondaryFuelBill->value());
+        mHeatingSystem->mFossilFuelDeliveries.push_back(delivery);
     }
 
     //3. Natural gas
     if (ui->doubleSpinBox_NaturalGas->value() > 0)
     {
-        int currentSize = settings.value("naturalGasIndex/size").toInt();
-
-        settings.beginWriteArray("naturalGasIndex");
-        settings.setArrayIndex(currentSize);
-
-        settings.setValue("date", ui->dateEdit_NaturalGas->date());
-        settings.setValue("index", ui->doubleSpinBox_NaturalGas->value());
-
-        settings.endArray();
+        HeatingSystem::FuelIndex delivery(HeatingSystem::NaturalGas,
+                                          ui->doubleSpinBox_NaturalGas->value(),
+                                          ui->dateEdit_NaturalGas->date());
+        mHeatingSystem->mNaturalGasIndexes.push_back(delivery);
     }
 
     //4. Electricity
     if (ui->spinBox_Electricity->value() > 0)
     {
-        int currentSize = settings.value("electricityIndex/size").toInt();
-
-        settings.beginWriteArray("electricityIndex");
-        settings.setArrayIndex(currentSize);
-
-        settings.setValue("date", ui->dateEdit_Electricity->date());
-        settings.setValue("index", ui->spinBox_Electricity->value());
-
-        settings.endArray();
+        HeatingSystem::FuelIndex delivery(HeatingSystem::NaturalGas,
+                                          ui->spinBox_Electricity->value(),
+                                          ui->dateEdit_Electricity->date());
+        mHeatingSystem->mElectricityIndexes.push_back(delivery);
     }
 }
