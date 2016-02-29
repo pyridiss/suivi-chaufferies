@@ -54,7 +54,7 @@ public:
         {
             return mHash == right.mHash;
         }
-        QString getHash()
+        const QString& getHash() const
         {
             return mHash;
         }
@@ -94,7 +94,7 @@ public:
         {
             return mHash == right.mHash;
         }
-        QString getHash()
+        const QString& getHash() const
         {
             return mHash;
         }
@@ -128,7 +128,7 @@ public:
         {
             return mHash == right.mHash;
         }
-        QString getHash()
+        const QString& getHash() const
         {
             return mHash;
         }
