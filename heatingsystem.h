@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDate>
+#include <QUuid>
 
 typedef QList< QPair<QString, double> > SubstationsList;
 
@@ -31,8 +32,14 @@ public:
         QDate mDate;
         double mValue;
 
+    private:
+        //mHash will be used to identify records with no doubt.
+        QString mHash;
+
+    public:
         Record()
         {
+            mHash = QUuid::createUuid().toString();
         }
 
         Record(QString substation, QDate date, double value)
@@ -40,6 +47,16 @@ public:
             mSubstation = substation;
             mDate = date;
             mValue = value;
+
+            mHash = QUuid::createUuid().toString();
+        }
+        bool operator==(const Record &right)
+        {
+            return mHash == right.mHash;
+        }
+        QString getHash()
+        {
+            return mHash;
         }
     };
 
@@ -48,18 +65,75 @@ public:
         Fuel mFuel;
         QDate mDate;
         double mValue;
+        double mBill;
+        int mWoodUnit;
+        double mWoodMoisture;
 
+    private:
+        //mHash will be used to identify fuel deliviries with no doubt.
+        QString mHash;
+
+    public:
         FuelDelivery()
         {
+            mHash = QUuid::createUuid().toString();
         }
 
-        FuelDelivery(Fuel fuel, QDate date, double value)
+        FuelDelivery(Fuel fuel, QDate date, double value, double bill, int woodUnit = 0, double woodMoisture = 0)
         {
             mFuel = fuel;
             mDate = date;
             mValue = value;
+            mBill = bill;
+            mWoodUnit = woodUnit;
+            mWoodMoisture = woodMoisture;
+
+            mHash = QUuid::createUuid().toString();
+        }
+        bool operator==(const FuelDelivery &right)
+        {
+            return mHash == right.mHash;
+        }
+        QString getHash()
+        {
+            return mHash;
         }
     };
+
+    struct FuelIndex
+    {
+        Fuel mFuel;
+        int mIndex;
+        QDate mDate;
+
+    private:
+        //mHash will be used to identify fuel indexes with no doubt.
+        QString mHash;
+
+    public:
+        FuelIndex()
+        {
+            mHash = QUuid::createUuid().toString();
+        }
+
+        FuelIndex(Fuel fuel, int index, QDate date)
+        {
+            mFuel = fuel;
+            mIndex = index;
+            mDate = date;
+
+            mHash = QUuid::createUuid().toString();
+        }
+        bool operator==(const FuelIndex &right)
+        {
+            return mHash == right.mHash;
+        }
+        QString getHash()
+        {
+            return mHash;
+        }
+    };
+
 
 public:
     explicit HeatingSystem(QObject *parent = 0);
@@ -98,7 +172,10 @@ public:
     bool mHeatSellLoanInterest;
 
     QList<Record> mRecords;
-    QList<FuelDelivery> mFuelDeliveries;
+    QList<FuelDelivery> mWoodDeliveries;
+    QList<FuelDelivery> mFossilFuelDeliveries;
+    QList<FuelIndex> mNaturalGasIndexes;
+    QList<FuelIndex> mElectricityIndexes;
 };
 
 #endif // HEATINGSYSTEM_H
