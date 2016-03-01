@@ -281,7 +281,7 @@ void MainWindow::updateEnergyConsumptionChart()
 
     //Shift
     double theoreticConsumption = 0;
-    if (!meterRecords.isEmpty())
+    if (!meterRecords.isEmpty() && meterRecords.lastKey() > heatingSeasonBegin && meterRecords.lastKey() < heatingSeasonEnd)
     {
         if (meterRecords.lastKey() <= lastKnownTemperature)
             theoreticConsumption = y1[heatingSeasonBegin.daysTo(meterRecords.lastKey()) - 1];
