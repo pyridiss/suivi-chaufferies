@@ -1,6 +1,5 @@
 #include <QGridLayout>
 #include <QLabel>
-#include <QSettings>
 #include <QSpinBox>
 
 #include "addmetersrecorddialog.h"
@@ -19,8 +18,10 @@ AddMetersRecordDialog::~AddMetersRecordDialog()
     delete ui;
 }
 
-void AddMetersRecordDialog::readSettings()
+void AddMetersRecordDialog::setHeatingSystem(HeatingSystem *system)
 {
+    mHeatingSystem = system;
+
     if (ui->groupBox_Records->layout() != NULL)
     {
         QLayoutItem* item;
@@ -35,62 +36,42 @@ void AddMetersRecordDialog::readSettings()
 
     QGridLayout* layout = new QGridLayout(ui->groupBox_Records);
 
-    QSettings settings;
+    ui->spinBox_MainHeatMeter->setEnabled(system->mMainHeatMeter);
 
-    ui->spinBox_MainHeatMeter->setEnabled(settings.value("boilerRoom/mainHeatMeter").toBool());
-
-    int size = settings.beginReadArray("substations");
-    for (int i = 0; i < size; ++i)
+    for (int i = 0 ; i < system->mSubstations.size() ; ++i)
     {
-        settings.setArrayIndex(i);
-        layout->addWidget(new QLabel(settings.value("name").toString()), i, 0);
+        layout->addWidget(new QLabel(system->mSubstations[i].first), i, 0);
 
         QSpinBox* spinBox = new QSpinBox(ui->groupBox_Records);
         spinBox->setSuffix(" kWh");
         spinBox->setMaximum(1000000);
+        spinBox->setProperty("substation", system->mSubstations[i].first);
         layout->addWidget(spinBox, i, 1);
 
         spinBoxes.push_back(spinBox);
     }
-    settings.endArray();
-
 }
 
 void AddMetersRecordDialog::on_buttonBox_accepted()
 {
-    QSettings settings;
-
     //1. Main heat meter
     if (ui->spinBox_MainHeatMeter->value() > 0)
     {
-        int currentSize = settings.value("mainHeatMeterRecords/size", 0).toInt();
-
-        settings.beginWriteArray("mainHeatMeterRecords");
-        settings.setArrayIndex(currentSize);
-
-        settings.setValue("date", ui->dateEdit_RecordDate->date());
-        settings.setValue("index", ui->spinBox_MainHeatMeter->value());
-
-        settings.endArray();
+        HeatingSystem::Record record("MainHeatMeter",
+                                     ui->dateEdit_RecordDate->date(),
+                                     ui->spinBox_MainHeatMeter->value());
+        mHeatingSystem->mMainHeatMeterRecords.push_back(record);
     }
 
     //2. Substation meters
-    for (int i = 0 ; i < spinBoxes.length() ; ++i)
+    foreach (QSpinBox* spinBox, spinBoxes)
     {
-        QSpinBox* spinBox = spinBoxes[i];
         if (spinBox->value() > 0)
         {
-            //Not to be confused, substation number is i+1 to follow the numbers used in the [substations] section of the settings file.
-            QString category = "substation" + QVariant(i+1).toString();
-            int currentSize = settings.value(category + "/size", 0).toInt();
-
-            settings.beginWriteArray(category);
-            settings.setArrayIndex(currentSize);
-
-            settings.setValue("date", ui->dateEdit_RecordDate->date());
-            settings.setValue("index", spinBox->value());
-
-            settings.endArray();
+            HeatingSystem::Record record(spinBox->property("substation").toString(),
+                                         ui->dateEdit_RecordDate->date(),
+                                         spinBox->value());
+            mHeatingSystem->mRecords.push_back(record);
         }
     }
 

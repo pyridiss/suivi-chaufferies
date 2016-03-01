@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSpinBox>
+#include <heatingsystem.h>
 
 namespace Ui {
 class AddMetersRecordDialog;
@@ -19,9 +20,10 @@ public:
 private:
     Ui::AddMetersRecordDialog *ui;
     QList<QSpinBox*> spinBoxes;
+    HeatingSystem *mHeatingSystem;
 
 public slots:
-    void readSettings();
+    void setHeatingSystem(HeatingSystem *system);
 
 private slots:
     void on_buttonBox_accepted();

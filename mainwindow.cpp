@@ -397,7 +397,12 @@ void MainWindow::on_pushButton_AddFuelDelivery_clicked()
 
 void MainWindow::on_pushButton_AddMetersRecord_clicked()
 {
-    mAddMetersRecordDialog->readSettings();
+    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
+    {
+        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
+        return;
+    }
+    mAddMetersRecordDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
     mAddMetersRecordDialog->show();
 }
 
