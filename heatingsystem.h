@@ -172,6 +172,7 @@ public:
     bool mHeatSellLoanInterest;
 
     QList<Record> mRecords;
+    QList<Record> mMainHeatMeterRecords;
     QList<FuelDelivery> mWoodDeliveries;
     QList<FuelDelivery> mFossilFuelDeliveries;
     QList<FuelIndex> mNaturalGasIndexes;
