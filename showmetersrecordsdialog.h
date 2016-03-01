@@ -2,6 +2,7 @@
 #define SHOWMETERSRECORDSDIALOG_H
 
 #include <QDialog>
+#include <heatingsystem.h>
 
 namespace Ui {
 class ShowMetersRecordsDialog;
@@ -20,9 +21,10 @@ public:
 
 private:
     Ui::ShowMetersRecordsDialog *ui;
+    HeatingSystem* mHeatingSystem;
 
 public slots:
-    void readSettings();
+    void setHeatingSystem(HeatingSystem *system);
     void recordChanged(int, int);
 
 signals:

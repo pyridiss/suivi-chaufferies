@@ -1,5 +1,4 @@
 #include <QDate>
-#include <QSettings>
 #include <QColor>
 
 #include "showmetersrecordsdialog.h"
@@ -26,9 +25,9 @@ void ShowMetersRecordsDialog::resetValues()
     while (ui->tableWidget->rowCount() > 1) ui->tableWidget->removeRow(1);
 }
 
-void ShowMetersRecordsDialog::readSettings()
+void ShowMetersRecordsDialog::setHeatingSystem(HeatingSystem *system)
 {
-    QSettings settings;
+    mHeatingSystem = system;
 
     /*
      * The table will be filled with meters records.
@@ -41,54 +40,47 @@ void ShowMetersRecordsDialog::readSettings()
     //1. Add substations in columns header ( = Horizontal header) and in first row.
     //Be careful: we must start at the second column (column == 1) because the first one (column == 0) will be used to store dates.
 
-    int substationsNumber = settings.beginReadArray("substations");
-    ui->tableWidget->setColumnCount(substationsNumber + 3);
+    ui->tableWidget->setColumnCount(system->mSubstations.length() + 3);
 
-    for (int i = 0 ; i < substationsNumber ; ++i)
+    for (int i = 0 ; i < system->mSubstations.length() ; ++i)
     {
-        settings.setArrayIndex(i);
-        ui->tableWidget->setHorizontalHeaderItem(i+1, new QTableWidgetItem(settings.value("name").toString()));
-        ui->tableWidget->setItem(0, i+1, new QTableWidgetItem("substation" + QVariant(i+1).toString()));
+        ui->tableWidget->setHorizontalHeaderItem(i+1, new QTableWidgetItem(system->mSubstations[i].first));
+        ui->tableWidget->setItem(0, i+1, new QTableWidgetItem(system->mSubstations[i].first));
     }
-    settings.endArray();
 
     //2. For each substation, iterate to find each record and add it to the table.
-    for (int i = 0 ; i < substationsNumber ; ++i)
+    foreach (HeatingSystem::Record record, system->mRecords)
     {
-        int recordsNumber = settings.beginReadArray("substation" + QVariant(i+1).toString());
+        //Find the corresponding column
+        int column = 1;
+        while (ui->tableWidget->item(0, column)->text() != record.mSubstation && column < ui->tableWidget->columnCount())
+            ++column;
 
-        for (int j = 0 ; j < recordsNumber ; ++j)
+        //If a row has already to added for this date, we must use the same. Else, we create a new one.
+        if (ui->tableWidget->findItems(record.mDate.toString("yyyy-MM-dd"), Qt::MatchExactly).empty())
         {
-            //Get the date and the index of the record 'j' for the substation 'i'.
-            settings.setArrayIndex(j);
-            QDate date = settings.value("date").toDate();
-            int index = settings.value("index").toInt();
+            //Insert a new row at position 1, and store the date in the first column.
+            ui->tableWidget->insertRow(1);
+            ui->tableWidget->setItem(1, 0, new QTableWidgetItem(record.mDate.toString("yyyy-MM-dd")));
 
-            //If a row has already to added for this date, we must use the same. Else, we create a new one.
-            if (ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).empty())
-            {
-                //Insert a new row at position 1, and store the date in the first column.
-                ui->tableWidget->insertRow(1);
-                ui->tableWidget->setItem(1, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
-
-                //Then we store the index.
-                QTableWidgetItem *item = new QTableWidgetItem;
-                item->setData(Qt::EditRole, index);
-                item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(1, i+1, item);
-            }
-            else
-            {
-                //A row exists for this date; we get it and add the index in it.
-                int row = ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).first()->row();
-
-                QTableWidgetItem *item = new QTableWidgetItem;
-                item->setData(Qt::EditRole, index);
-                item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(row, i+1, item);
-            }
+            //Then we store the index.
+            QTableWidgetItem *item = new QTableWidgetItem;
+            item->setData(Qt::EditRole, record.mValue);
+            item->setTextAlignment(Qt::AlignCenter);
+            item->setData(Qt::UserRole, record.getHash());
+            ui->tableWidget->setItem(1, column, item);
         }
-        settings.endArray();
+        else
+        {
+            //A row exists for this date; we get it and add the index in it.
+            int row = ui->tableWidget->findItems(record.mDate.toString("yyyy-MM-dd"), Qt::MatchExactly).first()->row();
+
+            QTableWidgetItem *item = new QTableWidgetItem;
+            item->setData(Qt::EditRole, record.mValue);
+            item->setTextAlignment(Qt::AlignCenter);
+            item->setData(Qt::UserRole, record.getHash());
+            ui->tableWidget->setItem(row, column, item);
+        }
     }
 
     //3. We add a 'sum' column
@@ -108,46 +100,40 @@ void ShowMetersRecordsDialog::readSettings()
     }
 
     //4. We add a column for the main meter
-    if (settings.value("boilerRoom/mainHeatMeter").toBool() == true)
+    if (system->mMainHeatMeter)
     {
         ui->tableWidget->setHorizontalHeaderItem(ui->tableWidget->columnCount() - 1, new QTableWidgetItem("Compteur principal"));
         ui->tableWidget->setItem(0, ui->tableWidget->columnCount() - 1, new QTableWidgetItem("mainHeatMeterRecords"));
 
-        int recordsNumber = settings.beginReadArray("mainHeatMeterRecords");
-
-        for (int i = 0 ; i < recordsNumber ; ++i)
+        foreach (HeatingSystem::Record record, system->mMainHeatMeterRecords)
         {
-            settings.setArrayIndex(i);
-            QDate date = settings.value("date").toDate();
-            int index = settings.value("index").toInt();
-
             //If a row has already to added for this date, we must use the same. Else, we create a new one.
-            if (ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).empty())
+            if (ui->tableWidget->findItems(record.mDate.toString("yyyy-MM-dd"), Qt::MatchExactly).empty())
             {
                 //Insert a new row at position 1, and store the date in the first column.
                 ui->tableWidget->insertRow(1);
-                ui->tableWidget->setItem(1, 0, new QTableWidgetItem(date.toString("yyyy-MM-dd")));
+                ui->tableWidget->setItem(1, 0, new QTableWidgetItem(record.mDate.toString("yyyy-MM-dd")));
 
                 //Then we store the index.
                 QTableWidgetItem *item = new QTableWidgetItem;
-                item->setData(Qt::EditRole, index);
+                item->setData(Qt::EditRole, record.mValue);
                 item->setTextAlignment(Qt::AlignCenter);
                 item->setTextColor(Qt::red);
+                item->setData(Qt::UserRole, record.getHash());
                 ui->tableWidget->setItem(1, ui->tableWidget->columnCount() - 1, item);
             }
             else
             {
                 //A row exists for this date; we get it and add the index in it.
-                int row = ui->tableWidget->findItems(date.toString("yyyy-MM-dd"), Qt::MatchExactly).first()->row();
+                int row = ui->tableWidget->findItems(record.mDate.toString("yyyy-MM-dd"), Qt::MatchExactly).first()->row();
 
                 QTableWidgetItem *item = new QTableWidgetItem;
-                item->setData(Qt::EditRole, index);
+                item->setData(Qt::EditRole, record.mValue);
                 item->setTextAlignment(Qt::AlignCenter);
                 item->setTextColor(Qt::red);
                 ui->tableWidget->setItem(row, ui->tableWidget->columnCount() - 1, item);
             }
         }
-        settings.endArray();
     }
     else
     {
@@ -198,27 +184,24 @@ void ShowMetersRecordsDialog::readSettings()
 
 void ShowMetersRecordsDialog::recordChanged(int x, int y)
 {
-    //1. First, we get the item changed and corresponding date and substation.
+    //1. First, we get the item changed.
     QTableWidgetItem* item = ui->tableWidget->item(x, y);
-    QTableWidgetItem* itemDate = ui->tableWidget->item(x, 0);
-    QTableWidgetItem* itemSubstation = ui->tableWidget->item(0, y);
 
-    QSettings settings;
-
-    //2. We enter the records for the changed substation.
-    int size = settings.beginReadArray(itemSubstation->text());
-    for (int i = 0 ; i < size ; ++i)
+    //2. We enter the records (substations and main heat meter)
+    for (HeatingSystem::Record &record : mHeatingSystem->mRecords)
     {
-        settings.setArrayIndex(i);
-        //For each saved record, we check if the date is the same as the modified index.
-        if (settings.value("date").toDate().toString("yyyy-MM-dd") == itemDate->text())
+        if (record.getHash() == item->data(Qt::UserRole))
         {
-            //Update index.
-            settings.setValue("index", item->data(Qt::EditRole));
+            record.mValue = item->data(Qt::EditRole).toDouble();
         }
     }
-
-    settings.endArray();
+    for (HeatingSystem::Record &record : mHeatingSystem->mMainHeatMeterRecords)
+    {
+        if (record.getHash() == item->data(Qt::UserRole))
+        {
+            record.mValue = item->data(Qt::EditRole).toDouble();
+        }
+    }
 
     //3. Update sums
     for (int i = 1 ; i < ui->tableWidget->rowCount() ; ++i)

@@ -364,7 +364,7 @@ void MainWindow::on_actionShowMetersRecord_triggered()
         return;
     }
     mShowMetersRecordsDialog->resetValues();
-    mShowMetersRecordsDialog->readSettings();
+    mShowMetersRecordsDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
     mShowMetersRecordsDialog->show();
 }
 
