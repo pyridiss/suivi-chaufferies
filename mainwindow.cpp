@@ -161,8 +161,6 @@ void MainWindow::changeCurrentHeatingSystem()
 
 void MainWindow::updateEnergyConsumptionChart()
 {
-    QSettings settings;
-
     double theoreticAnnualConsumption = 0;
 
     //Remove data from ui->tableWidget_chartResults
@@ -173,13 +171,15 @@ void MainWindow::updateEnergyConsumptionChart()
     {
         theoreticAnnualConsumption += substation.second;
 
-        //ui->tableWidget_chartResults will be filled with consumptions. These values will be used later.
         int i = ui->tableWidget_chartResults->rowCount();
+
         QTableWidgetItem *newItem = new QTableWidgetItem();
         newItem->setData(Qt::EditRole, substation.second);
         newItem->setFlags(Qt::NoItemFlags);
         newItem->setTextAlignment(Qt::AlignCenter);
         newItem->setTextColor(Qt::black);
+
+        //ui->tableWidget_chartResults will be filled with consumptions. These values will be used later.
         ui->tableWidget_chartResults->insertRow(i);
         ui->tableWidget_chartResults->setItem(i, 0, newItem);
         ui->tableWidget_chartResults->setVerticalHeaderItem(i, new QTableWidgetItem(substation.first));
@@ -188,24 +188,11 @@ void MainWindow::updateEnergyConsumptionChart()
     //1. Graph 0: 'real sum of meters in substations'.
     QMap<QDate, int> meterRecords;
 
-    int substationsNumber = settings.value("substations/size").toInt();
-
-    for (int i = 0 ; i < substationsNumber ; ++i)
+    for (const HeatingSystem::Record &record : mHeatingSystems[mCurrentHeatingSystem]->mRecords)
     {
-        int recordsNumber = settings.beginReadArray("substation" + QVariant(i+1).toString());
-
-        for (int j = 0 ; j < recordsNumber ; ++j)
-        {
-            //Get the date and the index of the record 'j' for the substation 'i'.
-            settings.setArrayIndex(j);
-            QDate date = settings.value("date").toDate();
-            int index = settings.value("index").toInt();
-
-            if (meterRecords.find(date) == meterRecords.end())
-                meterRecords.insert(date, index);
-            else meterRecords[date] += index;
-        }
-        settings.endArray();
+        if (meterRecords.find(record.mDate) == meterRecords.end())
+            meterRecords.insert(record.mDate, record.mValue);
+        else meterRecords[record.mDate] += record.mValue;
     }
 
     QVector<double> x0(meterRecords.size()), y0(meterRecords.size());
