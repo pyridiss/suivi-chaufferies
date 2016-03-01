@@ -215,4 +215,5 @@ void ShowMetersRecordsDialog::recordChanged(int x, int y)
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }

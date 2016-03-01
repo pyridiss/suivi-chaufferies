@@ -446,6 +446,7 @@ void ShowFuelDeliveriesDialog::recordChanged_Wood(int x, int y)
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }
 
 void ShowFuelDeliveriesDialog::recordChanged_SecondaryFuel(int x, int y)
@@ -474,6 +475,7 @@ void ShowFuelDeliveriesDialog::recordChanged_SecondaryFuel(int x, int y)
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }
 
 void ShowFuelDeliveriesDialog::recordChanged_NaturalGas(int x, int y)
@@ -494,6 +496,7 @@ void ShowFuelDeliveriesDialog::recordChanged_NaturalGas(int x, int y)
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }
 
 void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
@@ -514,6 +517,7 @@ void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }
 
 void ShowFuelDeliveriesDialog::deleteWoodDelivery()
@@ -543,6 +547,7 @@ void ShowFuelDeliveriesDialog::deleteWoodDelivery()
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }
 
 void ShowFuelDeliveriesDialog::deleteSecondaryFuelDelivery()
@@ -572,4 +577,5 @@ void ShowFuelDeliveriesDialog::deleteSecondaryFuelDelivery()
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }

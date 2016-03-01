@@ -76,4 +76,5 @@ void AddMetersRecordDialog::on_buttonBox_accepted()
     }
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }

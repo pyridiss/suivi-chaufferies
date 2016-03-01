@@ -156,4 +156,5 @@ void ConfigurationDialog::on_buttonBox_accepted()
     mHeatingSystem->mMainHeatMeter         = ui->editMainHeatMeter->isChecked();
 
     emit settingsChanged();
+    mHeatingSystem->save();
 }

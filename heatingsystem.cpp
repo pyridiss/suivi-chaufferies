@@ -1,6 +1,7 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include <QMessageBox>
 #include <QLocale>
 #include <QDate>
@@ -14,6 +15,8 @@ HeatingSystem::HeatingSystem(QObject *parent) : QObject(parent)
 
 void HeatingSystem::load(QString fileName)
 {
+    mFileName = fileName;
+
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
     QFile* file = new QFile(dir.filePath(fileName + ".xml"));
@@ -108,7 +111,7 @@ void HeatingSystem::load(QString fileName)
                         mMainHeatMeter = a.value().toInt();
                 }
             }
-            if (xml.name() == "heatSell")
+            if (xml.name() == "heat_sell")
             {
                 QXmlStreamAttributes xmlAttributes = xml.attributes();
                 foreach (QXmlStreamAttribute a, xmlAttributes)
@@ -157,6 +160,90 @@ void HeatingSystem::load(QString fileName)
         QMessageBox::critical(0, "xml Parse Error", xml.errorString(), QMessageBox::Ok);
         return;
     }
+
+    file->close();
+}
+
+void HeatingSystem::save()
+{
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
+
+    QFile* file = new QFile(dir.filePath(mFileName + ".xml"));
+
+    bool fileOpened = file->open(QIODevice::WriteOnly);
+    if (!fileOpened)
+    {
+        QMessageBox::critical(0, "Erreur", "Le fichier de données de la chaufferie n'a pas pu être enregistré.");
+        return;
+    }
+
+    QXmlStreamWriter xml(file);
+    xml.setAutoFormatting(true);
+
+    xml.writeStartDocument();
+    xml.writeStartElement("heating_system");
+
+    xml.writeStartElement("properties");
+        xml.writeAttribute("name", mName);
+    xml.writeEndElement();
+
+    xml.writeStartElement("heat_sources");
+        xml.writeAttribute("first",  QString::number(mMainHeatSource));
+        xml.writeAttribute("second", QString::number(mSecondHeatSource));
+    xml.writeEndElement();
+
+    xml.writeStartElement("economy");
+        xml.writeAttribute("investment", QString::number(mInvestment));
+        xml.writeAttribute("subsidies",  QString::number(mSubsidies));
+        xml.writeAttribute("loan",       QString::number(mLoan));
+        xml.writeAttribute("loanPeriod", QString::number(mLoanPeriod));
+        xml.writeAttribute("loanRate",   QString::number(mLoanRate));
+    xml.writeEndElement();
+
+    xml.writeStartElement("technic");
+        xml.writeAttribute("annualWoodConsumption", QString::number(mAnnualWoodConsumption));
+        xml.writeAttribute("boilerEfficiency",      QString::number(mBoilerEfficiency));
+        xml.writeAttribute("networkEfficiency",     QString::number(mNetworkEfficiency));
+        xml.writeAttribute("mainHeatMeter",         QString::number(mMainHeatMeter));
+    xml.writeEndElement();
+
+    xml.writeStartElement("heat_sell");
+        xml.writeAttribute("activated",          QString::number(mHeatSellActivated));
+        xml.writeAttribute("electricity",        QString::number(mHeatSellElectricity));
+        xml.writeAttribute("routineMaintenance", QString::number(mHeatSellRoutineMaintenance));
+        xml.writeAttribute("majorMaintenance",   QString::number(mHeatSellMajorMaintenance));
+        xml.writeAttribute("loanAmortization",   QString::number(mHeatSellLoanAmortization));
+        xml.writeAttribute("loanInterest",       QString::number(mHeatSellLoanInterest));
+    xml.writeEndElement();
+
+    QPair<QString, double> substation;
+    foreach (substation, mSubstations)
+    {
+        xml.writeStartElement("add_substation");
+            xml.writeAttribute("consumption", QString::number(substation.second));
+            xml.writeCharacters(substation.first);
+        xml.writeEndElement();
+    }
+
+    foreach (const Record &record, mRecords)
+    {
+        xml.writeStartElement("add_record");
+            xml.writeAttribute("substation", record.mSubstation);
+            xml.writeAttribute("date",       record.mDate.toString("yyyy-MM-dd"));
+            xml.writeCharacters(QString::number(record.mValue));
+        xml.writeEndElement();
+    }
+
+    foreach (const Record &record, mMainHeatMeterRecords)
+    {
+        xml.writeStartElement("add_mainheatmeter_record");
+            xml.writeAttribute("date", record.mDate.toString("yyyy-MM-dd"));
+            xml.writeCharacters(QString::number(record.mValue));
+        xml.writeEndElement();
+    }
+
+    xml.writeEndElement(); //heating_system
+    xml.writeEndDocument();
 
     file->close();
 }

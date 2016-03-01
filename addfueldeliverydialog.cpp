@@ -155,4 +155,6 @@ void AddFuelDeliveryDialog::on_buttonBox_accepted()
                                           ui->dateEdit_Electricity->date());
         mHeatingSystem->mElectricityIndexes.push_back(delivery);
     }
+
+    mHeatingSystem->save();
 }

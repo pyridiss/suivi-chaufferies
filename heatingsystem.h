@@ -140,6 +140,7 @@ public:
 
 public:
     void load(QString fileName);
+    void save();
 
 signals:
 
@@ -147,6 +148,7 @@ public slots:
 
 public:
     QString mName;
+    QString mFileName;
 
     Fuel mMainHeatSource;
     Fuel mSecondHeatSource;
