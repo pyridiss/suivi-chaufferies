@@ -138,6 +138,17 @@ void HeatingSystem::load(QString fileName)
 
                 mRecords.push_back(newRecord);
             }
+            if (xml.name() == "add_mainheatmeter_record")
+            {
+                Record newRecord;
+
+                QXmlStreamAttributes xmlAttributes = xml.attributes();
+                newRecord.mSubstation = "MainHeatMeter";
+                newRecord.mDate = QDate::fromString(xmlAttributes.value("", "date").toString(), "yyyy-MM-dd");
+                newRecord.mValue = xml.readElementText().toDouble();
+
+                mMainHeatMeterRecords.push_back(newRecord);
+            }
         }
     }
 
