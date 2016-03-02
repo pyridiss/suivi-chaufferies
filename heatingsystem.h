@@ -30,7 +30,7 @@ public:
     {
         QString mSubstation;
         QDate mDate;
-        double mValue;
+        double mValue = 0;
 
     private:
         //mHash will be used to identify records with no doubt.
@@ -62,12 +62,12 @@ public:
 
     struct FuelDelivery
     {
-        Fuel mFuel;
+        Fuel mFuel           = NoFuel;
         QDate mDate;
-        double mValue;
-        double mBill;
-        int mWoodUnit;
-        double mWoodMoisture;
+        double mValue        = 0;
+        double mBill         = 0;
+        int mWoodUnit        = 0;
+        double mWoodMoisture = 0;
 
     private:
         //mHash will be used to identify fuel deliviries with no doubt.
@@ -102,8 +102,8 @@ public:
 
     struct FuelIndex
     {
-        Fuel mFuel;
-        int mIndex;
+        Fuel mFuel = NoFuel;
+        int mIndex = 0;
         QDate mDate;
 
     private:
@@ -150,28 +150,28 @@ public:
     QString mName;
     QString mFileName;
 
-    Fuel mMainHeatSource;
-    Fuel mSecondHeatSource;
+    Fuel mMainHeatSource   = NoFuel;
+    Fuel mSecondHeatSource = NoFuel;
 
     SubstationsList mSubstations;
 
-    double mInvestment;
-    double mSubsidies;
-    double mLoan;
-    int mLoanPeriod;
-    double mLoanRate;
+    double mInvestment = 0;
+    double mSubsidies  = 0;
+    double mLoan       = 0;
+    int mLoanPeriod    = 0;
+    double mLoanRate   = 0;
 
-    double mAnnualWoodConsumption;
-    double mBoilerEfficiency;
-    double mNetworkEfficiency;
-    bool mMainHeatMeter;
+    double mAnnualWoodConsumption = 0;
+    double mBoilerEfficiency      = 0;
+    double mNetworkEfficiency     = 0;
+    bool mMainHeatMeter           = false;
 
-    bool mHeatSellActivated;
-    bool mHeatSellElectricity;
-    bool mHeatSellRoutineMaintenance;
-    bool mHeatSellMajorMaintenance;
-    bool mHeatSellLoanAmortization;
-    bool mHeatSellLoanInterest;
+    bool mHeatSellActivated          = false;
+    bool mHeatSellElectricity        = false;
+    bool mHeatSellRoutineMaintenance = false;
+    bool mHeatSellMajorMaintenance   = false;
+    bool mHeatSellLoanAmortization   = false;
+    bool mHeatSellLoanInterest       = false;
 
     QList<Record> mRecords;
     QList<Record> mMainHeatMeterRecords;
