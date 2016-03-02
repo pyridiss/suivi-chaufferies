@@ -100,6 +100,7 @@ void MainWindow::readSettings()
     QMenu* menu = new QMenu(this);
 
     QAction *actionNewHeatingSystem = menu->addAction("Créer une nouvelle chaufferie");
+    connect(actionNewHeatingSystem, SIGNAL(triggered(bool)), this, SLOT(actionNewHeatingSystem_triggered()));
 
     menu->addSection("Chaufferies existantes");
 
@@ -446,4 +447,33 @@ void MainWindow::fileDownloaded(QByteArray* file)
     QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
 
     mDJU.load();
+}
+
+void MainWindow::actionNewHeatingSystem_triggered()
+{
+    QString userText = QInputDialog::getText(this, "Nom de la nouvelle chaufferie",
+                                             "Veuillez choisir un nom pour la nouvelle chaufferie (ce nom pourra être modifié par la suite)");
+
+    //Remove non-ASCII characters from userText to be able to use it as a file name.
+    QString name = userText;
+    QString filename = userText.replace(QRegExp("[^A-Za-z0-9]"), "_");
+
+    //Create a new HeatingSystem
+    HeatingSystem* system = new HeatingSystem();
+    mHeatingSystems.insert(filename, system);
+
+    system->mName = name;
+    system->mFileName = filename;
+    system->save();
+
+    mCurrentHeatingSystem = filename;
+
+    //Open configuration dialog
+    on_actionConfigureBoilerRoom_triggered();
+
+    //Save the new heating system in settings file
+    saveSettings();
+
+    //Update menu
+    readSettings();
 }
