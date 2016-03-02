@@ -3,7 +3,6 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QMessageBox>
-#include <QLocale>
 #include <QDate>
 
 #include "heatingsystem.h"
@@ -24,11 +23,9 @@ void HeatingSystem::load(QString fileName)
     bool fileOpened = file->open(QIODevice::ReadOnly);
     if (!fileOpened)
     {
-        QMessageBox::warning(0, "Information", "La chaufferie demandée n'existe pas.");
+        QMessageBox::warning(0, "Information", "La chaufferie demandée n'existe pas.\n(fichier : " + fileName + ")");
         return;
     }
-
-    QLocale locale;
 
     QXmlStreamReader xml(file);
 
