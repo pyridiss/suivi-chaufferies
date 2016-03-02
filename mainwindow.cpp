@@ -18,8 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mShowMetersRecordsDialog = new ShowMetersRecordsDialog(this);
     mShowFuelDeliveriesDialog = new ShowFuelDeliveriesDialog(this);
 
-    connect(mConfigurationDialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
-    connect(mAddMetersRecordDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
+    connect(mConfigurationDialog,     SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
+    connect(mAddMetersRecordDialog,   SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
 
     mDJU.load();
@@ -105,7 +105,7 @@ void MainWindow::readSettings()
 
     QActionGroup *heatingSystemsGroup = new QActionGroup(this);
 
-    QString lastHeatingSystem = settings.value("boilerRoom/lastHeatingSystem").toString();
+    QString lastHeatingSystem = settings.value("lastHeatingSystem").toString();
 
     int size = settings.beginReadArray("heatingSystems");
     for (int i = 0 ; i < size ; ++i)
@@ -126,20 +126,46 @@ void MainWindow::readSettings()
         QAction *heatingSystem = heatingSystemsGroup->addAction(name);
         heatingSystem->setCheckable(true);
         heatingSystem->setProperty("filename", filename);
-
-        connect(heatingSystem, SIGNAL(triggered(bool)), this, SLOT(changeCurrentHeatingSystem()));
-
-        if (name == lastHeatingSystem)
-        {
-            heatingSystem->setChecked(true);
-            heatingSystem->trigger();
-        }
     }
     settings.endArray();
 
     menu->addActions(heatingSystemsGroup->actions());
 
     toolButton->setMenu(menu);
+
+    foreach(QAction* action, heatingSystemsGroup->actions())
+    {
+        connect(action, SIGNAL(triggered(bool)), this, SLOT(changeCurrentHeatingSystem()));
+
+        if (action->text() == lastHeatingSystem)
+        {
+            action->setChecked(true);
+            action->trigger();
+        }
+    }
+}
+
+void MainWindow::saveSettings()
+{
+    QSettings settings;
+
+    //Write heating systems
+    settings.remove("heatingSystems");
+    settings.beginWriteArray("heatingSystems");
+
+    QMap<QString, HeatingSystem*>::iterator it = mHeatingSystems.begin();
+    for (int i = 0 ; i < mHeatingSystems.size() ; ++i)
+    {
+        settings.setArrayIndex(i);
+
+        settings.setValue("name", it.value()->mName);
+        settings.setValue("filename", it.value()->mFileName);
+        ++it;
+    }
+    settings.endArray();
+
+    //Write current heating system
+    settings.setValue("lastHeatingSystem", mHeatingSystems[mCurrentHeatingSystem]->mName);
 }
 
 void MainWindow::changeCurrentHeatingSystem()
@@ -150,17 +176,20 @@ void MainWindow::changeCurrentHeatingSystem()
 
     mCurrentHeatingSystem = newHeatingSystem;
 
+    updateEnergyConsumptionChart();
+
+    saveSettings();
+}
+
+void MainWindow::updateEnergyConsumptionChart()
+{
+    //Update name of the heating system
     QString name = "<p align=\"center\"><span style=\"font-weight:600;\">";
     name += mHeatingSystems[mCurrentHeatingSystem]->mName;
     name += "</span></p>";
 
     ui->labelBoilerRoomName->setText(name);
 
-    updateEnergyConsumptionChart();
-}
-
-void MainWindow::updateEnergyConsumptionChart()
-{
     double theoreticAnnualConsumption = 0;
 
     //Remove data from ui->tableWidget_chartResults

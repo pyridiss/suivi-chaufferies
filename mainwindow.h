@@ -52,6 +52,7 @@ private slots:
 
 public slots:
     void readSettings();
+    void saveSettings();
     void changeCurrentHeatingSystem();
     void updateEnergyConsumptionChart();
 };
