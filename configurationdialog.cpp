@@ -25,8 +25,6 @@ ConfigurationDialog::ConfigurationDialog(QWidget *parent) :
     delegateSubstationsConsumptions->setSuffix(" MWh");
     delegateSubstationsConsumptions->setMaximum(100000);
     ui->editSubstations->setItemDelegateForColumn(1, delegateSubstationsConsumptions);
-
-    connect(ui->editHeatSell_Activated, SIGNAL(stateChanged(int)), this, SLOT(setHeatSell(int)));
 }
 
 ConfigurationDialog::~ConfigurationDialog()
@@ -72,7 +70,7 @@ void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
     }
 
     //Set the 'heat sell' tab
-    ui->editHeatSell_Activated         ->setChecked(system->mHeatSellActivated);
+    ui->groupBox_HeatSell              ->setChecked(system->mHeatSellActivated);
     ui->editHeatSell_Electricity       ->setChecked(system->mHeatSellElectricity);
     ui->editHeatSell_RoutineMaintenance->setChecked(system->mHeatSellRoutineMaintenance);
     ui->editHeatSell_MajorMaintenance  ->setChecked(system->mHeatSellMajorMaintenance);
@@ -91,11 +89,6 @@ void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
     ui->editNetworkEfficiency    ->setValue(system->mNetworkEfficiency);
     ui->editAnnualWoodConsumption->setValue(system->mAnnualWoodConsumption);
     ui->editMainHeatMeter        ->setChecked(system->mMainHeatMeter);
-}
-
-void ConfigurationDialog::setHeatSell(int state)
-{
-    ui->groupBox_HeatSell->setEnabled(state);
 }
 
 void ConfigurationDialog::on_pushButton_AddSubstation_clicked()
@@ -137,7 +130,7 @@ void ConfigurationDialog::on_buttonBox_accepted()
         mHeatingSystem->mSubstations.push_back(QPair<QString, double>(name, consumption));
     }
 
-    mHeatingSystem->mHeatSellActivated          = ui->editHeatSell_Activated->isChecked();
+    mHeatingSystem->mHeatSellActivated          = ui->groupBox_HeatSell->isChecked();
     mHeatingSystem->mHeatSellElectricity        = ui->editHeatSell_Electricity->isChecked();
     mHeatingSystem->mHeatSellRoutineMaintenance = ui->editHeatSell_RoutineMaintenance->isChecked();
     mHeatingSystem->mHeatSellMajorMaintenance   = ui->editHeatSell_MajorMaintenance->isChecked();

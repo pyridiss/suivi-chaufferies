@@ -24,7 +24,6 @@ private:
     HeatingSystem *mHeatingSystem;
 
 public slots:
-    void setHeatSell(int state);
 
 private slots:
     void on_pushButton_AddSubstation_clicked();
