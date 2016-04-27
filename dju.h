@@ -21,7 +21,7 @@ private:
     QString mWeatherStation;
     QMap<QString, double> mDJU;
     QMap< std::pair<QString, QString>, double> mPeriodicDJU;
-    QList<int> mCompleteYears;
+    QList<QString> mCompleteMonthes;
 };
 
 #endif // DJU_H

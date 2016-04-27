@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QMessageBox>
-#include <QLocale>
+#include <QDate>
 
 #include "dju.h"
 
@@ -31,7 +31,7 @@ void DJU::load(QString weatherStation)
     }
 
     QXmlStreamReader xml(file);
-    QLocale locale;
+
     while (!xml.atEnd() && !xml.hasError())
     {
         QXmlStreamReader::TokenType token = xml.readNext();
@@ -47,15 +47,15 @@ void DJU::load(QString weatherStation)
             {
                 continue;
             }
-            if (xml.name() == "complete_year")
+            if (xml.name() == "complete-month")
             {
-                int date = locale.toDouble(xml.readElementText());
-                mCompleteYears.push_back(date);
+                QString date = xml.readElementText();
+                mCompleteMonthes.push_back(date);
             }
             if (xml.name() == "dju")
             {
                 QString date = xml.attributes().first().value().toString();
-                double  dju  = locale.toDouble(xml.readElementText());
+                double  dju  = xml.readElementText().toDouble();
                 mDJU.insert(date, dju);
             }
         }
@@ -122,49 +122,34 @@ QString DJU::getLastDataDate()
 double DJU::getAverageDJU(QString date)
 {
     double averageDJU = 0;
-    foreach (int i, mCompleteYears)
+    int n = 0;
+    foreach (QString i, mCompleteMonthes)
     {
-        date.remove(0, 4);
-        date.insert(0, QString::number(i));
-        averageDJU += getDJU(date);
+        //Check if we have complete information about the asked month
+        if (i[5] == date[5] && i[6] == date[6])
+        {
+            date.remove(0, 7);
+            date.insert(0, i);
+            averageDJU += getDJU(date);
+            ++n;
+        }
     }
 
-    averageDJU /= mCompleteYears.size();
+    averageDJU /= n;
 
     return averageDJU;
 }
 
 double DJU::getAverageDJU(QString date1, QString date2)
 {
-    double averageDJU = 0;
-    QString d1 = date1, d2 = date2;
-    foreach (int i, mCompleteYears)
-    {
-        if (date2.left(4) > date1.left(4)) //The period overlaps two years
-        {
-            if (i == mCompleteYears.last()) continue;
-            d1.remove(0, 4);
-            d1.insert(0, QString::number(i));
-            d2.remove(0, 4);
-            d2.insert(0, QString::number(i+1));
-        }
-        else
-        {
-            d1.remove(0, 4);
-            d1.insert(0, QString::number(i));
-            d2.remove(0, 4);
-            d2.insert(0, QString::number(i));
-        }
-        averageDJU += getDJU(d1, d2);
-    }
+    //This function is *really* inefficient; but it works for now...
 
-    if (date2.left(4) > date1.left(4))
+    double averageDJU = 0;
+    QDate d2 = QDate::fromString(date2, "yyyy-MM-dd");
+
+    for (QDate date = QDate::fromString(date1,"yyyy-MM-dd") ; date < d2 ; date = date.addDays(1))
     {
-        averageDJU /= (mCompleteYears.size() - 1);
-    }
-    else
-    {
-        averageDJU /= mCompleteYears.size();
+        averageDJU += getAverageDJU(date.toString("yyyy-MM-dd"));
     }
 
     return averageDJU;
