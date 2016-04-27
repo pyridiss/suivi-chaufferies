@@ -190,7 +190,6 @@ void MainWindow::updateEnergyConsumptionChart()
     name += mHeatingSystems[mCurrentHeatingSystem]->mName;
     name += "</span></p>";
 
-    DJU* currentDJU = mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation];
     ui->labelBoilerRoomName->setText(name);
 
     double theoreticAnnualConsumption = 0;
@@ -240,6 +239,9 @@ void MainWindow::updateEnergyConsumptionChart()
     ui->chart_EnergyConsumption->graph(0)->setData(x0, y0);
 
     //2. Graph 1: 'theoretic sum based on real DJU'
+
+    DJU* currentDJU = mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation];
+    if (currentDJU == NULL) return;
 
     QDate heatingSeasonBegin(2015, 7, 1);
     QDate heatingSeasonEnd  (2016, 6, 30);
