@@ -68,6 +68,14 @@ void DJU::load(QString weatherStation)
     }
 
     file->close();
+
+    //Check if data is exploitable and warn about it if necessary
+    if (mCompleteMonthes.count() < 12)
+        QMessageBox::warning(0, "Attention",
+                             "Les données de température ne couvrent pas une année complète ; il est impossible de déterminer une consommation théorique.\n(Station météo : " + weatherStation + ").");
+    else if (mCompleteMonthes.count() < 36)
+        QMessageBox::warning(0, "Attention",
+                             "Les données de température couvrent moins de 3 années ; la consommation théorique sera peu précise.\n(Station météo : " + weatherStation + ").");
 }
 
 double DJU::getDJU(QString date)
