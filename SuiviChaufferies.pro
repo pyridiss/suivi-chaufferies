@@ -47,3 +47,5 @@ FORMS    += mainwindow.ui \
     showfueldeliveriesdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11
+
+RESOURCES = SuiviChaufferies.qrc

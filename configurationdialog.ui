@@ -24,7 +24,7 @@
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabGeneral">
       <attribute name="title">
@@ -75,7 +75,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="4" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
           <string>Chaufferie et réseau</string>
@@ -147,7 +147,7 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
+       <item row="5" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Éléments présents dans la chaufferie</string>
@@ -161,6 +161,23 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>Station météo de référence</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="editWeatherStation">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
         </widget>
        </item>
       </layout>
@@ -418,7 +435,8 @@
              <string>Ajouter une nouvelle saison de chauffe</string>
             </property>
             <property name="icon">
-             <iconset theme="list-add"/>
+             <iconset theme="list-add">
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>

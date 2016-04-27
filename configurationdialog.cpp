@@ -1,3 +1,7 @@
+#include <QFile>
+#include <QXmlStreamReader>
+#include <QMessageBox>
+
 #include "delegates/doublespinboxdelegate.h"
 
 #include "configurationdialog.h"
@@ -25,6 +29,44 @@ ConfigurationDialog::ConfigurationDialog(QWidget *parent) :
     delegateSubstationsConsumptions->setSuffix(" MWh");
     delegateSubstationsConsumptions->setMaximum(100000);
     ui->editSubstations->setItemDelegateForColumn(1, delegateSubstationsConsumptions);
+
+    //Setup weather station selection
+    QFile* file = new QFile(":/resources/cities.xml");
+    bool fileOpened = file->open(QIODevice::ReadOnly);
+    if (!fileOpened)
+    {
+        QMessageBox::warning(0, "Information", "Aucun fichier de données des stations météo n'a été trouvé.");
+        return;
+    }
+
+    QXmlStreamReader xml(file);
+    while (!xml.atEnd() && !xml.hasError())
+    {
+        QXmlStreamReader::TokenType token = xml.readNext();
+
+        if(token == QXmlStreamReader::StartDocument)
+        {
+            continue;
+        }
+
+        if(token == QXmlStreamReader::StartElement)
+        {
+            if (xml.name() == "city")
+            {
+                QString code = xml.attributes().first().value().toString();
+                QString name = xml.readElementText();
+                ui->editWeatherStation->addItem(name, code);
+            }
+        }
+    }
+
+    if(xml.hasError())
+    {
+        QMessageBox::critical(0, "xml Parse Error", xml.errorString(), QMessageBox::Ok);
+        return;
+    }
+
+    file->close();
 }
 
 ConfigurationDialog::~ConfigurationDialog()
