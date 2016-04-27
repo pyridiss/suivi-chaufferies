@@ -90,6 +90,11 @@ void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
         if (ui->editSecondHeatSource->itemData(i) == system->mSecondHeatSource)
             ui->editSecondHeatSource->setCurrentIndex(i);
     }
+    for (int i = 0 ; i < ui->editWeatherStation->count() ; ++i)
+    {
+        if (ui->editWeatherStation->itemData(i).toString() == system->mWeatherStation)
+            ui->editWeatherStation->setCurrentIndex(i);
+    }
 
     //Clear substations table
     while (ui->editSubstations->rowCount() > 0)
@@ -161,6 +166,7 @@ void ConfigurationDialog::on_buttonBox_accepted()
     mHeatingSystem->mName             = ui->editHeatingSystemName->text();
     mHeatingSystem->mMainHeatSource   = (HeatingSystem::Fuel)ui->editMainHeatSource->currentData().toInt();
     mHeatingSystem->mSecondHeatSource = (HeatingSystem::Fuel)ui->editSecondHeatSource->currentData().toInt();
+    mHeatingSystem->mWeatherStation   = ui->editWeatherStation->currentData().toString();
 
     mHeatingSystem->mSubstations.clear();
 

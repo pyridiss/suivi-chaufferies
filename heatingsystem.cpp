@@ -51,6 +51,8 @@ void HeatingSystem::load(QString fileName)
                 {
                     if (a.name() == "name")
                         mName = a.value().toString();
+                    if (a.name() == "weatherStation")
+                        mWeatherStation = a.value().toString();
                 }
             }
             if (xml.name() == "heat_sources")
@@ -182,6 +184,7 @@ void HeatingSystem::save()
 
     xml.writeStartElement("properties");
         xml.writeAttribute("name", mName);
+        xml.writeAttribute("weatherStation", mWeatherStation);
     xml.writeEndElement();
 
     xml.writeStartElement("heat_sources");

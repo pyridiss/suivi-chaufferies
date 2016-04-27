@@ -153,6 +153,8 @@ public:
     Fuel mMainHeatSource   = NoFuel;
     Fuel mSecondHeatSource = NoFuel;
 
+    QString mWeatherStation;
+
     SubstationsList mSubstations;
 
     double mInvestment = 0;
