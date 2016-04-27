@@ -366,7 +366,8 @@ void MainWindow::on_actionSend_triggered()
 
 void MainWindow::on_actionDownloadData_triggered()
 {
-    QUrl DJUFile("http://www.ale08.org/dju.xml");
+
+    QUrl DJUFile("http://www.ale08.org/suivi-chaufferies/" + mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation + ".xml");
     FileDownloader *downloader = new FileDownloader(DJUFile, this);
 
     QMessageBox *box = new QMessageBox(QMessageBox::Information,
@@ -444,13 +445,13 @@ void MainWindow::fileDownloaded(QByteArray* file)
 {
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
-    QFile outFile(dir.filePath("dju.xml"));
+    QFile outFile(dir.filePath(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation + ".xml"));
     outFile.open(QIODevice::WriteOnly);
     outFile.write(*file);
 
     QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
 
-    //mDJU.load();
+    mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation]->load(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation);
 }
 
 void MainWindow::actionNewHeatingSystem_triggered()
