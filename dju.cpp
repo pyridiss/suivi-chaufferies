@@ -11,8 +11,10 @@ DJU::DJU()
 {
 }
 
-void DJU::load()
+void DJU::load(QString weatherStation)
 {
+    mWeatherStation = weatherStation;
+
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
     if (!dir.exists())
@@ -20,7 +22,7 @@ void DJU::load()
         dir.mkpath(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
     }
 
-    QFile* file = new QFile(dir.filePath("dju.xml"));
+    QFile* file = new QFile(dir.filePath(weatherStation + ".xml"));
     bool fileOpened = file->open(QIODevice::ReadOnly);
     if (!fileOpened)
     {

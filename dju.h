@@ -10,7 +10,7 @@ public:
     DJU();
 
 public:
-    void load();
+    void load(QString weatherStation);
     double getDJU(QString date);
     double getDJU(QString date1, QString date2);
     QString getLastDataDate();
@@ -18,6 +18,7 @@ public:
     double getAverageDJU(QString date1, QString date2);
 
 private:
+    QString mWeatherStation;
     QMap<QString, double> mDJU;
     QMap< std::pair<QString, QString>, double> mPeriodicDJU;
     QList<int> mCompleteYears;
