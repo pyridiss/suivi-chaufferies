@@ -32,7 +32,7 @@ private:
     ShowFuelDeliveriesDialog *mShowFuelDeliveriesDialog;
 
 private:
-    DJU mDJU;
+    QMap<QString, DJU*> mDJU;
     QMap<QString, HeatingSystem*> mHeatingSystems;
     QString mCurrentHeatingSystem;
 

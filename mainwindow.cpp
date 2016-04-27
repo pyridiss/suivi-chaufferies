@@ -22,8 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mAddMetersRecordDialog,   SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
 
-    mDJU.load();
-
     /*
      * Set Energy Consumption chart design
      */
@@ -121,7 +119,10 @@ void MainWindow::readSettings()
         {
             HeatingSystem *newHeatingSystem = new HeatingSystem(this);
             newHeatingSystem->load(filename);
-            mHeatingSystems.insert(filename, newHeatingSystem);
+            QMap<QString, HeatingSystem*>::iterator i = mHeatingSystems.insert(filename, newHeatingSystem);
+            DJU* newDJU = new DJU();
+            newDJU->load(i.value()->mWeatherStation);
+            mDJU.insert(i.value()->mWeatherStation, newDJU);
         }
 
         QAction *heatingSystem = heatingSystemsGroup->addAction(name);
@@ -189,6 +190,7 @@ void MainWindow::updateEnergyConsumptionChart()
     name += mHeatingSystems[mCurrentHeatingSystem]->mName;
     name += "</span></p>";
 
+    DJU* currentDJU = mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation];
     ui->labelBoilerRoomName->setText(name);
 
     double theoreticAnnualConsumption = 0;
@@ -241,9 +243,9 @@ void MainWindow::updateEnergyConsumptionChart()
 
     QDate heatingSeasonBegin(2015, 7, 1);
     QDate heatingSeasonEnd  (2016, 6, 30);
-    QDate lastKnownTemperature = QDate::fromString(mDJU.getLastDataDate(), "yyyy-MM-dd");
+    QDate lastKnownTemperature = QDate::fromString(currentDJU->getLastDataDate(), "yyyy-MM-dd");
 
-    double averageDJUOfHeatingSeason = mDJU.getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+    double averageDJUOfHeatingSeason = currentDJU->getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
 
     int size1 = qMax(qint64(1), heatingSeasonBegin.daysTo(lastKnownTemperature) + 1);
     QVector <double> x1(size1), y1(size1);
@@ -251,22 +253,22 @@ void MainWindow::updateEnergyConsumptionChart()
     QDate d = heatingSeasonBegin;
 
     x1[0] = QDateTime(d).toTime_t();
-    y1[0] = mDJU.getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+    y1[0] = currentDJU->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
 
     for (int i = 1 ; i < size1 ; ++i)
     {
         d = d.addDays(1);
 
         x1[i] = QDateTime(d).toTime_t();
-        y1[i] = y1[i-1] + mDJU.getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+        y1[i] = y1[i-1] + currentDJU->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
     }
 
     ui->chart_EnergyConsumption->graph(1)->setData(x1, y1);
 
     //3. Graph 2: 'theoretic sum based on theoric DJU'
 
-    double DJUSinceBeginningOfHeatingSeason = mDJU.getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastKnownTemperature.toString("yyyy-MM-dd"));
-    double DJURestOfHeatingSeason           = mDJU.getAverageDJU(lastKnownTemperature.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+    double DJUSinceBeginningOfHeatingSeason = currentDJU->getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastKnownTemperature.toString("yyyy-MM-dd"));
+    double DJURestOfHeatingSeason           = currentDJU->getAverageDJU(lastKnownTemperature.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
 
     int size2 = lastKnownTemperature.daysTo(heatingSeasonEnd) + 1;
     QVector <double> x2(size2), y2(size2);
@@ -281,7 +283,7 @@ void MainWindow::updateEnergyConsumptionChart()
         d = d.addDays(1);
 
         x2[i] = QDateTime(d).toTime_t();
-        y2[i] = y2[i-1] + mDJU.getAverageDJU(d.toString("yyyy-MM-dd")) / (DJUSinceBeginningOfHeatingSeason + DJURestOfHeatingSeason) * theoreticAnnualConsumption;
+        y2[i] = y2[i-1] + currentDJU->getAverageDJU(d.toString("yyyy-MM-dd")) / (DJUSinceBeginningOfHeatingSeason + DJURestOfHeatingSeason) * theoreticAnnualConsumption;
     }
 
     ui->chart_EnergyConsumption->graph(2)->setData(x2, y2);
@@ -331,16 +333,16 @@ void MainWindow::updateEnergyConsumptionChart()
     while (!meterRecords.isEmpty() && d < meterRecords.lastKey())
     {
         if (d <= lastKnownTemperature)
-            DJUcovered += mDJU.getDJU(d.toString("yyyy-MM-dd"));
+            DJUcovered += currentDJU->getDJU(d.toString("yyyy-MM-dd"));
         else
-            DJUcovered += mDJU.getAverageDJU(d.toString("yyyy-MM-dd"));
+            DJUcovered += currentDJU->getAverageDJU(d.toString("yyyy-MM-dd"));
 
         d = d.addDays(1);
     }
 
     double expectedCorrectedConsumptionMWh = 0;
     if (!meterRecords.isEmpty())
-        expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * mDJU.getAverageDJU("2010-01-01", "2010-12-31");
+        expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * currentDJU->getAverageDJU("2010-01-01", "2010-12-31");
     ui->label_ExpectedCorrectedConsumption->setText("<b>" + locale.toString(expectedCorrectedConsumptionMWh, 'g', 3) + " MWh</b>");
 }
 
@@ -446,7 +448,7 @@ void MainWindow::fileDownloaded(QByteArray* file)
 
     QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
 
-    mDJU.load();
+    //mDJU.load();
 }
 
 void MainWindow::actionNewHeatingSystem_triggered()
