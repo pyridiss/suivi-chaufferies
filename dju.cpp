@@ -11,10 +11,8 @@ DJU::DJU()
 {
 }
 
-void DJU::load(QString weatherStation)
+void DJU::loadFromFile(QString weatherStation)
 {
-    mWeatherStation = weatherStation;
-
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
     if (!dir.exists())
@@ -29,8 +27,16 @@ void DJU::load(QString weatherStation)
         QMessageBox::warning(0, "Information", "Aucun fichier de données des DJU n'a été trouvé.");
         return;
     }
+    load(weatherStation, file->readAll());
 
-    QXmlStreamReader xml(file);
+    file->close();
+}
+
+void DJU::load(QString weatherStation, const QByteArray& data)
+{
+    mWeatherStation = weatherStation;
+
+    QXmlStreamReader xml(data);
 
     while (!xml.atEnd() && !xml.hasError())
     {
@@ -67,15 +73,13 @@ void DJU::load(QString weatherStation)
         return;
     }
 
-    file->close();
-
     //Check if data is exploitable and warn about it if necessary
     if (mCompleteMonthes.count() < 12)
         QMessageBox::warning(0, "Attention",
-                             "Les données de température ne couvrent pas une année complète ; il est impossible de déterminer une consommation théorique.\n(Station météo : " + weatherStation + ").");
+                             "Les données de température ne couvrent pas une année complète ; il est impossible de déterminer une consommation théorique.\n(Station météo : " + mWeatherStation + ").");
     else if (mCompleteMonthes.count() < 36)
         QMessageBox::warning(0, "Attention",
-                             "Les données de température couvrent moins de 3 années ; la consommation théorique sera peu précise.\n(Station météo : " + weatherStation + ").");
+                             "Les données de température couvrent moins de 3 années ; la consommation théorique sera peu précise.\n(Station météo : " + mWeatherStation + ").");
 }
 
 double DJU::getDJU(QString date)

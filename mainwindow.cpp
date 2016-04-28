@@ -121,7 +121,7 @@ void MainWindow::readSettings()
             newHeatingSystem->load(filename);
             QMap<QString, HeatingSystem*>::iterator i = mHeatingSystems.insert(filename, newHeatingSystem);
             DJU* newDJU = new DJU();
-            newDJU->load(i.value()->mWeatherStation);
+            newDJU->loadFromFile(i.value()->mWeatherStation);
             mDJU.insert(i.value()->mWeatherStation, newDJU);
         }
 
@@ -443,20 +443,23 @@ void MainWindow::on_pushButton_AddMetersRecord_clicked()
 
 void MainWindow::fileDownloaded(QByteArray* file)
 {
+    QString& weatherStation = mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation;
+
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/SuiviChaufferies/");
 
-    QFile outFile(dir.filePath(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation + ".xml"));
-    outFile.open(QIODevice::WriteOnly);
-    outFile.write(*file);
+    QFile* outFile = new QFile(dir.filePath(weatherStation + ".xml"));
+    outFile->open(QIODevice::WriteOnly);
+    outFile->write(*file);
+    outFile->close();
 
     QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
 
-    if (mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation] == NULL)
+    if (mDJU[weatherStation] == NULL)
     {
         DJU* newDJU = new DJU;
-        mDJU.insert(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation, newDJU);
+        mDJU.insert(weatherStation, newDJU);
     }
-    mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation]->load(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation);
+    mDJU[weatherStation]->load(weatherStation, *file);
 }
 
 void MainWindow::actionNewHeatingSystem_triggered()

@@ -10,7 +10,8 @@ public:
     DJU();
 
 public:
-    void load(QString weatherStation);
+    void loadFromFile(QString weatherStation);
+    void load(QString weatherStation, const QByteArray& data);
     double getDJU(QString date);
     double getDJU(QString date1, QString date2);
     QString getLastDataDate();
