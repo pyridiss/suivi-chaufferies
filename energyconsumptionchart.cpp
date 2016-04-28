@@ -5,13 +5,11 @@
 EnergyConsumptionChart::EnergyConsumptionChart(QWidget *parent) :
     QFrame(parent)
 {
-    QHBoxLayout* horizontalLayout = new QHBoxLayout(this);
-    horizontalLayout->setSpacing(6);
-    horizontalLayout->setContentsMargins(11, 11, 11, 11);
-
     mChart = new QCustomPlot(this);
 
-    horizontalLayout->addWidget(mChart);
+    QHBoxLayout* layout = new QHBoxLayout;
+    layout->addWidget(mChart);
+    setLayout(layout);
 
     mChart->setLocale(QLocale(QLocale::French, QLocale::France));
     mChart->plotLayout()->insertRow(0);
