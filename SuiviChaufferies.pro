@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     delegates/doublespinboxdelegate.cpp \
     dju.cpp \
     filedownloader.cpp \
-    heatingsystem.cpp
+    heatingsystem.cpp \
+    energyconsumptionchart.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     delegates/doublespinboxdelegate.h \
     dju.h \
     filedownloader.h \
-    heatingsystem.h
+    heatingsystem.h \
+    energyconsumptionchart.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
