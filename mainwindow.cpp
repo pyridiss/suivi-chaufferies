@@ -451,6 +451,11 @@ void MainWindow::fileDownloaded(QByteArray* file)
 
     QMessageBox::information(this, "Information", "Le fichier a été téléchargé.");
 
+    if (mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation] == NULL)
+    {
+        DJU* newDJU = new DJU;
+        mDJU.insert(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation, newDJU);
+    }
     mDJU[mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation]->load(mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation);
 }
 
