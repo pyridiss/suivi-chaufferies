@@ -45,20 +45,26 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
     setChartAxis(theoreticAnnualConsumption * 1.2);
     setChartLegend();
 
+    //Set pens
+    QPen greenPen, redPen;
+    greenPen.setColor(QColor(55, 164, 44));
+    greenPen.setWidthF(2);
+    redPen.setColor(QColor(232, 87, 82));
+    redPen.setWidthF(1.5);
+
+    //Other things
+    QLocale locale;
+
     /*
      * Graph #0: Sum of meters in substations
      */
 
     //Add a new layer to keep this graph on the top
     mChart->addLayer("mainGraph", mChart->layer("main"));
+
     mChart->setCurrentLayer("mainGraph");
     mChart->addGraph();
-
-    QPen pen;
-    pen.setColor(QColor(55, 164, 44));
-    pen.setWidthF(2);
-
-    mChart->graph(0)->setPen(pen);
+    mChart->graph(0)->setPen(greenPen);
     mChart->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
     mChart->graph(0)->setName("Relevés des compteurs de chaleur");
 
@@ -83,21 +89,15 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
     mChart->graph(0)->setData(x0, y0);
 
     /*
-     * Graph #1 and #2: Theoretic sums
+     * Graph #1 to #3: Theoretic sums
      */
-
-    mChart->setCurrentLayer("main");
 
     if (djuState == DJU_OK || djuState == DJU_LESSTHAN3YEARS)
     {
-        // #1: based on real DJU
+        // #1: theoretic sum based on real DJU
+        mChart->setCurrentLayer("main");
         mChart->addGraph();
-
-        QPen pen;
-        pen.setColor(QColor(232, 87, 82));
-        pen.setWidthF(1.5);
-
-        mChart->graph(1)->setPen(pen);
+        mChart->graph(1)->setPen(redPen);
         mChart->graph(1)->setName("Estimation à partir des données réelles de température");
 
         QDate heatingSeasonBegin(2015, 7, 1);
@@ -124,12 +124,12 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
         mChart->graph(1)->setData(x1, y1);
 
-        // #2: based on average DJU
+        // #2: theoretic sum based on average DJU
         mChart->addGraph();
 
-        pen.setStyle(Qt::DotLine);
+        redPen.setStyle(Qt::DotLine);
 
-        mChart->graph(2)->setPen(pen);
+        mChart->graph(2)->setPen(redPen);
         mChart->graph(2)->setName("Estimation à partir de données théoriques de température");
 
         double DJUSinceBeginningOfHeatingSeason = dju->getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastKnownTemperature.toString("yyyy-MM-dd"));
@@ -153,27 +153,23 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
         mChart->graph(2)->setData(x2, y2);
 
-        //Results
-        QLocale locale;
+        // #3: extension of the current data
+        //TODO: Remove this graph if no data is recorded.
+        mChart->setCurrentLayer("mainGraph");
+        mChart->addGraph();
 
-        //Expected consumption
-        double expectedConsumptionMWh = y2[size2 - 1];
-        expectedLabel->setText("<b>" + locale.toString(expectedConsumptionMWh, 'g', 3) + " MWh</b>");
+        greenPen.setStyle(Qt::DotLine);
 
-        //Shift
-        double theoreticConsumption = 0;
-        if (!meterRecords.isEmpty() && meterRecords.lastKey() > heatingSeasonBegin && meterRecords.lastKey() < heatingSeasonEnd)
-        {
-            if (meterRecords.lastKey() <= lastKnownTemperature)
-                theoreticConsumption = y1[heatingSeasonBegin.daysTo(meterRecords.lastKey()) - 1];
-            else
-                theoreticConsumption = y2[lastKnownTemperature.daysTo(meterRecords.lastKey()) - 1];
-        }
+        mChart->graph(3)->setPen(greenPen);
+        mChart->graph(3)->setName("Estimation des relevés futurs");
 
-        double shift = 0;
-        if (!meterRecords.isEmpty())
-            shift = (meterRecords.last() / 1000.f - theoreticConsumption) / theoreticConsumption * 100.f;
-        shiftLabel->setText(((shift >= 0) ? "<b>+ " : "<b>- ") + locale.toString((shift >= 0) ? shift : -shift, 'g', 3) + " %</b>");
+        QDate lastRecord = meterRecords.lastKey();
+
+        int size3 = lastRecord.daysTo(heatingSeasonEnd) + 1;
+        QVector <double> x3(size3), y3(size3);
+
+        x3[0] = QDateTime(lastRecord).toTime_t();
+        y3[0] = y0[meterRecords.size() - 1];
 
         //Expected corrected consumption
         double DJUcovered = 0;
@@ -189,10 +185,83 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
             d = d.addDays(1);
         }
 
-        double expectedCorrectedConsumptionMWh = 0;
-        if (!meterRecords.isEmpty())
-            expectedCorrectedConsumptionMWh = meterRecords.last() / 1000.f / DJUcovered * dju->getAverageDJU("2010-01-01", "2010-12-31");
-        expectedCorrectedLabel->setText("<b>" + locale.toString(expectedCorrectedConsumptionMWh, 'g', 3) + " MWh</b>");
+        d = lastRecord;
+        for (int i = 1 ; i < size3 ; ++i)
+        {
+            d = d.addDays(1);
+
+            x3[i] = QDateTime(d).toTime_t();
+            y3[i] = y3[i-1] + meterRecords.last() /1000.f / DJUcovered * dju->getAverageDJU(d.toString("yyyy-MM-dd"));
+        }
+
+        mChart->graph(3)->setData(x3, y3);
+
+        /*
+         * Results
+         */
+
+        greenPen.setStyle(Qt::SolidLine);
+        redPen.setStyle(Qt::SolidLine);
+
+        //Expected consumption
+        QCPItemTracer *tracer1 = new QCPItemTracer(mChart);
+        mChart->addItem(tracer1);
+        tracer1->setGraph(mChart->graph(2));
+        tracer1->setGraphKey(x2[size2-3]);
+        tracer1->setStyle(QCPItemTracer::tsCircle);
+        tracer1->setPen(redPen);
+        tracer1->setBrush(redPen.color());
+        tracer1->setSize(7);
+
+        QCPItemText *label1 = new QCPItemText(mChart);
+        mChart->addItem(label1);
+        label1->position->setType(QCPItemPosition::ptAxisRectRatio);
+        label1->setPositionAlignment(Qt::AlignRight);
+        label1->position->setCoords(0.95, 0.02);
+        label1->setText("Consommation théorique cette année :\n" + locale.toString(y2[size2-1], 'g', 3) + " MWh");
+        label1->setTextAlignment(Qt::AlignHCenter);
+        label1->setFont(QFont("sans", 8));
+
+        QCPItemCurve *arrow1 = new QCPItemCurve(mChart);
+        mChart->addItem(arrow1);
+        arrow1->start->setParentAnchor(label1->right);
+        arrow1->startDir->setParentAnchor(arrow1->start);
+        arrow1->startDir->setCoords(10, 0);
+        arrow1->end->setParentAnchor(tracer1->position);
+        arrow1->end->setCoords(-5, -5);
+        arrow1->endDir->setParentAnchor(arrow1->end);
+        arrow1->endDir->setCoords(-30, -30);
+        arrow1->setHead(QCPLineEnding::esSpikeArrow);
+
+        //Current trajectory
+        QCPItemTracer *tracer2 = new QCPItemTracer(mChart);
+        mChart->addItem(tracer2);
+        tracer2->setGraph(mChart->graph(3));
+        tracer2->setGraphKey(x3[size3-3]);
+        tracer2->setStyle(QCPItemTracer::tsCircle);
+        tracer2->setPen(greenPen);
+        tracer2->setBrush(greenPen.color());
+        tracer2->setSize(7);
+
+        QCPItemText *label2 = new QCPItemText(mChart);
+        mChart->addItem(label2);
+        label2->position->setType(QCPItemPosition::ptAxisRectRatio);
+        label2->setPositionAlignment(Qt::AlignRight);
+        label2->position->setCoords(0.95, 0.6);
+        label2->setText("Trajectoire actuelle :\n" + locale.toString(y3[size3-1], 'g', 3) + " MWh");
+        label2->setTextAlignment(Qt::AlignHCenter);
+        label2->setFont(QFont("sans", 8));
+
+        QCPItemCurve *arrow2 = new QCPItemCurve(mChart);
+        mChart->addItem(arrow2);
+        arrow2->start->setParentAnchor(label2->right);
+        arrow2->startDir->setParentAnchor(arrow2->start);
+        arrow2->startDir->setCoords(10, 0);
+        arrow2->end->setParentAnchor(tracer2->position);
+        arrow2->end->setCoords(-5, 5);
+        arrow2->endDir->setParentAnchor(arrow2->end);
+        arrow2->endDir->setCoords(-30, 30);
+        arrow2->setHead(QCPLineEnding::esSpikeArrow);
     }
 
     /*
@@ -203,21 +272,6 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
 }
 
-void EnergyConsumptionChart::setExpectedLabel(QLabel* l)
-{
-    expectedLabel = l;
-}
-
-void EnergyConsumptionChart::setShiftLabel(QLabel* l)
-{
-    shiftLabel = l;
-}
-
-void EnergyConsumptionChart::setExpectedCorrectedLabel(QLabel* l)
-{
-    expectedCorrectedLabel = l;
-}
-
 void EnergyConsumptionChart::clearChart()
 {
     //We start with a brand new QCustomPlot... not really efficient, but it works!
@@ -225,11 +279,6 @@ void EnergyConsumptionChart::clearChart()
     mChart = new QCustomPlot(this);
     layout()->addWidget(mChart);
     mChart->setLocale(QLocale(QLocale::French, QLocale::France));
-
-    //Remove data from labels
-    expectedLabel->setText("-");
-    shiftLabel->setText("-");
-    expectedCorrectedLabel->setText("-");
 }
 
 void EnergyConsumptionChart::setChartTitle(DJUstate djuState)

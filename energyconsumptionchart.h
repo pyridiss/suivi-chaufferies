@@ -19,9 +19,6 @@ public:
 
 public:
     void updateChart(HeatingSystem* heatingSystem, DJU *dju);
-    void setExpectedLabel(QLabel* l);
-    void setShiftLabel(QLabel* l);
-    void setExpectedCorrectedLabel(QLabel* l);
 
 private:
     void clearChart();
@@ -31,10 +28,6 @@ private:
 
 private:
     QCustomPlot *mChart;
-
-    QLabel* expectedLabel;
-    QLabel* shiftLabel;
-    QLabel* expectedCorrectedLabel;
 };
 
 #endif // ENERGYCONSUMPTIONCHART_H
