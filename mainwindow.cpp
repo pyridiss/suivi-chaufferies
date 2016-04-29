@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
 
     /* Configure Energy Consumption Chart */
-    ui->energyConsumptionChart->setResultsTable(ui->tableWidget_chartResults);
     ui->energyConsumptionChart->setExpectedLabel(ui->label_ExpectedConsumption);
     ui->energyConsumptionChart->setShiftLabel(ui->label_Shift);
     ui->energyConsumptionChart->setExpectedCorrectedLabel(ui->label_ExpectedCorrectedConsumption);

@@ -19,7 +19,6 @@ public:
 
 public:
     void updateChart(HeatingSystem* heatingSystem, DJU *dju);
-    void setResultsTable(QTableWidget *t);
     void setExpectedLabel(QLabel* l);
     void setShiftLabel(QLabel* l);
     void setExpectedCorrectedLabel(QLabel* l);
@@ -33,7 +32,6 @@ private:
 private:
     QCustomPlot *mChart;
 
-    QTableWidget *resultsTable;
     QLabel* expectedLabel;
     QLabel* shiftLabel;
     QLabel* expectedCorrectedLabel;

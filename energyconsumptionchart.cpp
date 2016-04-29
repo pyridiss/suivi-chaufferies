@@ -203,11 +203,6 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
 }
 
-void EnergyConsumptionChart::setResultsTable(QTableWidget *t)
-{
-    resultsTable = t;
-}
-
 void EnergyConsumptionChart::setExpectedLabel(QLabel* l)
 {
     expectedLabel = l;
@@ -230,10 +225,6 @@ void EnergyConsumptionChart::clearChart()
     mChart = new QCustomPlot(this);
     layout()->addWidget(mChart);
     mChart->setLocale(QLocale(QLocale::French, QLocale::France));
-
-    //Remove data from resultsTable
-    while (resultsTable->rowCount() > 0)
-        resultsTable->removeRow(0);
 
     //Remove data from labels
     expectedLabel->setText("-");
