@@ -11,6 +11,8 @@ class EnergyConsumptionChart : public QFrame
 {
     Q_OBJECT
 
+    enum DJUstate {DJU_OK, DJU_LESSTHAN3YEARS, DJU_LESSTHAN1YEAR, DJU_NOFILE};
+
 public:
     explicit EnergyConsumptionChart(QWidget *parent = 0);
     ~EnergyConsumptionChart();
@@ -21,6 +23,12 @@ public:
     void setExpectedLabel(QLabel* l);
     void setShiftLabel(QLabel* l);
     void setExpectedCorrectedLabel(QLabel* l);
+
+private:
+    void clearChart();
+    void setChartTitle(DJUstate djuState);
+    void setChartAxis(double ymax);
+    void setChartLegend();
 
 private:
     QCustomPlot *mChart;

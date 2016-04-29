@@ -72,14 +72,6 @@ void DJU::load(QString weatherStation, const QByteArray& data)
         QMessageBox::critical(0, "xml Parse Error", xml.errorString(), QMessageBox::Ok);
         return;
     }
-
-    //Check if data is exploitable and warn about it if necessary
-    if (mCompleteMonthes.count() < 12)
-        QMessageBox::warning(0, "Attention",
-                             "Les données de température ne couvrent pas une année complète ; il est impossible de déterminer une consommation théorique.\n(Station météo : " + mWeatherStation + ").");
-    else if (mCompleteMonthes.count() < 36)
-        QMessageBox::warning(0, "Attention",
-                             "Les données de température couvrent moins de 3 années ; la consommation théorique sera peu précise.\n(Station météo : " + mWeatherStation + ").");
 }
 
 double DJU::getDJU(QString date)
@@ -165,4 +157,9 @@ double DJU::getAverageDJU(QString date1, QString date2)
     }
 
     return averageDJU;
+}
+
+int DJU::completeMonthesNumber()
+{
+    return mCompleteMonthes.count();
 }

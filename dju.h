@@ -17,6 +17,7 @@ public:
     QString getLastDataDate();
     double getAverageDJU(QString date);
     double getAverageDJU(QString date1, QString date2);
+    int completeMonthesNumber();
 
 private:
     QString mWeatherStation;
