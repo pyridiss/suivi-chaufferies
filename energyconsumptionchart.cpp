@@ -35,14 +35,8 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
     else if (dju->completeMonthesNumber() < 36) djuState = DJU_LESSTHAN3YEARS;
     else djuState = DJU_OK;
 
-    //Theoretic annual consumption
-    double theoreticAnnualConsumption = 0;
-    for (QPair<QString, double> &substation : heatingSystem->mSubstations)
-        theoreticAnnualConsumption += substation.second;
-
     //Set chart properties
     setChartTitle(djuState);
-    setChartAxis(theoreticAnnualConsumption * 1.2);
     setChartLegend();
 
     //Set pens
@@ -56,17 +50,12 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
     QLocale locale;
 
     /*
-     * Graph #0: Sum of meters in substations
+     * Data needed to plot the graphs
      */
 
-    //Add a new layer to keep this graph on the top
-    mChart->addLayer("mainGraph", mChart->layer("main"));
-
-    mChart->setCurrentLayer("mainGraph");
-    mChart->addGraph();
-    mChart->graph(0)->setPen(greenPen);
-    mChart->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
-    mChart->graph(0)->setName("Relevés des compteurs de chaleur");
+    double theoreticAnnualConsumption = 0;
+    for (QPair<QString, double> &substation : heatingSystem->mSubstations)
+        theoreticAnnualConsumption += substation.second;
 
     QMap<QDate, int> meterRecords;
     for (const HeatingSystem::Record &record : heatingSystem->mRecords)
@@ -76,7 +65,32 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         else meterRecords[record.mDate] += record.mValue;
     }
 
-    QVector<double> x0(meterRecords.size()), y0(meterRecords.size());
+    QDate heatingSeasonBegin(2015, 7, 1);
+    QDate heatingSeasonEnd  (2016, 6, 30);
+    QDate lastDJU = QDate::fromString(dju->getLastDataDate(), "yyyy-MM-dd");
+    QDate lastRecord = (meterRecords.empty() == false) ? meterRecords.lastKey() : QDate();
+    QDate d;
+
+    double averageDJUOfHeatingSeason = dju->getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+
+    //Coordinates
+    QVector<double> x0, y0, x1, y1, x2, y2, x3, y3;
+
+    /*
+     * Graph #0: Sum of meters in substations
+     */
+
+    //Add a new layer to keep this graph on the top
+    mChart->addLayer("mainGraph", mChart->layer("main"));
+
+    mChart->setCurrentLayer("mainGraph");
+    QCPGraph* graph0 = mChart->addGraph();
+    graph0->setPen(greenPen);
+    graph0->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+    graph0->setName("Relevés des compteurs de chaleur");
+
+    x0.resize(meterRecords.size());
+    y0.resize(meterRecords.size());
 
     QMap<QDate, int>::iterator it = meterRecords.begin();
     for (int i = 0 ; i < meterRecords.size() ; ++i)
@@ -86,98 +100,33 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         ++it;
     }
 
-    mChart->graph(0)->setData(x0, y0);
+    graph0->setData(x0, y0);
 
     /*
-     * Graph #1 to #3: Theoretic sums
+     * Graph #1: Extension of the current data
      */
 
-    if (djuState == DJU_OK || djuState == DJU_LESSTHAN3YEARS)
+    if ((djuState == DJU_OK || djuState == DJU_LESSTHAN3YEARS) && meterRecords.empty() == false)
     {
-        // #1: theoretic sum based on real DJU
-        mChart->setCurrentLayer("main");
-        mChart->addGraph();
-        mChart->graph(1)->setPen(redPen);
-        mChart->graph(1)->setName("Estimation à partir des données réelles de température");
-
-        QDate heatingSeasonBegin(2015, 7, 1);
-        QDate heatingSeasonEnd  (2016, 6, 30);
-        QDate lastKnownTemperature = QDate::fromString(dju->getLastDataDate(), "yyyy-MM-dd");
-
-        double averageDJUOfHeatingSeason = dju->getAverageDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
-
-        int size1 = qMax(qint64(1), heatingSeasonBegin.daysTo(lastKnownTemperature) + 1);
-        QVector <double> x1(size1), y1(size1);
-
-        QDate d = heatingSeasonBegin;
-
-        x1[0] = QDateTime(d).toTime_t();
-        y1[0] = dju->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
-
-        for (int i = 1 ; i < size1 ; ++i)
-        {
-            d = d.addDays(1);
-
-            x1[i] = QDateTime(d).toTime_t();
-            y1[i] = y1[i-1] + dju->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
-        }
-
-        mChart->graph(1)->setData(x1, y1);
-
-        // #2: theoretic sum based on average DJU
-        mChart->addGraph();
-
-        redPen.setStyle(Qt::DotLine);
-
-        mChart->graph(2)->setPen(redPen);
-        mChart->graph(2)->setName("Estimation à partir de données théoriques de température");
-
-        double DJUSinceBeginningOfHeatingSeason = dju->getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastKnownTemperature.toString("yyyy-MM-dd"));
-        double DJURestOfHeatingSeason           = dju->getAverageDJU(lastKnownTemperature.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
-
-        int size2 = lastKnownTemperature.daysTo(heatingSeasonEnd) + 1;
-        QVector <double> x2(size2), y2(size2);
-
-        d = lastKnownTemperature;
-
-        x2[0] = QDateTime(d).toTime_t();
-        y2[0] = y1[size1 - 1];
-
-        for (int i = 1 ; i < size2 ; ++i)
-        {
-            d = d.addDays(1);
-
-            x2[i] = QDateTime(d).toTime_t();
-            y2[i] = y2[i-1] + dju->getAverageDJU(d.toString("yyyy-MM-dd")) / (DJUSinceBeginningOfHeatingSeason + DJURestOfHeatingSeason) * theoreticAnnualConsumption;
-        }
-
-        mChart->graph(2)->setData(x2, y2);
-
-        // #3: extension of the current data
-        //TODO: Remove this graph if no data is recorded.
-        mChart->setCurrentLayer("mainGraph");
-        mChart->addGraph();
+        QCPGraph* graph1 = mChart->addGraph();
 
         greenPen.setStyle(Qt::DotLine);
 
-        mChart->graph(3)->setPen(greenPen);
-        mChart->graph(3)->setName("Estimation des relevés futurs");
+        graph1->setPen(greenPen);
+        graph1->setName("Estimation des relevés futurs");
 
-        QDate lastRecord = meterRecords.lastKey();
+        x1.resize(lastRecord.daysTo(heatingSeasonEnd) + 1);
+        y1.resize(lastRecord.daysTo(heatingSeasonEnd) + 1);
 
-        int size3 = lastRecord.daysTo(heatingSeasonEnd) + 1;
-        QVector <double> x3(size3), y3(size3);
+        x1[0] = QDateTime(lastRecord).toTime_t();
+        y1[0] = y0[meterRecords.size() - 1];
 
-        x3[0] = QDateTime(lastRecord).toTime_t();
-        y3[0] = y0[meterRecords.size() - 1];
-
-        //Expected corrected consumption
         double DJUcovered = 0;
 
         d = heatingSeasonBegin;
         while (!meterRecords.isEmpty() && d < meterRecords.lastKey())
         {
-            if (d <= lastKnownTemperature)
+            if (d <= lastDJU)
                 DJUcovered += dju->getDJU(d.toString("yyyy-MM-dd"));
             else
                 DJUcovered += dju->getAverageDJU(d.toString("yyyy-MM-dd"));
@@ -186,39 +135,34 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         }
 
         d = lastRecord;
-        for (int i = 1 ; i < size3 ; ++i)
+        for (int i = 1 ; i < x1.size() ; ++i)
         {
             d = d.addDays(1);
 
-            x3[i] = QDateTime(d).toTime_t();
-            y3[i] = y3[i-1] + meterRecords.last() /1000.f / DJUcovered * dju->getAverageDJU(d.toString("yyyy-MM-dd"));
+            x1[i] = QDateTime(d).toTime_t();
+            y1[i] = y1[i-1] + meterRecords.last() /1000.f / DJUcovered * dju->getAverageDJU(d.toString("yyyy-MM-dd"));
         }
 
-        mChart->graph(3)->setData(x3, y3);
+        graph1->setData(x1, y1);
 
-        /*
-         * Results
-         */
-
+        //Result
         greenPen.setStyle(Qt::SolidLine);
-        redPen.setStyle(Qt::SolidLine);
 
-        //Expected consumption
         QCPItemTracer *tracer1 = new QCPItemTracer(mChart);
         mChart->addItem(tracer1);
-        tracer1->setGraph(mChart->graph(2));
-        tracer1->setGraphKey(x2[size2-3]);
+        tracer1->setGraph(graph1);
+        tracer1->setGraphKey(x1[x1.size() - 3]);
         tracer1->setStyle(QCPItemTracer::tsCircle);
-        tracer1->setPen(redPen);
-        tracer1->setBrush(redPen.color());
+        tracer1->setPen(greenPen);
+        tracer1->setBrush(greenPen.color());
         tracer1->setSize(7);
 
         QCPItemText *label1 = new QCPItemText(mChart);
         mChart->addItem(label1);
         label1->position->setType(QCPItemPosition::ptAxisRectRatio);
         label1->setPositionAlignment(Qt::AlignRight);
-        label1->position->setCoords(0.95, 0.02);
-        label1->setText("Consommation théorique cette année :\n" + locale.toString(y2[size2-1], 'g', 3) + " MWh");
+        label1->position->setCoords(0.95, 0.6);
+        label1->setText("Trajectoire actuelle :\n" + locale.toString(y1[y1.size() - 1], 'g', 3) + " MWh");
         label1->setTextAlignment(Qt::AlignHCenter);
         label1->setFont(QFont("sans", 8));
 
@@ -228,46 +172,109 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         arrow1->startDir->setParentAnchor(arrow1->start);
         arrow1->startDir->setCoords(10, 0);
         arrow1->end->setParentAnchor(tracer1->position);
-        arrow1->end->setCoords(-5, -5);
+        arrow1->end->setCoords(-5, 5);
         arrow1->endDir->setParentAnchor(arrow1->end);
-        arrow1->endDir->setCoords(-30, -30);
+        arrow1->endDir->setCoords(-30, 30);
         arrow1->setHead(QCPLineEnding::esSpikeArrow);
+    }
 
-        //Current trajectory
-        QCPItemTracer *tracer2 = new QCPItemTracer(mChart);
-        mChart->addItem(tracer2);
-        tracer2->setGraph(mChart->graph(3));
-        tracer2->setGraphKey(x3[size3-3]);
-        tracer2->setStyle(QCPItemTracer::tsCircle);
-        tracer2->setPen(greenPen);
-        tracer2->setBrush(greenPen.color());
-        tracer2->setSize(7);
+    /*
+     * Graph #2 and #3: Theoretic sums
+     */
 
-        QCPItemText *label2 = new QCPItemText(mChart);
-        mChart->addItem(label2);
-        label2->position->setType(QCPItemPosition::ptAxisRectRatio);
-        label2->setPositionAlignment(Qt::AlignRight);
-        label2->position->setCoords(0.95, 0.6);
-        label2->setText("Trajectoire actuelle :\n" + locale.toString(y3[size3-1], 'g', 3) + " MWh");
-        label2->setTextAlignment(Qt::AlignHCenter);
-        label2->setFont(QFont("sans", 8));
+    if (djuState == DJU_OK || djuState == DJU_LESSTHAN3YEARS)
+    {
+        // #1: theoretic sum based on real DJU
+        mChart->setCurrentLayer("main");
+        QCPGraph* graph2 = mChart->addGraph();
+        graph2->setPen(redPen);
+        graph2->setName("Estimation à partir des données réelles de température");
 
-        QCPItemCurve *arrow2 = new QCPItemCurve(mChart);
-        mChart->addItem(arrow2);
-        arrow2->start->setParentAnchor(label2->right);
-        arrow2->startDir->setParentAnchor(arrow2->start);
-        arrow2->startDir->setCoords(10, 0);
-        arrow2->end->setParentAnchor(tracer2->position);
-        arrow2->end->setCoords(-5, 5);
-        arrow2->endDir->setParentAnchor(arrow2->end);
-        arrow2->endDir->setCoords(-30, 30);
-        arrow2->setHead(QCPLineEnding::esSpikeArrow);
+        x2.resize(qMax(qint64(1), heatingSeasonBegin.daysTo(lastDJU) + 1));
+        y2.resize(qMax(qint64(1), heatingSeasonBegin.daysTo(lastDJU) + 1));
+
+        d = heatingSeasonBegin;
+
+        x2[0] = QDateTime(d).toTime_t();
+        y2[0] = dju->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+
+        for (int i = 1 ; i < x2.size() ; ++i)
+        {
+            d = d.addDays(1);
+
+            x2[i] = QDateTime(d).toTime_t();
+            y2[i] = y2[i-1] + dju->getDJU(d.toString("yyyy-MM-dd")) / averageDJUOfHeatingSeason * theoreticAnnualConsumption;
+        }
+
+        graph2->setData(x2, y2);
+
+        // #2: theoretic sum based on average DJU
+        QCPGraph* graph3 = mChart->addGraph();
+
+        redPen.setStyle(Qt::DotLine);
+
+        graph3->setPen(redPen);
+        graph3->setName("Estimation à partir de données théoriques de température");
+
+        double DJUSinceBeginningOfHeatingSeason = dju->getDJU(heatingSeasonBegin.toString("yyyy-MM-dd"), lastDJU.toString("yyyy-MM-dd"));
+        double DJURestOfHeatingSeason           = dju->getAverageDJU(lastDJU.toString("yyyy-MM-dd"), heatingSeasonEnd.toString("yyyy-MM-dd"));
+
+        x3.resize(lastDJU.daysTo(heatingSeasonEnd) + 1);
+        y3.resize(lastDJU.daysTo(heatingSeasonEnd) + 1);
+
+        x3[0] = QDateTime(d).toTime_t();
+        y3[0] = y2[y2.size() - 1];
+
+        d = lastDJU;
+
+        for (int i = 1 ; i < x3.size() ; ++i)
+        {
+            d = d.addDays(1);
+
+            x3[i] = QDateTime(d).toTime_t();
+            y3[i] = y3[i-1] + dju->getAverageDJU(d.toString("yyyy-MM-dd")) / (DJUSinceBeginningOfHeatingSeason + DJURestOfHeatingSeason) * theoreticAnnualConsumption;
+        }
+
+        graph3->setData(x3, y3);
+
+        //Result
+        redPen.setStyle(Qt::SolidLine);
+
+        QCPItemTracer *tracer3 = new QCPItemTracer(mChart);
+        mChart->addItem(tracer3);
+        tracer3->setGraph(graph3);
+        tracer3->setGraphKey(x3[x3.size() - 3]);
+        tracer3->setStyle(QCPItemTracer::tsCircle);
+        tracer3->setPen(redPen);
+        tracer3->setBrush(redPen.color());
+        tracer3->setSize(7);
+
+        QCPItemText *label3 = new QCPItemText(mChart);
+        mChart->addItem(label3);
+        label3->position->setType(QCPItemPosition::ptAxisRectRatio);
+        label3->setPositionAlignment(Qt::AlignRight);
+        label3->position->setCoords(0.95, 0.02);
+        label3->setText("Consommation théorique cette année :\n" + locale.toString(y3[y3.size() - 1], 'g', 3) + " MWh");
+        label3->setTextAlignment(Qt::AlignHCenter);
+        label3->setFont(QFont("sans", 8));
+
+        QCPItemCurve *arrow3 = new QCPItemCurve(mChart);
+        mChart->addItem(arrow3);
+        arrow3->start->setParentAnchor(label3->right);
+        arrow3->startDir->setParentAnchor(arrow3->start);
+        arrow3->startDir->setCoords(10, 0);
+        arrow3->end->setParentAnchor(tracer3->position);
+        arrow3->end->setCoords(-5, -5);
+        arrow3->endDir->setParentAnchor(arrow3->end);
+        arrow3->endDir->setCoords(-30, -30);
+        arrow3->setHead(QCPLineEnding::esSpikeArrow);
     }
 
     /*
      * End
      */
 
+    setChartAxis(theoreticAnnualConsumption * 1.2);
     mChart->replot();
 
 }
