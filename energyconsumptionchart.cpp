@@ -159,9 +159,10 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
         QCPItemText *label1 = new QCPItemText(mChart);
         mChart->addItem(label1);
-        label1->position->setType(QCPItemPosition::ptAxisRectRatio);
+        int label1_pos = (y1[y1.size() - 1] < theoreticAnnualConsumption) ? -1 : 1;
+        label1->position->setType(QCPItemPosition::ptPlotCoords);
+        label1->position->setCoords(QDateTime(heatingSeasonEnd.addMonths(-1)).toTime_t(), y1[y1.size() - 1] * (1 + 0.2 * label1_pos));
         label1->setPositionAlignment(Qt::AlignRight);
-        label1->position->setCoords(0.95, 0.6);
         label1->setText("Trajectoire actuelle :\n" + locale.toString(y1[y1.size() - 1], 'g', 3) + " MWh");
         label1->setTextAlignment(Qt::AlignHCenter);
         label1->setFont(QFont("sans", 8));
@@ -172,9 +173,9 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         arrow1->startDir->setParentAnchor(arrow1->start);
         arrow1->startDir->setCoords(10, 0);
         arrow1->end->setParentAnchor(tracer1->position);
-        arrow1->end->setCoords(-5, 5);
+        arrow1->end->setCoords(-5, -5 * label1_pos);
         arrow1->endDir->setParentAnchor(arrow1->end);
-        arrow1->endDir->setCoords(-30, 30);
+        arrow1->endDir->setCoords(-30, -30 * label1_pos);
         arrow1->setHead(QCPLineEnding::esSpikeArrow);
     }
 
@@ -251,10 +252,11 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
 
         QCPItemText *label3 = new QCPItemText(mChart);
         mChart->addItem(label3);
-        label3->position->setType(QCPItemPosition::ptAxisRectRatio);
+        int label3_pos = (y3[y3.size() - 1] < y1[y1.size() - 1]) ? -1 : 1;
+        label3->position->setType(QCPItemPosition::ptPlotCoords);
+        label3->position->setCoords(QDateTime(heatingSeasonEnd.addMonths(-1)).toTime_t(), y3[y3.size() - 1] * (1 + 0.2 * label3_pos));
         label3->setPositionAlignment(Qt::AlignRight);
-        label3->position->setCoords(0.95, 0.02);
-        label3->setText("Consommation théorique cette année :\n" + locale.toString(y3[y3.size() - 1], 'g', 3) + " MWh");
+        label3->setText("Consommation théorique :\n" + locale.toString(y3[y3.size() - 1], 'g', 3) + " MWh");
         label3->setTextAlignment(Qt::AlignHCenter);
         label3->setFont(QFont("sans", 8));
 
@@ -264,9 +266,9 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
         arrow3->startDir->setParentAnchor(arrow3->start);
         arrow3->startDir->setCoords(10, 0);
         arrow3->end->setParentAnchor(tracer3->position);
-        arrow3->end->setCoords(-5, -5);
+        arrow3->end->setCoords(-5, -5 * label3_pos);
         arrow3->endDir->setParentAnchor(arrow3->end);
-        arrow3->endDir->setCoords(-30, -30);
+        arrow3->endDir->setCoords(-30, -30 * label3_pos);
         arrow3->setHead(QCPLineEnding::esSpikeArrow);
     }
 
@@ -274,7 +276,10 @@ void EnergyConsumptionChart::updateChart(HeatingSystem *heatingSystem, DJU* dju)
      * End
      */
 
-    setChartAxis(theoreticAnnualConsumption * 1.2);
+    double ymax = theoreticAnnualConsumption * 1.2;
+    if (y1.empty() == false) ymax = qMax(y1[y1.size() - 1] * 1.2, ymax);
+    if (y3.empty() == false) ymax = qMax(y3[y3.size() - 1] * 1.2, ymax);
+    setChartAxis(ymax);
     mChart->replot();
 
 }
