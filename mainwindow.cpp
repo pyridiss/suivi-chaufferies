@@ -2,6 +2,7 @@
 
 #include "qcustomplot/qcustomplot.h"
 #include "filedownloader.h"
+#include "tabstyle.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -91,6 +92,10 @@ void MainWindow::readSettings()
             action->trigger();
         }
     }
+
+    ui->tabWidget->tabBar()->setStyle(new TabStyle);
+
+    ui->pushButton_AddFuelDelivery->setFocus();
 }
 
 void MainWindow::saveSettings()
@@ -132,7 +137,7 @@ void MainWindow::changeCurrentHeatingSystem()
 void MainWindow::updateEnergyConsumptionChart()
 {
     //Update name of the heating system
-    QString name = "<p align=\"center\"><span style=\"font-weight:600;\">";
+    QString name = "<p align=\"center\"><span style=\"font-weight:600;font-size:12pt;\">";
     name += mHeatingSystems[mCurrentHeatingSystem]->mName;
     name += "</span></p>";
 

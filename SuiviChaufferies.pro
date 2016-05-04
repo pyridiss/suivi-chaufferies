@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     dju.cpp \
     filedownloader.cpp \
     heatingsystem.cpp \
-    energyconsumptionchart.cpp
+    energyconsumptionchart.cpp \
+    tabstyle.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     dju.h \
     filedownloader.h \
     heatingsystem.h \
-    energyconsumptionchart.h
+    energyconsumptionchart.h \
+    tabstyle.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
