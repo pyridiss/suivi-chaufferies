@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     mConfigurationDialog = new ConfigurationDialog(this);
-    mAddFullDeliveryDialog = new AddFuelDeliveryDialog(ui->dataFrame);
+    mAddFullDelivery = new AddFuelDelivery(ui->dataFrame);
     mAddMetersRecordDialog = new AddMetersRecordDialog(ui->dataFrame);
     mShowMetersRecordsDialog = new ShowMetersRecordsDialog(this);
     mShowFuelDeliveriesDialog = new ShowFuelDeliveriesDialog(this);
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mAddMetersRecordDialog,   SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
 
-    mAddFullDeliveryDialog->hide();
+    mAddFullDelivery->hide();
     mAddMetersRecordDialog->hide();
 }
 
@@ -253,18 +253,18 @@ void MainWindow::on_pushButton_AddFuelDelivery_toggled(bool checked)
         return;
     }
 
-    mAddFullDeliveryDialog->resetValues();
+    mAddFullDelivery->resetValues();
 
     if (checked)
     {
-        mAddFullDeliveryDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
-        mAddFullDeliveryDialog->setMinimumWidth(ui->dataFrame->width());
-        mAddFullDeliveryDialog->show();
+        mAddFullDelivery->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
+        mAddFullDelivery->setMinimumWidth(ui->dataFrame->width());
+        mAddFullDelivery->show();
         ui->pushButton_AddMetersRecord->setChecked(false);
         ui->pushButton_AddIntervention->setChecked(false);
     }
     else
-        mAddFullDeliveryDialog->hide();
+        mAddFullDelivery->hide();
 }
 
 void MainWindow::on_pushButton_AddMetersRecord_toggled(bool checked)

@@ -26,7 +26,7 @@ public:
 private:
     Ui::MainWindow *ui;
     ConfigurationDialog *mConfigurationDialog;
-    AddFuelDeliveryDialog *mAddFullDeliveryDialog;
+    AddFuelDelivery *mAddFullDelivery;
     AddMetersRecordDialog *mAddMetersRecordDialog;
     ShowMetersRecordsDialog *mShowMetersRecordsDialog;
     ShowFuelDeliveriesDialog *mShowFuelDeliveriesDialog;

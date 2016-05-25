@@ -1,9 +1,9 @@
 #include "addfueldelivery.h"
-#include "ui_addfueldeliverydialog.h"
+#include "ui_addfueldelivery.h"
 
-AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
+AddFuelDelivery::AddFuelDelivery(QWidget *parent) :
     QFrame(parent),
-    ui(new Ui::AddFuelDeliveryDialog)
+    ui(new Ui::AddFuelDelivery)
 {
     ui->setupUi(this);
 
@@ -20,12 +20,12 @@ AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxClicked(QAbstractButton*)));
 }
 
-AddFuelDeliveryDialog::~AddFuelDeliveryDialog()
+AddFuelDelivery::~AddFuelDelivery()
 {
     delete ui;
 }
 
-void AddFuelDeliveryDialog::resetValues()
+void AddFuelDelivery::resetValues()
 {
     ui->radioButton_None->setChecked(true);
 
@@ -55,7 +55,7 @@ void AddFuelDeliveryDialog::resetValues()
     hideAllGroupBoxes();
 }
 
-void AddFuelDeliveryDialog::hideAllGroupBoxes()
+void AddFuelDelivery::hideAllGroupBoxes()
 {
     ui->groupBox_WoodChips->hide();
     ui->groupBox_Pellets->hide();
@@ -67,14 +67,14 @@ void AddFuelDeliveryDialog::hideAllGroupBoxes()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::deactivate(bool status)
+void AddFuelDelivery::deactivate(bool status)
 {
     ui->editDeliveryDate->setEnabled(!status);
     ui->editProvider->setEnabled(!status);
     ui->editComment->setEnabled(!status);
 }
 
-void AddFuelDeliveryDialog::setHeatingSystem(HeatingSystem *system)
+void AddFuelDelivery::setHeatingSystem(HeatingSystem *system)
 {
     mHeatingSystem = system;
 
@@ -128,7 +128,7 @@ void AddFuelDeliveryDialog::setHeatingSystem(HeatingSystem *system)
     resetValues();
 }
 
-void AddFuelDeliveryDialog::showWoodChipsGroup()
+void AddFuelDelivery::showWoodChipsGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_WoodChips->show();
@@ -136,7 +136,7 @@ void AddFuelDeliveryDialog::showWoodChipsGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::showPelletsGroup()
+void AddFuelDelivery::showPelletsGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_Pellets->show();
@@ -144,7 +144,7 @@ void AddFuelDeliveryDialog::showPelletsGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::showFuelOilGroup()
+void AddFuelDelivery::showFuelOilGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_FuelOil->show();
@@ -152,7 +152,7 @@ void AddFuelDeliveryDialog::showFuelOilGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::showPropaneGroup()
+void AddFuelDelivery::showPropaneGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_Propane->show();
@@ -160,7 +160,7 @@ void AddFuelDeliveryDialog::showPropaneGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::showNaturalGasGroup()
+void AddFuelDelivery::showNaturalGasGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_NaturalGas->show();
@@ -168,7 +168,7 @@ void AddFuelDeliveryDialog::showNaturalGasGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::showElectricityGroup()
+void AddFuelDelivery::showElectricityGroup()
 {
     hideAllGroupBoxes();
     ui->groupBox_Electricity->show();
@@ -176,13 +176,13 @@ void AddFuelDeliveryDialog::showElectricityGroup()
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
-void AddFuelDeliveryDialog::buttonBoxClicked(QAbstractButton* button)
+void AddFuelDelivery::buttonBoxClicked(QAbstractButton* button)
 {
     if (ui->buttonBox->buttonRole(button) == QDialogButtonBox::ResetRole)
         resetValues();
 }
 
-void AddFuelDeliveryDialog::on_buttonBox_accepted()
+void AddFuelDelivery::on_buttonBox_accepted()
 {
     //1. Wood chips
     if (ui->editWoodChipsQuantity->value() > 0)

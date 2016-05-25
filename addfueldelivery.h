@@ -1,27 +1,27 @@
-#ifndef ADDFUELDELIVERYDIALOG_H
-#define ADDFUELDELIVERYDIALOG_H
+#ifndef ADDFUELDELIVERY_H
+#define ADDFUELDELIVERY_H
 
 #include <QFrame>
 #include <QAbstractButton>
 #include <heatingsystem.h>
 
 namespace Ui {
-class AddFuelDeliveryDialog;
+class AddFuelDelivery;
 }
 
-class AddFuelDeliveryDialog : public QFrame
+class AddFuelDelivery : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit AddFuelDeliveryDialog(QWidget *parent = 0);
-    ~AddFuelDeliveryDialog();
+    explicit AddFuelDelivery(QWidget *parent = 0);
+    ~AddFuelDelivery();
 
 public:
     void resetValues();
 
 private:
-    Ui::AddFuelDeliveryDialog *ui;
+    Ui::AddFuelDelivery *ui;
     HeatingSystem* mHeatingSystem;
 
 public slots:
@@ -41,4 +41,4 @@ private slots:
     void buttonBoxClicked(QAbstractButton* button);
 };
 
-#endif // ADDFUELDELIVERYDIALOG_H
+#endif // ADDFUELDELIVERY_H
