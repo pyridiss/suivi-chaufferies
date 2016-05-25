@@ -59,7 +59,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="setScreen_FuelDeliveries">
              <property name="styleSheet">
               <string notr="true">margin-left:20px;
 margin-right:20px;
@@ -71,7 +71,7 @@ padding:6px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="setScreen_MetersRecords">
              <property name="styleSheet">
               <string notr="true">margin-left:20px;
 margin-right:20px;
@@ -83,7 +83,7 @@ padding:6px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_5">
+            <widget class="QPushButton" name="setScreen_Interventions">
              <property name="styleSheet">
               <string notr="true">margin-left:20px;
 margin-right:20px;
@@ -346,8 +346,6 @@ font-weight:bold;</string>
     <property name="title">
      <string>Données</string>
     </property>
-    <addaction name="actionShowDeliveries"/>
-    <addaction name="actionShowMetersRecord"/>
     <addaction name="actionSend"/>
     <addaction name="actionDownloadData"/>
    </widget>
@@ -386,12 +384,11 @@ font-weight:bold;</string>
     <bool>false</bool>
    </attribute>
    <addaction name="actionHeatingSystems"/>
-   <addaction name="actionShowDeliveries"/>
-   <addaction name="actionShowMetersRecord"/>
+   <addaction name="actionConfigureBoilerRoom"/>
   </widget>
   <action name="actionConfigureBoilerRoom">
    <property name="icon">
-    <iconset theme="document-properties">
+    <iconset theme="configure">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -437,24 +434,6 @@ font-weight:bold;</string>
     <string>&amp;Mettre à jour les données de prix des énergies et de température</string>
    </property>
   </action>
-  <action name="actionShowDeliveries">
-   <property name="icon">
-    <iconset theme="table">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Afficher les livraisons de combustible</string>
-   </property>
-  </action>
-  <action name="actionShowMetersRecord">
-   <property name="icon">
-    <iconset theme="table">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Afficher les &amp;relevés des compteurs</string>
-   </property>
-  </action>
   <action name="actionAboutSoftware">
    <property name="icon">
     <iconset theme="dialog-information">
@@ -475,7 +454,7 @@ font-weight:bold;</string>
   </action>
   <action name="actionHeatingSystems">
    <property name="icon">
-    <iconset theme="configure">
+    <iconset>
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">

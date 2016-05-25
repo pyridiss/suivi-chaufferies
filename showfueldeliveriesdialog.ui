@@ -11,10 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Livraisons de combsutible</string>
+   <string>Livraisons de combustible</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="clock"/>
+   <iconset theme="clock">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

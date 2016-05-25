@@ -180,30 +180,6 @@ void MainWindow::on_actionDownloadData_triggered()
     connect(downloader, SIGNAL(downloaded(QByteArray*)), this, SLOT(fileDownloaded(QByteArray*)));
 }
 
-void MainWindow::on_actionShowDeliveries_triggered()
-{
-    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
-    {
-        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
-        return;
-    }
-    mShowFuelDeliveriesDialog->resetValues();
-    mShowFuelDeliveriesDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
-    mShowFuelDeliveriesDialog->show();
-}
-
-void MainWindow::on_actionShowMetersRecord_triggered()
-{
-    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
-    {
-        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
-        return;
-    }
-    mShowMetersRecordsDialog->resetValues();
-    mShowMetersRecordsDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
-    mShowMetersRecordsDialog->show();
-}
-
 void MainWindow::on_actionAboutSoftware_triggered()
 {
     QMessageBox::about(this, "À propos du logiciel", "Logiciel développé par l'ALE 08.");
@@ -309,4 +285,35 @@ void MainWindow::on_pushButton_AddMetersRecord_toggled(bool checked)
     }
     else
         mAddMetersRecordDialog->hide();
+}
+
+void MainWindow::on_setScreen_FuelDeliveries_clicked()
+{
+    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
+    {
+        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
+        return;
+    }
+
+    mShowFuelDeliveriesDialog->resetValues();
+    mShowFuelDeliveriesDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
+    mShowFuelDeliveriesDialog->show();
+}
+
+void MainWindow::on_setScreen_MetersRecords_clicked()
+{
+    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
+    {
+        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
+        return;
+    }
+
+    mShowMetersRecordsDialog->resetValues();
+    mShowMetersRecordsDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
+    mShowMetersRecordsDialog->show();
+}
+
+void MainWindow::on_setScreen_Interventions_clicked()
+{
+
 }
