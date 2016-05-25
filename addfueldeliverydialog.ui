@@ -7,34 +7,58 @@
     <x>0</x>
     <y>0</y>
     <width>425</width>
-    <height>719</height>
+    <height>1100</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Saississez ici vos quantités de combustibles livrées.</string>
-     </property>
-    </widget>
-   </item>
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_Fuels">
      <property name="title">
       <string>Combustible livré</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QRadioButton" name="radioButton_Wood">
+       <widget class="QRadioButton" name="radioButton_None">
         <property name="text">
-         <string>&amp;Bois</string>
+         <string>Aucun</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButton_SecondaryFuel">
+       <widget class="QRadioButton" name="radioButton_WoodChips">
         <property name="text">
-         <string>Appoin&amp;t</string>
+         <string>&amp;Bois déchiqueté</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_Pellets">
+        <property name="text">
+         <string>&amp;Granulés</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_FuelOil">
+        <property name="text">
+         <string>Fioul</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_Propane">
+        <property name="text">
+         <string>Propane</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_NaturalGas">
+        <property name="text">
+         <string>Relevé du compteur de ga&amp;z naturel</string>
         </property>
        </widget>
       </item>
@@ -48,32 +72,73 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_Wood">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item row="11" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_NaturalGas">
      <property name="title">
-      <string>Livraison de bois</string>
+      <string>Relevé du compteur de gaz naturel</string>
      </property>
-     <layout class="QFormLayout" name="formLayout_2">
+     <layout class="QFormLayout" name="formLayout_4">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="label_13">
         <property name="text">
-         <string>Date de la livraison</string>
+         <string>Valeur relevée</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDateEdit" name="dateEdit_Wood">
+       <widget class="QDoubleSpinBox" name="editNaturalGasIndex">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="suffix">
+         <string> m³</string>
+        </property>
        </widget>
       </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="12" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Electricity">
+     <property name="title">
+      <string>Relevé du compteur électrique</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Valeur relevée</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="editElectricityIndex">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> kWh</string>
+        </property>
+        <property name="maximum">
+         <number>1000000</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_WoodChips">
+     <property name="title">
+      <string>Livraison de bois déchiqueté</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
       <item row="1" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
@@ -84,14 +149,14 @@
       <item row="1" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
         <item>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_Wood">
+         <widget class="QDoubleSpinBox" name="editWoodChipsQuantity">
           <property name="maximum">
            <double>10000.000000000000000</double>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_WoodUnit">
+         <widget class="QComboBox" name="editWoodChipsUnit">
           <item>
            <property name="text">
             <string>MAP</string>
@@ -121,7 +186,7 @@
       <item row="2" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_WoodMoisture">
+         <widget class="QDoubleSpinBox" name="editWoodChipsMoisture">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -148,6 +213,22 @@
         </item>
        </layout>
       </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="editWoodChipsBill">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> €</string>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
@@ -155,8 +236,90 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_WoodBill">
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDateEdit" name="editDeliveryDate">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Fournisseur</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Pellets">
+     <property name="title">
+      <string>Livraison de granulés</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Quantité livrée</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="editPelletsQuantity">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> tonnes</string>
+        </property>
+        <property name="maximum">
+         <double>10000.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Montant de la facture</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>PCI du bois</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="editPelletsLHV">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> kWh / tonne</string>
+        </property>
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+        <property name="singleStep">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="editPelletsBill">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -174,31 +337,44 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_SecondaryFuel">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+   <item row="9" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_FuelOil">
      <property name="title">
-      <string>Livraison d'appoint</string>
+      <string>Livraison de fioul</string>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
-      <item row="1" column="0">
+      <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
          <string>Quantité livrée</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="editFuelOilQuantity">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string> litres</string>
+        </property>
+        <property name="maximum">
+         <number>1000000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Montant de la facture</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_SecondaryFuelBill">
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="editFuelOilBill">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -213,74 +389,58 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Date de la livraison</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDateEdit" name="dateEdit_SecondaryFuel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_SecondaryFuel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximum">
-         <number>1000000</number>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_NaturalGas">
-     <property name="enabled">
-      <bool>false</bool>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Date de la livraison ou du relevé</string>
      </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Saississez ici vos quantités de combustibles livrées.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="0">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>Commentaire sur la livraison</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="1">
+    <widget class="QPlainTextEdit" name="editComment"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="editProvider"/>
+   </item>
+   <item row="10" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Propane">
      <property name="title">
-      <string>Relevé du compteur de gaz naturel</string>
+      <string>Livraison de propane</string>
      </property>
-     <layout class="QFormLayout" name="formLayout_4">
+     <layout class="QFormLayout" name="formLayout_6">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_12">
+       <widget class="QLabel" name="label_17">
         <property name="text">
-         <string>Date du relevé</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDateEdit" name="dateEdit_NaturalGas">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+         <string>Quantité livrée</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_13">
+       <widget class="QLabel" name="label_16">
         <property name="text">
-         <string>Valeur relevée</string>
+         <string>Montant de la facture</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_NaturalGas">
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="editPropaneQuantity">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -288,48 +448,15 @@
          </sizepolicy>
         </property>
         <property name="suffix">
-         <string> m³</string>
+         <string> kg</string>
         </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_Electricity">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Relevé du compteur électrique</string>
-     </property>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Date du relevé</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDateEdit" name="dateEdit_Electricity">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Valeur relevée</string>
+        <property name="maximum">
+         <number>10000</number>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_Electricity">
+       <widget class="QDoubleSpinBox" name="editPropaneBill">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -337,17 +464,17 @@
          </sizepolicy>
         </property>
         <property name="suffix">
-         <string> kWh</string>
+         <string> €</string>
         </property>
         <property name="maximum">
-         <number>1000000</number>
+         <double>10000.000000000000000</double>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="14" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>

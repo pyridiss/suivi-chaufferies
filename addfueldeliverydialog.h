@@ -26,9 +26,15 @@ private:
 
 public slots:
     void setHeatingSystem(HeatingSystem *system);
-    void changeSelectionToWood();
-    void changeSelectionToSecondaryFuel();
-    void changeSelectionToElectricity();
+    void hideAllGroupBoxes();
+    void deactivate(bool status);
+
+    void showWoodChipsGroup();
+    void showPelletsGroup();
+    void showFuelOilGroup();
+    void showPropaneGroup();
+    void showNaturalGasGroup();
+    void showElectricityGroup();
 
 private slots:
     void on_buttonBox_accepted();
