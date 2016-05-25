@@ -10,13 +10,6 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Enregistrer un relevé des compteurs de chaleur</string>
-  </property>
-  <property name="windowIcon">
-   <iconset theme="clock">
-    <normaloff>.</normaloff>.</iconset>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0">
    <item>
     <widget class="QLabel" name="label">
