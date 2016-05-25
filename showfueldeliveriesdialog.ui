@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
+    <width>1000</width>
     <height>670</height>
    </rect>
   </property>
@@ -19,15 +19,15 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox_Wood">
+    <widget class="QGroupBox" name="groupBox_Fuels">
      <property name="title">
-      <string>Livraisons de bois</string>
+      <string>Livraisons de combustibles</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Vous pouvez modifier les caractéristiques des livraisons enregistrées  à partir du tableau ci-dessous. La dernière colonne vous permet de supprimer des livraisons si nécessaire.</string>
+         <string>Vous pouvez modifier les caractéristiques des livraisons enregistrées à partir du tableau ci-dessous. La dernière colonne vous permet de supprimer des livraisons si nécessaire.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -35,7 +35,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QTableWidget" name="tableWidget_Wood">
+       <widget class="QTableWidget" name="tableFuels">
         <property name="verticalScrollMode">
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
@@ -45,6 +45,16 @@
         <column>
          <property name="text">
           <string>Date</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>UUID</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Combustible</string>
          </property>
         </column>
         <column>
@@ -59,63 +69,12 @@
         </column>
         <column>
          <property name="text">
+          <string>Pouvoir Calorifique</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
           <string>Humidité</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Énergie livrée</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Facture</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Prix au MWh</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string/>
-         </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_SecondaryFuel">
-     <property name="title">
-      <string>Livraisons de combustible d'appoint</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Utilisez la dernière colonne pour supprimer des livraisons si nécessaire.</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="tableWidget_SecondaryFuel">
-        <property name="verticalScrollMode">
-         <enum>QAbstractItemView::ScrollPerPixel</enum>
-        </property>
-        <property name="horizontalScrollMode">
-         <enum>QAbstractItemView::ScrollPerPixel</enum>
-        </property>
-        <column>
-         <property name="text">
-          <string>Date</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Quantité livrée</string>
          </property>
         </column>
         <column>

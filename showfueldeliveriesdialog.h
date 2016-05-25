@@ -25,12 +25,10 @@ private:
 
 public slots:
     void setHeatingSystem(HeatingSystem *system);
-    void recordChanged_Wood(int x, int y);
-    void recordChanged_SecondaryFuel(int x, int y);
+    void recordChanged_Fuel(int x, int y);
     void recordChanged_NaturalGas(int x, int y);
     void recordChanged_Electricity(int x, int y);
-    void deleteWoodDelivery();
-    void deleteSecondaryFuelDelivery();
+    void deleteFuelDelivery();
     void updateSums();
 
 signals:

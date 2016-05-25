@@ -190,10 +190,11 @@ void AddFuelDelivery::on_buttonBox_accepted()
         HeatingSystem::FuelDelivery delivery(HeatingSystem::WoodChips,
                                              ui->editDeliveryDate->date(),
                                              ui->editWoodChipsQuantity->value(),
+                                             /*ui->editWoodChipsUnit->currentIndex()*/ HeatingSystem::ApparentCubicMeters,
                                              ui->editWoodChipsBill->value(),
-                                             ui->editWoodChipsUnit->currentIndex(),
+                                             3.5,
                                              ui->editWoodChipsMoisture->value());
-        mHeatingSystem->mWoodDeliveries.push_back(delivery);
+        mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
     //2. Pellets
@@ -203,10 +204,10 @@ void AddFuelDelivery::on_buttonBox_accepted()
         HeatingSystem::FuelDelivery delivery(HeatingSystem::Pellets,
                                              ui->editDeliveryDate->date(),
                                              ui->editPelletsQuantity->value(),
+                                             HeatingSystem::Tons,
                                              ui->editPelletsBill->value(),
-                                             0,
-                                             0);
-        mHeatingSystem->mWoodDeliveries.push_back(delivery);
+                                             ui->editPelletsLHV->value());
+        mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
     //3. Fuel oil
@@ -215,8 +216,10 @@ void AddFuelDelivery::on_buttonBox_accepted()
         HeatingSystem::FuelDelivery delivery(HeatingSystem::FuelOil,
                                              ui->editDeliveryDate->date(),
                                              ui->editFuelOilQuantity->value(),
-                                             ui->editFuelOilBill->value());
-        mHeatingSystem->mFossilFuelDeliveries.push_back(delivery);
+                                             HeatingSystem::Liters,
+                                             ui->editFuelOilBill->value(),
+                                             9.96);
+        mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
     //4. Propane
@@ -225,8 +228,10 @@ void AddFuelDelivery::on_buttonBox_accepted()
         HeatingSystem::FuelDelivery delivery(HeatingSystem::Propane,
                                              ui->editDeliveryDate->date(),
                                              ui->editPropaneQuantity->value(),
-                                             ui->editPropaneBill->value());
-        mHeatingSystem->mFossilFuelDeliveries.push_back(delivery);
+                                             HeatingSystem::Kilograms,
+                                             ui->editPropaneBill->value(),
+                                             12.1);
+        mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
     //5. Natural gas

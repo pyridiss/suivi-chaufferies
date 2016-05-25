@@ -26,6 +26,17 @@ public:
     };
     Q_ENUM(Fuel)
 
+    enum FuelUnits
+    {
+        Kilograms,
+        Tons,
+        Liters,
+        CubicMeters,
+        ApparentCubicMeters,
+        kWh,
+        MWh
+    };
+
     struct Record
     {
         QString mSubstation;
@@ -65,8 +76,9 @@ public:
         Fuel mFuel           = NoFuel;
         QDate mDate;
         double mValue        = 0;
+        FuelUnits mUnit      = MWh;
         double mBill         = 0;
-        int mWoodUnit        = 0;
+        double mLHV          = 0;
         double mWoodMoisture = 0;
 
     private:
@@ -79,13 +91,14 @@ public:
             mHash = QUuid::createUuid().toString();
         }
 
-        FuelDelivery(Fuel fuel, QDate date, double value, double bill, int woodUnit = 0, double woodMoisture = 0)
+        FuelDelivery(Fuel fuel, QDate date, double value, FuelUnits unit, double bill, double lhv, double woodMoisture = 0)
         {
             mFuel = fuel;
             mDate = date;
             mValue = value;
+            mUnit = unit;
             mBill = bill;
-            mWoodUnit = woodUnit;
+            mLHV = lhv;
             mWoodMoisture = woodMoisture;
 
             mHash = QUuid::createUuid().toString();
@@ -178,8 +191,7 @@ public:
 
     QList<Record> mRecords;
     QList<Record> mMainHeatMeterRecords;
-    QList<FuelDelivery> mWoodDeliveries;
-    QList<FuelDelivery> mFossilFuelDeliveries;
+    QList<FuelDelivery> mFuelDeliveries;
     QList<FuelIndex> mNaturalGasIndexes;
     QList<FuelIndex> mElectricityIndexes;
 };
