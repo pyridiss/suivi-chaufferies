@@ -47,9 +47,10 @@ private slots:
     void on_actionAboutSoftware_triggered();
     void on_actionAboutQt_triggered();
     void actionNewHeatingSystem_triggered();
-    void on_pushButton_AddFuelDelivery_clicked();
-    void on_pushButton_AddMetersRecord_clicked();
     void fileDownloaded(QByteArray *file);
+
+    void on_pushButton_AddFuelDelivery_toggled(bool checked);
+    void on_pushButton_AddMetersRecord_toggled(bool checked);
 
 public slots:
     void readSettings();

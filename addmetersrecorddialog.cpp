@@ -6,11 +6,13 @@
 #include "ui_addmetersrecorddialog.h"
 
 AddMetersRecordDialog::AddMetersRecordDialog(QWidget *parent) :
-    QDialog(parent),
+    QFrame(parent),
     ui(new Ui::AddMetersRecordDialog)
 {
     ui->setupUi(this);
     ui->dateEdit_RecordDate->setDate(QDate::currentDate());
+
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxClicked(QAbstractButton*)));
 }
 
 AddMetersRecordDialog::~AddMetersRecordDialog()
@@ -40,7 +42,7 @@ void AddMetersRecordDialog::setHeatingSystem(HeatingSystem *system)
 
     for (int i = 0 ; i < system->mSubstations.size() ; ++i)
     {
-        layout->addWidget(new QLabel(system->mSubstations[i].first), i, 0);
+        layout->addWidget(new QLabel("<p style='text-align:right;'>" + system->mSubstations[i].first + "</p>"), i, 0);
 
         QSpinBox* spinBox = new QSpinBox(ui->groupBox_Records);
         spinBox->setSuffix(" kWh");
@@ -50,6 +52,13 @@ void AddMetersRecordDialog::setHeatingSystem(HeatingSystem *system)
 
         spinBoxes.push_back(spinBox);
     }
+}
+
+void AddMetersRecordDialog::resetValues()
+{
+    ui->dateEdit_RecordDate->setDate(QDate::currentDate());
+    ui->spinBox_MainHeatMeter->setValue(0);
+    setHeatingSystem(mHeatingSystem);
 }
 
 void AddMetersRecordDialog::on_buttonBox_accepted()
@@ -77,4 +86,11 @@ void AddMetersRecordDialog::on_buttonBox_accepted()
 
     emit settingsChanged();
     mHeatingSystem->save();
+    resetValues();
+}
+
+void AddMetersRecordDialog::buttonBoxClicked(QAbstractButton* button)
+{
+    if (ui->buttonBox->buttonRole(button) == QDialogButtonBox::ResetRole)
+        resetValues();
 }

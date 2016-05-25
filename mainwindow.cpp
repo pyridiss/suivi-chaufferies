@@ -14,14 +14,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     mConfigurationDialog = new ConfigurationDialog(this);
-    mAddFullDeliveryDialog = new AddFuelDeliveryDialog(this);
-    mAddMetersRecordDialog = new AddMetersRecordDialog(this);
+    mAddFullDeliveryDialog = new AddFuelDeliveryDialog(ui->dataFrame);
+    mAddMetersRecordDialog = new AddMetersRecordDialog(ui->dataFrame);
     mShowMetersRecordsDialog = new ShowMetersRecordsDialog(this);
     mShowFuelDeliveriesDialog = new ShowFuelDeliveriesDialog(this);
 
     connect(mConfigurationDialog,     SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mAddMetersRecordDialog,   SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
     connect(mShowMetersRecordsDialog, SIGNAL(settingsChanged()), this, SLOT(updateEnergyConsumptionChart()));
+
+    mAddFullDeliveryDialog->hide();
+    mAddMetersRecordDialog->hide();
 }
 
 MainWindow::~MainWindow()
@@ -216,29 +219,6 @@ void MainWindow::on_actionExit_triggered()
     qApp->exit();
 }
 
-void MainWindow::on_pushButton_AddFuelDelivery_clicked()
-{
-    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
-    {
-        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
-        return;
-    }
-    mAddFullDeliveryDialog->resetValues();
-    mAddFullDeliveryDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
-    mAddFullDeliveryDialog->show();
-}
-
-void MainWindow::on_pushButton_AddMetersRecord_clicked()
-{
-    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
-    {
-        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
-        return;
-    }
-    mAddMetersRecordDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
-    mAddMetersRecordDialog->show();
-}
-
 void MainWindow::fileDownloaded(QByteArray* file)
 {
     QString& weatherStation = mHeatingSystems[mCurrentHeatingSystem]->mWeatherStation;
@@ -287,4 +267,46 @@ void MainWindow::actionNewHeatingSystem_triggered()
 
     //Update menu
     readSettings();
+}
+
+void MainWindow::on_pushButton_AddFuelDelivery_toggled(bool checked)
+{
+    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
+    {
+        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
+        return;
+    }
+
+    mAddFullDeliveryDialog->resetValues();
+
+    if (checked)
+    {
+        mAddFullDeliveryDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
+        mAddFullDeliveryDialog->setMinimumWidth(ui->dataFrame->width());
+        mAddFullDeliveryDialog->show();
+        ui->pushButton_AddMetersRecord->setChecked(false);
+        ui->pushButton_AddIntervention->setChecked(false);
+    }
+    else
+        mAddFullDeliveryDialog->hide();
+}
+
+void MainWindow::on_pushButton_AddMetersRecord_toggled(bool checked)
+{
+    if (mHeatingSystems[mCurrentHeatingSystem] == NULL)
+    {
+        QMessageBox::critical(this, "Erreur", "Aucune chaufferie n'est définie.");
+        return;
+    }
+
+    if (checked)
+    {
+        mAddMetersRecordDialog->setHeatingSystem(mHeatingSystems[mCurrentHeatingSystem]);
+        mAddMetersRecordDialog->setMinimumWidth(ui->dataFrame->width());
+        mAddMetersRecordDialog->show();
+        ui->pushButton_AddFuelDelivery->setChecked(false);
+        ui->pushButton_AddIntervention->setChecked(false);
+    }
+    else
+        mAddMetersRecordDialog->hide();
 }

@@ -2,7 +2,7 @@
 #include "ui_addfueldeliverydialog.h"
 
 AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
-    QDialog(parent),
+    QFrame(parent),
     ui(new Ui::AddFuelDeliveryDialog)
 {
     ui->setupUi(this);
@@ -10,6 +10,7 @@ AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :
     connect(ui->radioButton_Wood, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToWood()));
     connect(ui->radioButton_SecondaryFuel, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToSecondaryFuel()));
     connect(ui->radioButton_Electricity, SIGNAL(clicked(bool)), this, SLOT(changeSelectionToElectricity()));
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxClicked(QAbstractButton*)));
 }
 
 AddFuelDeliveryDialog::~AddFuelDeliveryDialog()
@@ -86,7 +87,6 @@ void AddFuelDeliveryDialog::setHeatingSystem(HeatingSystem *system)
             break;
     }
 
-    //TODO: This line does not work because minimumSize() is not updated yet.
     resize(layout()->minimumSize().width(), layout()->minimumSize().height());
 }
 
@@ -112,6 +112,12 @@ void AddFuelDeliveryDialog::changeSelectionToElectricity()
     ui->groupBox_SecondaryFuel->setEnabled(false);
     ui->groupBox_NaturalGas->setEnabled(false);
     ui->groupBox_Electricity->setEnabled(true);
+}
+
+void AddFuelDeliveryDialog::buttonBoxClicked(QAbstractButton* button)
+{
+    if (ui->buttonBox->buttonRole(button) == QDialogButtonBox::ResetRole)
+        resetValues();
 }
 
 void AddFuelDeliveryDialog::on_buttonBox_accepted()
@@ -157,4 +163,5 @@ void AddFuelDeliveryDialog::on_buttonBox_accepted()
     }
 
     mHeatingSystem->save();
+    resetValues();
 }

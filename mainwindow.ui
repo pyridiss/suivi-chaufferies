@@ -31,33 +31,163 @@
        <attribute name="title">
         <string>Gestion de la chaufferie</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_AddFuelDelivery">
-          <property name="text">
-           <string>Enregistrer une livraison de combustible</string>
+       <layout class="QGridLayout" name="gridLayout_5" rowstretch="3,2,1" columnstretch="1,2">
+        <item row="0" column="1" rowspan="3">
+         <widget class="QFrame" name="dataFrame">
+          <property name="maximumSize">
+           <size>
+            <width>550</width>
+            <height>16777215</height>
+           </size>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_AddMetersRecord">
-          <property name="text">
-           <string>Enregistrer un relevé des compteurs de chaleur</string>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
           </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4"/>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_3">
-          <property name="text">
-           <string>Enregistrer une intervention</string>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Consulter ou modifier les données</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="styleSheet">
+              <string notr="true">margin-left:20px;
+margin-right:20px;
+padding:6px;</string>
+             </property>
+             <property name="text">
+              <string>Livraisons de combustibles</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="styleSheet">
+              <string notr="true">margin-left:20px;
+margin-right:20px;
+padding:6px;</string>
+             </property>
+             <property name="text">
+              <string>Relevés des compteurs de chaleur</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="styleSheet">
+              <string notr="true">margin-left:20px;
+margin-right:20px;
+padding:6px;</string>
+             </property>
+             <property name="text">
+              <string>Interventions</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Terminer la saison de chauffe actuelle</string>
+        <item row="2" column="0">
+         <widget class="QGroupBox" name="groupBox_4">
+          <property name="title">
+           <string>Saisons de chauffe</string>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QPushButton" name="pushButton_6">
+             <property name="styleSheet">
+              <string notr="true">margin-left:20px;
+margin-right:20px;
+padding:6px;</string>
+             </property>
+             <property name="text">
+              <string>Débuter une nouvelle saison</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="styleSheet">
+              <string notr="true">margin-left:20px;
+margin-right:20px;
+padding:6px;</string>
+             </property>
+             <property name="text">
+              <string>Terminer la saison actuelle</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="title">
+           <string>Enregistrer des données</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QPushButton" name="pushButton_AddFuelDelivery">
+             <property name="styleSheet">
+              <string notr="true">text-align:right;
+padding:12px;
+margin-left:50px;
+font-weight:bold;</string>
+             </property>
+             <property name="text">
+              <string>Livraison de combustible &gt;&gt;</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_AddMetersRecord">
+             <property name="styleSheet">
+              <string notr="true">text-align:right;
+padding:12px;
+margin-left:50px;
+font-weight:bold;</string>
+             </property>
+             <property name="text">
+              <string>Relevé des compteurs de chaleur &gt;&gt;</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_AddIntervention">
+             <property name="styleSheet">
+              <string notr="true">text-align:right;
+padding:12px;
+margin-left:50px;
+font-weight:bold;</string>
+             </property>
+             <property name="text">
+              <string>Intervention &gt;&gt;</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
