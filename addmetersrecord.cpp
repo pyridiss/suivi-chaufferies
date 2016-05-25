@@ -2,7 +2,7 @@
 #include <QLabel>
 #include <QSpinBox>
 
-#include "addmetersrecorddialog.h"
+#include "addmetersrecord.h"
 #include "ui_addmetersrecorddialog.h"
 
 AddMetersRecordDialog::AddMetersRecordDialog(QWidget *parent) :

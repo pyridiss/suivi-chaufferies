@@ -1,4 +1,4 @@
-#include "addfueldeliverydialog.h"
+#include "addfueldelivery.h"
 #include "ui_addfueldeliverydialog.h"
 
 AddFuelDeliveryDialog::AddFuelDeliveryDialog(QWidget *parent) :

@@ -16,8 +16,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     configurationdialog.cpp \
     qcustomplot/qcustomplot.cpp \
-    addfueldeliverydialog.cpp \
-    addmetersrecorddialog.cpp \
     showmetersrecordsdialog.cpp \
     showfueldeliveriesdialog.cpp \
     delegates/comboboxdelegate.cpp \
@@ -26,13 +24,13 @@ SOURCES += main.cpp\
     filedownloader.cpp \
     heatingsystem.cpp \
     energyconsumptionchart.cpp \
-    tabstyle.cpp
+    tabstyle.cpp \
+    addfueldelivery.cpp \
+    addmetersrecord.cpp
 
 HEADERS  += mainwindow.h \
     configurationdialog.h \
     qcustomplot/qcustomplot.h \
-    addfueldeliverydialog.h \
-    addmetersrecorddialog.h \
     showmetersrecordsdialog.h \
     showfueldeliveriesdialog.h \
     delegates/comboboxdelegate.h \
@@ -41,14 +39,16 @@ HEADERS  += mainwindow.h \
     filedownloader.h \
     heatingsystem.h \
     energyconsumptionchart.h \
-    tabstyle.h
+    tabstyle.h \
+    addfueldelivery.h \
+    addmetersrecord.h
 
 FORMS    += mainwindow.ui \
     configurationdialog.ui \
-    addfueldeliverydialog.ui \
-    addmetersrecorddialog.ui \
     showmetersrecordsdialog.ui \
-    showfueldeliveriesdialog.ui
+    showfueldeliveriesdialog.ui \
+    addfueldelivery.ui \
+    addmetersrecord.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 

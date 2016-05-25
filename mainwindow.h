@@ -4,8 +4,8 @@
 #include <QMainWindow>
 
 #include <configurationdialog.h>
-#include <addfueldeliverydialog.h>
-#include <addmetersrecorddialog.h>
+#include <addfueldelivery.h>
+#include <addmetersrecord.h>
 #include <showmetersrecordsdialog.h>
 #include <showfueldeliveriesdialog.h>
 #include <dju.h>
