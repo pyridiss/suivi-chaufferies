@@ -1,5 +1,5 @@
-#ifndef ADDMETERSRECORDDIALOG_H
-#define ADDMETERSRECORDDIALOG_H
+#ifndef ADDMETERSRECORD_H
+#define ADDMETERSRECORD_H
 
 #include <QFrame>
 #include <QSpinBox>
@@ -7,22 +7,22 @@
 #include <heatingsystem.h>
 
 namespace Ui {
-class AddMetersRecordDialog;
+class AddMetersRecord;
 }
 
-class AddMetersRecordDialog : public QFrame
+class AddMetersRecord : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit AddMetersRecordDialog(QWidget *parent = 0);
-    ~AddMetersRecordDialog();
+    explicit AddMetersRecord(QWidget *parent = 0);
+    ~AddMetersRecord();
 
 public:
     void resetValues();
 
 private:
-    Ui::AddMetersRecordDialog *ui;
+    Ui::AddMetersRecord *ui;
     QList<QSpinBox*> spinBoxes;
     HeatingSystem *mHeatingSystem;
 
@@ -37,4 +37,4 @@ signals:
     void settingsChanged();
 };
 
-#endif // ADDMETERSRECORDDIALOG_H
+#endif // ADDMETERSRECORD_H

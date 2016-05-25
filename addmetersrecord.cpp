@@ -3,11 +3,11 @@
 #include <QSpinBox>
 
 #include "addmetersrecord.h"
-#include "ui_addmetersrecorddialog.h"
+#include "ui_addmetersrecord.h"
 
-AddMetersRecordDialog::AddMetersRecordDialog(QWidget *parent) :
+AddMetersRecord::AddMetersRecord(QWidget *parent) :
     QFrame(parent),
-    ui(new Ui::AddMetersRecordDialog)
+    ui(new Ui::AddMetersRecord)
 {
     ui->setupUi(this);
     ui->dateEdit_RecordDate->setDate(QDate::currentDate());
@@ -15,12 +15,12 @@ AddMetersRecordDialog::AddMetersRecordDialog(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxClicked(QAbstractButton*)));
 }
 
-AddMetersRecordDialog::~AddMetersRecordDialog()
+AddMetersRecord::~AddMetersRecord()
 {
     delete ui;
 }
 
-void AddMetersRecordDialog::setHeatingSystem(HeatingSystem *system)
+void AddMetersRecord::setHeatingSystem(HeatingSystem *system)
 {
     mHeatingSystem = system;
 
@@ -54,14 +54,14 @@ void AddMetersRecordDialog::setHeatingSystem(HeatingSystem *system)
     }
 }
 
-void AddMetersRecordDialog::resetValues()
+void AddMetersRecord::resetValues()
 {
     ui->dateEdit_RecordDate->setDate(QDate::currentDate());
     ui->spinBox_MainHeatMeter->setValue(0);
     setHeatingSystem(mHeatingSystem);
 }
 
-void AddMetersRecordDialog::on_buttonBox_accepted()
+void AddMetersRecord::on_buttonBox_accepted()
 {
     //1. Main heat meter
     if (ui->spinBox_MainHeatMeter->value() > 0)
@@ -89,7 +89,7 @@ void AddMetersRecordDialog::on_buttonBox_accepted()
     resetValues();
 }
 
-void AddMetersRecordDialog::buttonBoxClicked(QAbstractButton* button)
+void AddMetersRecord::buttonBoxClicked(QAbstractButton* button)
 {
     if (ui->buttonBox->buttonRole(button) == QDialogButtonBox::ResetRole)
         resetValues();
