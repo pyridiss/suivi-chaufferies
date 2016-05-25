@@ -106,6 +106,8 @@ void HeatingSystem::load(QString fileName)
                         mBoilerEfficiency = a.value().toDouble();
                     if (a.name() == "networkEfficiency")
                         mNetworkEfficiency = a.value().toDouble();
+                    if (a.name() == "electricMeter")
+                        mElectricMeter = a.value().toInt();
                     if (a.name() == "mainHeatMeter")
                         mMainHeatMeter = a.value().toInt();
                 }
@@ -204,6 +206,7 @@ void HeatingSystem::save()
         xml.writeAttribute("annualWoodConsumption", QString::number(mAnnualWoodConsumption));
         xml.writeAttribute("boilerEfficiency",      QString::number(mBoilerEfficiency));
         xml.writeAttribute("networkEfficiency",     QString::number(mNetworkEfficiency));
+        xml.writeAttribute("electricMeter",         QString::number(mElectricMeter));
         xml.writeAttribute("mainHeatMeter",         QString::number(mMainHeatMeter));
     xml.writeEndElement();
 

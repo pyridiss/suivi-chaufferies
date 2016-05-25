@@ -154,6 +154,13 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
+           <widget class="QCheckBox" name="editElectricMeter">
+            <property name="text">
+             <string>Compteur d'électricité dédié à la chaufferie</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="editMainHeatMeter">
             <property name="text">
              <string>Compteur de chaleur général</string>

@@ -122,6 +122,9 @@ void AddFuelDeliveryDialog::setHeatingSystem(HeatingSystem *system)
             break;
     }
 
+    if (system->mElectricMeter)
+        ui->radioButton_Electricity->show();
+
     resetValues();
 }
 

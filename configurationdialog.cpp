@@ -135,6 +135,7 @@ void ConfigurationDialog::setHeatingSystem(HeatingSystem *system)
     ui->editBoilerEfficiency     ->setValue(system->mBoilerEfficiency);
     ui->editNetworkEfficiency    ->setValue(system->mNetworkEfficiency);
     ui->editAnnualWoodConsumption->setValue(system->mAnnualWoodConsumption);
+    ui->editElectricMeter        ->setChecked(system->mElectricMeter);
     ui->editMainHeatMeter        ->setChecked(system->mMainHeatMeter);
 }
 
@@ -194,6 +195,7 @@ void ConfigurationDialog::on_buttonBox_accepted()
     mHeatingSystem->mBoilerEfficiency      = ui->editBoilerEfficiency->value();
     mHeatingSystem->mNetworkEfficiency     = ui->editNetworkEfficiency->value();
     mHeatingSystem->mAnnualWoodConsumption = ui->editAnnualWoodConsumption->value();
+    mHeatingSystem->mElectricMeter         = ui->editElectricMeter->isChecked();
     mHeatingSystem->mMainHeatMeter         = ui->editMainHeatMeter->isChecked();
 
     emit settingsChanged();

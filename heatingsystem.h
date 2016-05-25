@@ -166,6 +166,7 @@ public:
     double mAnnualWoodConsumption = 0;
     double mBoilerEfficiency      = 0;
     double mNetworkEfficiency     = 0;
+    bool mElectricMeter           = false;
     bool mMainHeatMeter           = false;
 
     bool mHeatSellActivated          = false;
