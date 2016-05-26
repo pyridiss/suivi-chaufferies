@@ -136,6 +136,16 @@ public:
             if (mFuel == Propane)
                 mLHV = 12.78; //kWh / kg
         }
+        void checkUnit()
+        {
+            if (mFuel == Pellets)
+            {
+                mUnit = Tons;
+                mLHV = 5000;
+            }
+            if (mFuel == FuelOil) mUnit = Liters;
+            if (mFuel == Propane) mUnit = Kilograms;
+        }
     };
 
     struct FuelIndex

@@ -336,23 +336,34 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
 
 void ShowFuelDeliveriesDialog::recordChanged_Fuel(int x, int y)
 {
-    //1. First, we get the item changed and corresponding date and substation.
+    //We get the item changed and corresponding date and substation.
     QTableWidgetItem* item = ui->tableFuels->item(x, y);
     QTableWidgetItem* itemUUID = ui->tableFuels->item(x, Column_UUID);
 
     HeatingSystem::FuelDelivery* delivery = mHeatingSystem->findDelivery(itemUUID->text());
 
-    if      (y == Column_Fuel)     ;
+    if      (y == Column_Fuel)     delivery->mFuel         = (HeatingSystem::Fuel)item->data(Qt::EditRole).toInt();
     else if (y == Column_Quantity) delivery->mValue        = item->data(Qt::EditRole).toDouble();
     else if (y == Column_Unit)     delivery->mUnit         = (HeatingSystem::FuelUnits)item->data(Qt::EditRole).toInt();
-    else if (y == Column_LHV)      ;
+    else if (y == Column_LHV)      delivery->mLHV          = item->data(Qt::EditRole).toDouble();
     else if (y == Column_Moisture) delivery->mWoodMoisture = item->data(Qt::EditRole).toDouble();
     else if (y == Column_Bill)     delivery->mBill         = item->data(Qt::EditRole).toDouble();
+
+    //Check if the unit is ok
+    delivery->checkUnit();
 
     //Update LHV
     delivery->computeLHV();
     ui->tableFuels->item(x, Column_LHV)->setData(Qt::EditRole, delivery->mLHV);
 
+    //Be careful when changing fuel
+    if (y == Column_Fuel)
+    {
+        resetValues();
+        setHeatingSystem(mHeatingSystem);
+    }
+
+    //We're done
     emit settingsChanged();
     mHeatingSystem->save();
 }
