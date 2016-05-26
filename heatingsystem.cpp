@@ -250,3 +250,15 @@ void HeatingSystem::save()
 
     file->close();
 }
+
+HeatingSystem::FuelDelivery* HeatingSystem::findDelivery(QString hash)
+{
+    FuelDelivery* d = NULL;
+
+    for (FuelDelivery &delivery : mFuelDeliveries)
+    {
+        if (delivery.getHash() == hash)
+            d = &delivery;
+    }
+    return d;
+}

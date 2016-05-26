@@ -154,6 +154,7 @@ public:
 public:
     void load(QString fileName);
     void save();
+    FuelDelivery* findDelivery(QString hash);
 
 signals:
 

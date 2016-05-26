@@ -38,6 +38,23 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     ui->tableFuels->hideColumn(Column_Date);
     ui->tableFuels->hideColumn(Column_UUID);
 
+    //Fuel
+    ComboBoxDelegate *delegateFuel = new ComboBoxDelegate(this);
+    QVector<QString> fuels;
+    fuels.push_back("Aucun");
+    fuels.push_back("Bois déchiqueté");
+    fuels.push_back("Granulés");
+    fuels.push_back("Géothermie");
+    fuels.push_back("Gaz naturel");
+    fuels.push_back("Fioul");
+    fuels.push_back("Propane");
+    delegateFuel->setItems(fuels);
+    ui->tableFuels->setItemDelegateForColumn(Column_Fuel, delegateFuel);
+    ui->tableFuels->setColumnWidth(Column_Fuel, 150);
+
+    //Qauntity
+    ui->tableFuels->setColumnWidth(Column_Quantity, 110);
+
     //Unit
     ComboBoxDelegate *delegateUnit = new ComboBoxDelegate(this);
     QVector<QString> units;
@@ -50,30 +67,42 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     units.push_back("MWh");
     delegateUnit->setItems(units);
     ui->tableFuels->setItemDelegateForColumn(Column_Unit, delegateUnit);
+    ui->tableFuels->setColumnWidth(Column_Unit, 80);
+
+    //LHV
+    DoubleSpinBoxDelegate *delegateLHV = new DoubleSpinBoxDelegate(this);
+    delegateLHV->setSuffix(" kWh / unité");
+    delegateLHV->setPrecision(4);
+    ui->tableFuels->setItemDelegateForColumn(Column_LHV, delegateLHV);
+    ui->tableFuels->setColumnWidth(Column_LHV, 140);
 
     //Moisture
     DoubleSpinBoxDelegate *delegateMoisture = new DoubleSpinBoxDelegate(this);
     delegateMoisture->setSuffix(" %");
     delegateMoisture->setMaximum(100);
     ui->tableFuels->setItemDelegateForColumn(Column_Moisture, delegateMoisture);
+    ui->tableFuels->setColumnWidth(Column_Moisture, 80);
 
     //Energy
     DoubleSpinBoxDelegate *delegateEnergy = new DoubleSpinBoxDelegate(this);
     delegateEnergy->setSuffix(" MWh");
     delegateEnergy->setPrecision(4);
     ui->tableFuels->setItemDelegateForColumn(Column_Energy, delegateEnergy);
+    ui->tableFuels->setColumnWidth(Column_Energy, 100);
 
     //Bill
     DoubleSpinBoxDelegate *delegateBill = new DoubleSpinBoxDelegate(this);
     delegateBill->setSuffix(" €");
     delegateBill->setPrecision(6);
     ui->tableFuels->setItemDelegateForColumn(Column_Bill, delegateBill);
+    ui->tableFuels->setColumnWidth(Column_Bill, 110);
 
     //Energy Price
     DoubleSpinBoxDelegate *delegateEnergyPrice = new DoubleSpinBoxDelegate(this);
     delegateEnergyPrice->setSuffix(" € / MWh");
     delegateEnergyPrice->setPrecision(4);
     ui->tableFuels->setItemDelegateForColumn(Column_EnergyPrice, delegateEnergyPrice);
+    ui->tableFuels->setColumnWidth(Column_EnergyPrice, 100);
 
     //Last column allows user to delete records
     ui->tableFuels->setColumnWidth(Column_Delete, 34);
@@ -164,8 +193,11 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
     {
         ui->tableFuels->insertRow(0);
 
+        //UUID
+        ui->tableFuels->setItem(0, Column_UUID, new QTableWidgetItem(delivery.getHash()));
+
         //Date
-        ui->tableFuels->setItem(0, 0, new QTableWidgetItem(delivery.mDate.toString("yyyy-MM-dd")));
+        ui->tableFuels->setItem(0, Column_Date, new QTableWidgetItem(delivery.mDate.toString("yyyy-MM-dd")));
 
         //Quantity
         QTableWidgetItem *itemQuantity = new QTableWidgetItem;
@@ -176,6 +208,8 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
         //Unit
         QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(delivery.mUnit));
         ui->tableFuels->setItem(0, Column_Unit, itemUnit);
+
+        //LHV
 
         //Moisture
         QTableWidgetItem *itemMoisture = new QTableWidgetItem;
@@ -206,7 +240,7 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
     }
 
     //Sort deliveries
-    ui->tableFuels->sortItems(0);
+    ui->tableFuels->sortItems(Column_Date);
 
     //Copy dates in vertical header
     QStringList headers;
@@ -313,32 +347,16 @@ void ShowFuelDeliveriesDialog::recordChanged_Fuel(int x, int y)
 {
     //1. First, we get the item changed and corresponding date and substation.
     QTableWidgetItem* item = ui->tableFuels->item(x, y);
-    QTableWidgetItem* itemDate = ui->tableFuels->item(x, 0);
+    QTableWidgetItem* itemUUID = ui->tableFuels->item(x, Column_UUID);
 
-    //2. We enter the records for the changed substation.
-    for (HeatingSystem::FuelDelivery &delivery : mHeatingSystem->mFuelDeliveries)
-    {
-        //For each saved record, we check if the date is the same as the modified index.
-        if (delivery.mDate.toString("yyyy-MM-dd") == itemDate->text())
-        {
-            //Update value
-            switch (y)
-            {
-                case 1: //Quantity
-                    delivery.mValue = item->data(Qt::EditRole).toDouble();
-                    break;
-                case 2: //Unit
-//                    delivery.mUnit = item->data(Qt::EditRole).toInt();
-                    break;
-                case 3: //Moisture
-                    delivery.mWoodMoisture = item->data(Qt::EditRole).toDouble();
-                    break;
-                case 5: //Bill
-                    delivery.mBill = item->data(Qt::EditRole).toDouble();
-                    break;
-            }
-        }
-    }
+    HeatingSystem::FuelDelivery* delivery = mHeatingSystem->findDelivery(itemUUID->text());
+
+    if      (y == Column_Fuel)     ;
+    else if (y == Column_Quantity) delivery->mValue        = item->data(Qt::EditRole).toDouble();
+    else if (y == Column_Unit)     delivery->mUnit         = (HeatingSystem::FuelUnits)item->data(Qt::EditRole).toInt();
+    else if (y == Column_LHV)      ;
+    else if (y == Column_Moisture) delivery->mWoodMoisture = item->data(Qt::EditRole).toDouble();
+    else if (y == Column_Bill)     delivery->mBill         = item->data(Qt::EditRole).toDouble();
 
     emit settingsChanged();
     mHeatingSystem->save();
@@ -388,24 +406,18 @@ void ShowFuelDeliveriesDialog::recordChanged_Electricity(int x, int y)
 
 void ShowFuelDeliveriesDialog::deleteFuelDelivery()
 {
-    //The corresponding date has been saved in the properties of the sender.
+    //The hash has been saved in the properties of the sender.
     QString hash = sender()->property("record").toString();
-    QString date; //TODO: Remove this workaround
 
-    foreach (const HeatingSystem::FuelDelivery &delivery, mHeatingSystem->mFuelDeliveries)
-    {
-        if (delivery.getHash() == hash)
-        {
-            date = delivery.mDate.toString("yy-MM-dd");
-            mHeatingSystem->mFuelDeliveries.removeAll(delivery);
-            break;
-        }
-    }
+    HeatingSystem::FuelDelivery* delivery = mHeatingSystem->findDelivery(hash);
+
+    if (delivery != NULL)
+        mHeatingSystem->mFuelDeliveries.removeAll(*delivery);
 
     //Update table
     for (int i = 0 ; i < ui->tableFuels->rowCount() ; ++i)
     {
-        if (ui->tableFuels->item(i, Column_Date)->text() == date)
+        if (ui->tableFuels->item(i, Column_UUID)->text() == hash)
         {
             ui->tableFuels->removeRow(i);
             break;
