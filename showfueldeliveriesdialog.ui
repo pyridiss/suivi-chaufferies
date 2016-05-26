@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Livraisons de combustible</string>
+   <string>Livraisons de combustibles</string>
   </property>
   <property name="windowIcon">
    <iconset theme="clock">
@@ -27,7 +27,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Vous pouvez modifier les caractéristiques des livraisons enregistrées à partir du tableau ci-dessous. La dernière colonne vous permet de supprimer des livraisons si nécessaire.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vous pouvez modifier les caractéristiques des livraisons enregistrées à partir du tableau ci-dessous en double-cliquant sur les cases concernées. La dernière colonne vous permet de supprimer des livraisons si nécessaire.&lt;/p&gt;&lt;p&gt;Les modifications seront automatiquement enregistrées.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -202,7 +202,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

@@ -99,7 +99,7 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     delegateEnergyPrice->setSuffix(" € / MWh");
     delegateEnergyPrice->setPrecision(4);
     ui->tableFuels->setItemDelegateForColumn(Column_EnergyPrice, delegateEnergyPrice);
-    ui->tableFuels->setColumnWidth(Column_EnergyPrice, 100);
+    ui->tableFuels->setColumnWidth(Column_EnergyPrice, 110);
 
     //Last column allows user to delete records
     ui->tableFuels->setColumnWidth(Column_Delete, 34);
