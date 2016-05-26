@@ -91,7 +91,7 @@ public:
             mHash = QUuid::createUuid().toString();
         }
 
-        FuelDelivery(Fuel fuel, QDate date, double value, FuelUnits unit, double bill, double lhv, double woodMoisture = 0)
+        FuelDelivery(Fuel fuel, QDate date, double value, FuelUnits unit, double bill, double lhv = 0, double woodMoisture = 0)
         {
             mFuel = fuel;
             mDate = date;
@@ -102,6 +102,8 @@ public:
             mWoodMoisture = woodMoisture;
 
             mHash = QUuid::createUuid().toString();
+
+            computeLHV();
         }
         bool operator==(const FuelDelivery &right)
         {
@@ -110,6 +112,26 @@ public:
         const QString& getHash() const
         {
             return mHash;
+        }
+        void computeLHV()
+        {
+            if (mFuel == WoodChips)
+            {
+                //Assuming 20% softwood + 80% hardwood
+                double lhv     = (0.2 * (5.1 - mWoodMoisture / 16.4) + 0.8 * (4.9 - mWoodMoisture / 18.34));
+                double density = (0.2 * ((160 * mWoodMoisture) / (100 - mWoodMoisture) + 160) + 0.8 * ((220 * mWoodMoisture) / (100 - mWoodMoisture) + 220)) / 1000;
+
+                mLHV = 0;
+                if (mUnit == Tons) mLHV = lhv * 1000;
+                if (mUnit == ApparentCubicMeters) mLHV = lhv * density * 1000;
+                if (mUnit == MWh) mLHV = 1000;
+            }
+            if (mFuel == Pellets)
+                return; //set by the user
+            if (mFuel == FuelOil)
+                mLHV = 9.96; //kWh / liter
+            if (mFuel == Propane)
+                mLHV = 12.78; //kWh / kg
         }
     };
 
