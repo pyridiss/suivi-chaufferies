@@ -152,29 +152,12 @@ void ShowFuelDeliveriesDialog::updateSums()
 {
     for (int i = 0 ; i < ui->tableFuels->rowCount() ; ++i)
     {
-        double quantity               = ui->tableFuels->item(i, Column_Quantity)->data(Qt::EditRole).toDouble();
-        HeatingSystem::FuelUnits unit = (HeatingSystem::FuelUnits) ui->tableFuels->item(i, Column_Unit)    ->text().toInt();
-        double moisture               = ui->tableFuels->item(i, Column_Moisture)->data(Qt::EditRole).toDouble() / 100;
-        double bill                   = ui->tableFuels->item(i, Column_Bill)    ->data(Qt::EditRole).toDouble();
+        double quantity = ui->tableFuels->item(i, Column_Quantity)->data(Qt::EditRole).toDouble();
+        double lhv      = ui->tableFuels->item(i, Column_LHV)     ->data(Qt::EditRole).toDouble();
+        double bill     = ui->tableFuels->item(i, Column_Bill)    ->data(Qt::EditRole).toDouble();
 
-        //Assuming 20% softwood + 80% hardwood
-        double energy  = 0;
-        double lhv     = (0.2 * (5.1 - moisture * 100 / 16.4) + 0.8 * (4.9 - moisture * 100 / 18.34));
-        double density = (0.2 * ((160 * moisture * 100) / (100 - moisture * 100) + 160) + 0.8 * ((220 * moisture * 100) / (100 - moisture * 100) + 220)) / 1000;
-
-        switch (unit)
-        {
-            break; //TODO
-        }
-
-        if (unit == HeatingSystem::ApparentCubicMeters) energy = quantity * lhv * density;
-        if (unit == HeatingSystem::Tons) energy = quantity * lhv;
-        if (unit == HeatingSystem::MWh) energy = quantity;
-
-        if (energy == 0) energy = 1;
-
-        ui->tableFuels->item(i, Column_Energy)->setData(Qt::DisplayRole, energy);
-        ui->tableFuels->item(i, Column_EnergyPrice)->setData(Qt::DisplayRole, bill / energy);
+        ui->tableFuels->item(i, Column_Energy)     ->setData(Qt::DisplayRole, quantity * lhv / 1000);
+        ui->tableFuels->item(i, Column_EnergyPrice)->setData(Qt::DisplayRole, bill / (quantity * lhv / 1000));
     }
 }
 
@@ -207,13 +190,21 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
 
         //Unit
         QTableWidgetItem *itemUnit = new QTableWidgetItem(QString::number(delivery.mUnit));
+        if (delivery.mFuel != HeatingSystem::WoodChips)
+            itemUnit->setFlags(Qt::NoItemFlags);
         ui->tableFuels->setItem(0, Column_Unit, itemUnit);
 
         //LHV
+        QTableWidgetItem *itemLHV = new QTableWidgetItem(QString::number(delivery.mLHV));
+        if (delivery.mFuel != HeatingSystem::Pellets)
+            itemLHV->setFlags(Qt::NoItemFlags);
+        ui->tableFuels->setItem(0, Column_LHV, itemLHV);
 
         //Moisture
         QTableWidgetItem *itemMoisture = new QTableWidgetItem;
         itemMoisture->setData(Qt::EditRole, delivery.mWoodMoisture);
+        if (delivery.mFuel != HeatingSystem::WoodChips)
+            itemMoisture->setFlags(Qt::NoItemFlags);
         ui->tableFuels->setItem(0, Column_Moisture, itemMoisture);
 
         //Energy
@@ -357,6 +348,10 @@ void ShowFuelDeliveriesDialog::recordChanged_Fuel(int x, int y)
     else if (y == Column_LHV)      ;
     else if (y == Column_Moisture) delivery->mWoodMoisture = item->data(Qt::EditRole).toDouble();
     else if (y == Column_Bill)     delivery->mBill         = item->data(Qt::EditRole).toDouble();
+
+    //Update LHV
+    delivery->computeLHV();
+    ui->tableFuels->item(x, Column_LHV)->setData(Qt::EditRole, delivery->mLHV);
 
     emit settingsChanged();
     mHeatingSystem->save();
