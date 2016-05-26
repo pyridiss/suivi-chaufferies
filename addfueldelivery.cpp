@@ -187,18 +187,22 @@ void AddFuelDelivery::on_buttonBox_accepted()
     //1. Wood chips
     if (ui->editWoodChipsQuantity->value() > 0)
     {
+        HeatingSystem::FuelUnits unit;
+        if (ui->editWoodChipsUnit->currentIndex() == 0) unit = HeatingSystem::ApparentCubicMeters;
+        if (ui->editWoodChipsUnit->currentIndex() == 1) unit = HeatingSystem::Tons;
+        if (ui->editWoodChipsUnit->currentIndex() == 2) unit = HeatingSystem::MWh;
+
         HeatingSystem::FuelDelivery delivery(HeatingSystem::WoodChips,
                                              ui->editDeliveryDate->date(),
                                              ui->editWoodChipsQuantity->value(),
-                                             /*ui->editWoodChipsUnit->currentIndex()*/ HeatingSystem::ApparentCubicMeters,
+                                             unit,
                                              ui->editWoodChipsBill->value(),
-                                             3.5,
+                                             0,
                                              ui->editWoodChipsMoisture->value());
         mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
     //2. Pellets
-    //TODO: Not really well saved.
     if (ui->editPelletsQuantity->value() > 0)
     {
         HeatingSystem::FuelDelivery delivery(HeatingSystem::Pellets,
@@ -217,8 +221,7 @@ void AddFuelDelivery::on_buttonBox_accepted()
                                              ui->editDeliveryDate->date(),
                                              ui->editFuelOilQuantity->value(),
                                              HeatingSystem::Liters,
-                                             ui->editFuelOilBill->value(),
-                                             9.96);
+                                             ui->editFuelOilBill->value());
         mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
@@ -229,8 +232,7 @@ void AddFuelDelivery::on_buttonBox_accepted()
                                              ui->editDeliveryDate->date(),
                                              ui->editPropaneQuantity->value(),
                                              HeatingSystem::Kilograms,
-                                             ui->editPropaneBill->value(),
-                                             12.1);
+                                             ui->editPropaneBill->value());
         mHeatingSystem->mFuelDeliveries.push_back(delivery);
     }
 
