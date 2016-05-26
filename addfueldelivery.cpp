@@ -223,7 +223,7 @@ void AddFuelDelivery::on_buttonBox_accepted()
     }
 
     //4. Propane
-    if (ui->editFuelOilQuantity->value() > 0)
+    if (ui->editPropaneQuantity->value() > 0)
     {
         HeatingSystem::FuelDelivery delivery(HeatingSystem::Propane,
                                              ui->editDeliveryDate->date(),
