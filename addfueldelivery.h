@@ -26,8 +26,7 @@ private:
 
 public slots:
     void setHeatingSystem(HeatingSystem *system);
-    void hideAllGroupBoxes();
-    void deactivate(bool status);
+    void hideAllFrames();
 
     void showWoodChipsGroup();
     void showPelletsGroup();
