@@ -14,15 +14,15 @@ class HeatingSystem : public QObject
 public:
     enum Fuel
     {
-        NoFuel,
         WoodChips,
         Pellets,
-        GeothermalPower,
-        NaturalGas,
         FuelOil,
         Propane,
+        NaturalGas,
         Electricity,
-        Other
+        GeothermalPower,
+        Other,
+        NoFuel
     };
     Q_ENUM(Fuel)
 

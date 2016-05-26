@@ -41,11 +41,8 @@ ShowFuelDeliveriesDialog::ShowFuelDeliveriesDialog(QWidget *parent) :
     //Fuel
     ComboBoxDelegate *delegateFuel = new ComboBoxDelegate(this);
     QVector<QString> fuels;
-    fuels.push_back("Aucun");
     fuels.push_back("Bois déchiqueté");
     fuels.push_back("Granulés");
-    fuels.push_back("Géothermie");
-    fuels.push_back("Gaz naturel");
     fuels.push_back("Fioul");
     fuels.push_back("Propane");
     delegateFuel->setItems(fuels);
@@ -198,6 +195,9 @@ void ShowFuelDeliveriesDialog::setHeatingSystem(HeatingSystem *system)
 
         //Date
         ui->tableFuels->setItem(0, Column_Date, new QTableWidgetItem(delivery.mDate.toString("yyyy-MM-dd")));
+
+        //Fuel
+        ui->tableFuels->setItem(0, Column_Fuel, new QTableWidgetItem(QString::number(delivery.mFuel)));
 
         //Quantity
         QTableWidgetItem *itemQuantity = new QTableWidgetItem;
