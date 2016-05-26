@@ -118,13 +118,16 @@ public:
             if (mFuel == WoodChips)
             {
                 //Assuming 20% softwood + 80% hardwood
-                double lhv     = (0.2 * (5.1 - mWoodMoisture / 16.4) + 0.8 * (4.9 - mWoodMoisture / 18.34));
+                double lhv     = (0.2 * (5.1 - mWoodMoisture / 16.4) + 0.8 * (4.9 - mWoodMoisture / 18.34)); //kWh / kg
                 double density = (0.2 * ((160 * mWoodMoisture) / (100 - mWoodMoisture) + 160) + 0.8 * ((220 * mWoodMoisture) / (100 - mWoodMoisture) + 220)) / 1000;
 
-                mLHV = 0;
-                if (mUnit == Tons) mLHV = lhv * 1000;
+                if (mUnit == Kilograms)           mLHV = lhv;
+                if (mUnit == Tons)                mLHV = lhv * 1000;
+                if (mUnit == Liters)              mLHV = lhv * density;        //Assume the user means "Apparent Liters"
+                if (mUnit == CubicMeters)         mLHV = lhv * density * 1000; //Assume the user means "Apparent Cubic Meter"
                 if (mUnit == ApparentCubicMeters) mLHV = lhv * density * 1000;
-                if (mUnit == MWh) mLHV = 1000;
+                if (mUnit == kWh)                 mLHV = 1;
+                if (mUnit == MWh)                 mLHV = 1000;
             }
             if (mFuel == Pellets)
                 return; //set by the user
